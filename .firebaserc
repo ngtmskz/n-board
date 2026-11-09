@@ -1,0 +1,6 @@
+{
+  "projects": {
+    "default": "demo-nboard",
+    "production": "your-project-id"
+  }
+}

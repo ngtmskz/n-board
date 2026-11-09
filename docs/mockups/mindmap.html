@@ -1,0 +1,225 @@
+<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>みんなでマインドマップ 見本</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&family=Noto+Sans+JP:wght@400;600&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#f5f5f7;--canvas:#fafafa;--dot:#dcdce2;--surface:#fff;--text:#1d1d22;--muted:#6b6b76;--border:#e2e2e8;--accent:#3b6cf6;--shadow:0 2px 10px rgba(20,20,40,.12)}
+*{box-sizing:border-box}
+html,body{margin:0;height:100%;font-family:Inter,'Noto Sans JP',-apple-system,'Hiragino Sans',sans-serif;line-height:1.5;color:var(--text);background:var(--bg)}
+button{font:inherit;color:inherit;cursor:pointer}
+#cv{position:fixed;inset:0;overflow:hidden;background-color:var(--canvas);background-image:radial-gradient(var(--dot) 1.2px,transparent 1.2px);background-size:24px 24px;user-select:none;touch-action:none}
+#world{position:absolute;left:0;top:0;transform-origin:0 0}
+#lines{position:absolute;left:0;top:0;overflow:visible;pointer-events:none}
+.nd{position:absolute;transform:translate(-50%,-50%);white-space:nowrap;cursor:grab;box-shadow:0 1px 2px rgba(0,0,0,.12),0 4px 10px rgba(0,0,0,.06)}
+.nd.d0{background:#fff2a8;padding:18px 26px;font-size:24px;font-weight:600;border-radius:3px}
+.nd.d1{padding:7px 16px;font-size:17px;border-radius:999px}
+.nd.dn{background:#fff;padding:4px 13px;font-size:15px;border-radius:999px;border:2px solid}
+.nd.sel{outline:2px solid var(--accent);outline-offset:3px}
+.nd.target{outline:3px solid rgba(59,108,246,.55);outline-offset:3px}
+.nd input{font:inherit;border:none;outline:none;background:transparent;padding:0;text-align:center;min-width:3em}
+.nd .ph{color:rgba(0,0,0,.3)}
+.stamps{position:absolute;top:-16px;right:-14px;display:flex;gap:2px}
+.stamps span{height:26px;min-width:26px;padding:0 5px;border-radius:13px;background:#fff;border:1px solid var(--border);font-size:14px;display:flex;align-items:center;justify-content:center;gap:2px}
+.stamps b{font-size:11px;font-weight:600;color:var(--muted)}
+.who{position:absolute;left:50%;top:100%;margin-top:6px;transform:translateX(-50%);font-size:11px;color:#fff;padding:1px 8px;border-radius:999px;background:#4fa86a}
+#add{position:absolute;width:24px;height:24px;border-radius:50%;background:var(--accent);color:#fff;font-size:18px;line-height:22px;text-align:center;transform:translate(-50%,-50%);cursor:pointer;display:none;box-shadow:var(--shadow)}
+.bar{position:fixed;display:flex;gap:4px;align-items:center;background:var(--surface);border-radius:10px;box-shadow:var(--shadow);padding:6px}
+.bar button{border:none;background:none;height:36px;min-width:36px;border-radius:8px;padding:0 8px;font-size:14px}
+.bar button:hover{background:#f0f0f4}
+.bar button.on{background:#e8eefe;color:var(--accent)}
+.sep{width:1px;height:24px;background:var(--border);margin:0 4px}
+#tools{left:16px;top:50%;transform:translateY(-50%);flex-direction:column}
+#top{left:50%;top:14px;transform:translateX(-50%)}
+#right{right:16px;top:14px;font-size:13px;color:var(--muted);padding:6px 12px}
+.av{width:26px;height:26px;border-radius:50%;color:#fff;font-size:12px;display:inline-flex;align-items:center;justify-content:center;margin-left:-6px;border:2px solid #fff}
+#help{position:fixed;right:16px;bottom:16px;background:var(--surface);border-radius:10px;box-shadow:var(--shadow);padding:10px 14px;font-size:12.5px;color:var(--muted);line-height:1.7;max-width:380px}
+#help summary{cursor:pointer;color:var(--text);font-weight:600}
+#help b{color:var(--text);font-weight:600}
+.tm{font-variant-numeric:tabular-nums;font-weight:600}
+</style>
+</head>
+<body>
+<div id="cv">
+  <div id="world"><svg id="lines" width="1" height="1"></svg><div id="nodes"></div><div id="add" title="子の枝を足す（Tab）">+</div></div>
+</div>
+
+<div class="bar" id="tools">
+  <button id="tSel" class="on" title="選択">↖</button>
+  <div class="sep" style="width:24px;height:1px;margin:4px 0"></div>
+  <button data-s="👍" title="スタンプ">👍</button>
+  <button data-s="❤️" title="スタンプ">❤️</button>
+  <button data-s="💡" title="スタンプ">💡</button>
+  <button data-s="🔥" title="スタンプ">🔥</button>
+  <button data-s="👀" title="スタンプ">👀</button>
+</div>
+
+<div class="bar" id="top">
+  <button id="bTm">⏱ <span class="tm" id="tm">5:00</span></button>
+  <div class="sep"></div>
+  <button id="bLay">✨ きれいに並べる</button>
+  <button id="bFit">全体を表示</button>
+</div>
+
+<div class="bar" id="right">
+  <span class="av" style="background:#3b6cf6;margin-left:0">あ</span><span class="av" style="background:#4fa86a">B</span>
+  <span style="margin-left:8px">2人が参加中</span>
+</div>
+
+<details id="help" open><summary>操作のしかた</summary>
+  枝を押して選ぶ → <b>Tab</b> か青い <b>＋</b> で子の枝、<b>Enter</b> で兄弟の枝。<br>
+  <b>ダブルクリック</b>で書き直し、<b>Delete</b> で消す（下の枝ごと）。<b>⌘Z</b> で元に戻す。<br>
+  枝をドラッグすると下の枝ごと動く。何もないところのドラッグで画面移動、ホイールで拡大・縮小。<br>
+  左のスタンプを選んで枝を押すと貼れる（Esc で選択に戻る）。<br>
+  緑の <b>B さん</b>がときどき枝を足します（同時編集のつもり）。
+</details>
+
+<script>
+// 1段目の枝の色（N-Board の付箋の色）と、線の色（セクションの枠の色に近いもの）
+const COL=[['#ffd3a1','#e0913e'],['#ffc7d9','#d9649a'],['#c3e2ff','#5c8fe6'],['#c8efc1','#4fa86a'],['#dcc9ff','#9471dc'],['#fff2a8','#d1a51e']];
+const N={};let seq=0,sel=null,tool=null,editing=null;
+const cv=document.getElementById('cv'),world=document.getElementById('world'),nodesEl=document.getElementById('nodes'),lines=document.getElementById('lines'),addBtn=document.getElementById('add');
+let view={s:1,x:0,y:0};
+
+function add(text,parent,by){const p=parent&&N[parent];const id='n'+(seq++);N[id]={id,text,parent,x:p?p.x:0,y:p?p.y:0,dx:p?p.x:0,dy:p?p.y:0,stamps:{},by:by||null};return id}
+const kids=p=>Object.values(N).filter(n=>n.parent===p).map(n=>n.id);
+const depth=id=>N[id].parent?1+depth(N[id].parent):0;
+const rootId=()=>Object.values(N).find(n=>!n.parent).id;
+function branch(id){let n=N[id];if(!n.parent)return -1;while(N[n.parent].parent)n=N[n.parent];return kids(n.parent).indexOf(n.id)%COL.length}
+function subtree(id){const r=[id];kids(id).forEach(k=>r.push(...subtree(k)));return r}
+function size(id){const e=els.get(id);if(e&&e.offsetWidth)return{w:e.offsetWidth,h:e.offsetHeight};return{w:80,h:34}}
+
+// ---- 並べ方（ChatMap の考え方：親の向きに扇形に広げ、重なりを押し離す） ----
+function facing(id){const p=N[id];if(!p.parent)return -Math.PI/2;const g=N[p.parent];return Math.atan2(p.y-g.y,p.x-g.x)}
+function dist(pid){return N[pid].parent?{x:170,y:110}:{x:240,y:160}}
+function fan(pid){const ks=kids(pid),p=N[pid],c=ks.length;if(!c)return;const d=dist(pid);
+  if(!p.parent){ks.forEach((k,i)=>{const a=-Math.PI/2+i*2*Math.PI/c;N[k].x=p.x+Math.cos(a)*d.x;N[k].y=p.y+Math.sin(a)*d.y});return}
+  const base=facing(pid),spread=c===1?0:Math.min(Math.PI*1.5,c*Math.PI/3.5),step=c>1?spread/(c-1):0;
+  ks.forEach((k,i)=>{const a=base-spread/2+i*step;N[k].x=p.x+Math.cos(a)*d.x;N[k].y=p.y+Math.sin(a)*d.y})}
+function resolve(movable,iters){const all=Object.values(N);
+  for(let it=0;it<iters;it++){let moved=false;
+    for(let i=0;i<all.length;i++)for(let j=i+1;j<all.length;j++){const a=all[i],b=all[j],am=movable(a),bm=movable(b);if(!am&&!bm)continue;
+      const sa=size(a.id),sb=size(b.id),ox=(sa.w+sb.w)/2+20-Math.abs(b.x-a.x),oy=(sa.h+sb.h)/2+16-Math.abs(b.y-a.y);
+      if(ox<=0||oy<=0)continue;moved=true;
+      const horiz=ox/(sa.w+sb.w)<oy/(sa.h+sb.h),sx=Math.sign(b.x-a.x)||1,sy=Math.sign(b.y-a.y)||1,k=am&&bm?.5:1;
+      const mx=horiz?sx*(ox*k+1):0,my=horiz?0:sy*(oy*k+1);
+      if(am){a.x-=mx;a.y-=my}if(bm){b.x+=mx;b.y+=my}}
+    if(!moved)break}}
+function layoutAll(){const q=[rootId()];while(q.length){const id=q.shift();fan(id);q.push(...kids(id))}resolve(n=>n.parent&&n.id!==editing,80)}
+// 新しい枝だけを空いたところに置く（ほかの人の枝は動かさない）
+function place(id){const n=N[id],p=N[n.parent],sib=kids(n.parent).filter(k=>k!==id),d=dist(n.parent);let a;
+  if(!p.parent){a=-Math.PI/2+(sib.length+.5)*2*Math.PI/(sib.length+1)}
+  else{a=facing(n.parent)+(sib.length%2?-1:1)*Math.ceil(sib.length/2)*.55}
+  n.x=p.x+Math.cos(a)*d.x;n.y=p.y+Math.sin(a)*d.y;resolve(m=>m.id===id,60)}
+
+// ---- 元に戻す（自分の操作だけ） ----
+const undo=[];
+function snapshot(){return JSON.stringify(Object.values(N).map(({id,text,parent,x,y,stamps})=>({id,text,parent,x,y,stamps})))}
+function record(){undo.push(snapshot());if(undo.length>100)undo.shift()}
+function doUndo(){const s=undo.pop();if(!s)return;const keep=new Set();JSON.parse(s).forEach(o=>{keep.add(o.id);N[o.id]=Object.assign(N[o.id]||{dx:o.x,dy:o.y,by:null},o)});Object.keys(N).forEach(k=>{if(!keep.has(k)&&!N[k].by)delete N[k]});if(sel&&!N[sel])sel=null;editing=null;render()}
+
+// ---- 表示 ----
+const els=new Map();
+function nodeEl(id){let e=els.get(id);if(e)return e;e=document.createElement('div');e.className='nd';e.dataset.id=id;
+  e.innerHTML='<span class="lb"></span><div class="stamps"></div>';nodesEl.appendChild(e);els.set(id,e);return e}
+function render(){
+  for(const [id,e] of els)if(!N[id]){e.remove();els.delete(id)}
+  for(const n of Object.values(N)){const e=nodeEl(n.id),d=depth(n.id),b=branch(n.id);
+    e.className='nd '+(d===0?'d0':d===1?'d1':'dn')+(sel===n.id?' sel':'')+(hover===n.id&&tool?' target':'');
+    if(d===1)e.style.background=COL[b][0];if(d>1){e.style.borderColor=COL[b][0];e.style.background='#fff'}
+    const lb=e.querySelector('.lb');
+    if(editing!==n.id){if(lb.querySelector('input'))lb.innerHTML='';lb.textContent=n.text||'';if(!n.text){lb.innerHTML='<span class="ph">…</span>'}}
+    e.querySelector('.stamps').innerHTML=Object.entries(n.stamps).map(([k,v])=>`<span>${k}${v>1?`<b>${v}</b>`:''}</span>`).join('');
+    let w=e.querySelector('.who');if(n.by){if(!w){w=document.createElement('div');w.className='who';e.appendChild(w)}w.textContent=n.by}else if(w)w.remove()}
+}
+function frame(){
+  let path='';
+  for(const n of Object.values(N)){
+    if(dragging&&dragging.ids.includes(n.id)){n.dx=n.x;n.dy=n.y}else{n.dx+=(n.x-n.dx)*.22;n.dy+=(n.y-n.dy)*.22}
+    const e=els.get(n.id);if(e){e.style.left=n.dx+'px';e.style.top=n.dy+'px'}}
+  for(const n of Object.values(N)){if(!n.parent||!N[n.parent])continue;const p=N[n.parent],c=COL[branch(n.id)][1],mx=(p.dx+n.dx)/2;
+    path+=`<path d="M${p.dx},${p.dy} C${mx},${p.dy} ${mx},${n.dy} ${n.dx},${n.dy}" fill="none" stroke="${c}" stroke-width="${depth(n.id)===1?4:2.5}" stroke-linecap="round"/>`}
+  lines.innerHTML=path;
+  if(sel&&N[sel]&&!editing&&!tool){const n=N[sel],s=size(sel);addBtn.style.display='block';addBtn.style.left=(n.dx+s.w/2+20)+'px';addBtn.style.top=n.dy+'px'}else addBtn.style.display='none';
+  requestAnimationFrame(frame)}
+function applyView(){world.style.transform=`translate(${view.x}px,${view.y}px) scale(${view.s})`}
+function fit(){let x0=1e9,y0=1e9,x1=-1e9,y1=-1e9;for(const n of Object.values(N)){const s=size(n.id);x0=Math.min(x0,n.x-s.w/2);x1=Math.max(x1,n.x+s.w/2);y0=Math.min(y0,n.y-s.h/2-20);y1=Math.max(y1,n.y+s.h/2+24)}
+  const W=innerWidth-120,H=innerHeight-200,s=Math.min(1.2,W/(x1-x0),H/(y1-y0));view={s,x:60+(W-(x1-x0)*s)/2-x0*s,y:80+(H-(y1-y0)*s)/2-y0*s};applyView()}
+
+// ---- 編集 ----
+function startEdit(id){editing=id;sel=id;const e=nodeEl(id),lb=e.querySelector('.lb');lb.innerHTML='';const i=document.createElement('input');i.value=N[id].text;i.placeholder='ことばを書く';
+  const grow=()=>{i.style.width=Math.max(3,[...(i.value||i.placeholder)].length*1.05+1)+'em'};grow();i.oninput=grow;lb.appendChild(i);
+  // 押した直後はブラウザが押した場所にフォーカスを移すので、そのあとで入力欄に移す
+  setTimeout(()=>{if(editing===id){i.focus();i.select()}});
+  i.addEventListener('pointerdown',ev=>ev.stopPropagation());
+  i.addEventListener('keydown',ev=>{ev.stopPropagation();if(ev.isComposing||ev.keyCode===229)return;
+    if(ev.key==='Enter'){ev.preventDefault();const p=N[id].parent;if(endEdit()&&p)newChild(p);else if(!p)newChild(id)}
+    else if(ev.key==='Tab'){ev.preventDefault();if(endEdit())newChild(id)}
+    else if(ev.key==='Escape'){ev.preventDefault();endEdit()}});
+  i.addEventListener('blur',()=>{if(editing===id)endEdit()});render()}
+function endEdit(){const id=editing;if(!id)return false;const i=els.get(id)?.querySelector('input');const v=(i?i.value:'').trim();editing=null;
+  if(!v&&N[id].parent&&!kids(id).length){delete N[id];sel=N[id]?id:null;render();return false}
+  if(v)N[id].text=v;render();return true}
+function newChild(pid){record();const id=add('',pid);render();place(id);startEdit(id)}
+
+// ---- ポインター ----
+let dragging=null,panning=null,hover=null,lastDown={};
+cv.addEventListener('pointerdown',ev=>{
+  if(ev.target===addBtn){ev.preventDefault();newChild(sel);return}
+  const e=ev.target.closest('.nd');
+  if(editing&&!(e&&e.dataset.id===editing))endEdit();
+  if(!e){sel=null;render();panning={sx:ev.clientX,sy:ev.clientY,x:view.x,y:view.y};cv.setPointerCapture(ev.pointerId);return}
+  const id=e.dataset.id;
+  if(id===editing)return;
+  if(tool){record();N[id].stamps[tool]=(N[id].stamps[tool]||0)+1;render();return}
+  // ドラッグのためにポインターを捕まえると dblclick が枝に届かないので、2回押しは自分で判定する
+  const now=performance.now();if(lastDown.id===id&&now-lastDown.t<400){lastDown={};startEdit(id);return}lastDown={id,t:now};
+  sel=id;render();const ids=subtree(id);
+  dragging={ids,sx:ev.clientX,sy:ev.clientY,orig:ids.map(k=>[N[k].x,N[k].y]),moved:false};cv.setPointerCapture(ev.pointerId)});
+cv.addEventListener('pointermove',ev=>{
+  if(tool){const e=ev.target.closest('.nd');const h=e?e.dataset.id:null;if(h!==hover){hover=h;render()}}
+  if(panning){view.x=panning.x+ev.clientX-panning.sx;view.y=panning.y+ev.clientY-panning.sy;applyView();return}
+  if(!dragging)return;const dx=(ev.clientX-dragging.sx)/view.s,dy=(ev.clientY-dragging.sy)/view.s;
+  if(!dragging.moved&&Math.hypot(dx,dy)>3){dragging.moved=true;record()}
+  if(dragging.moved)dragging.ids.forEach((k,i)=>{if(N[k]){N[k].x=dragging.orig[i][0]+dx;N[k].y=dragging.orig[i][1]+dy}})});
+cv.addEventListener('pointerup',()=>{dragging=null;panning=null});
+cv.addEventListener('wheel',ev=>{ev.preventDefault();const k=Math.exp(-ev.deltaY*(ev.ctrlKey?.01:.002)),s=Math.min(3,Math.max(.2,view.s*k));
+  view.x=ev.clientX-(ev.clientX-view.x)*s/view.s;view.y=ev.clientY-(ev.clientY-view.y)*s/view.s;view.s=s;applyView()},{passive:false});
+document.addEventListener('keydown',ev=>{if(editing)return;
+  if((ev.metaKey||ev.ctrlKey)&&ev.key==='z'){ev.preventDefault();doUndo();return}
+  if(ev.key==='Escape'){setTool(null);sel=null;render();return}
+  if(!sel||!N[sel])return;
+  if(ev.key==='Tab'){ev.preventDefault();newChild(sel)}
+  else if(ev.key==='Enter'){ev.preventDefault();N[sel].parent?newChild(N[sel].parent):startEdit(sel)}
+  else if(ev.key==='F2'||ev.key===' '){ev.preventDefault();startEdit(sel)}
+  else if((ev.key==='Delete'||ev.key==='Backspace')&&N[sel].parent){ev.preventDefault();record();const p=N[sel].parent;subtree(sel).forEach(k=>delete N[k]);sel=p;render()}});
+
+// ---- ツール・タイマー ----
+const stampBtns=[...document.querySelectorAll('[data-s]')],tSel=document.getElementById('tSel');
+function setTool(t){tool=t;tSel.classList.toggle('on',!t);stampBtns.forEach(b=>b.classList.toggle('on',b.dataset.s===t));cv.style.cursor=t?'copy':'';if(!t)hover=null;render()}
+stampBtns.forEach(b=>b.onclick=()=>setTool(tool===b.dataset.s?null:b.dataset.s));tSel.onclick=()=>setTool(null);
+document.getElementById('bLay').onclick=()=>{record();layoutAll()};
+document.getElementById('bFit').onclick=fit;
+let tm=300,ti=null;const tmEl=document.getElementById('tm');
+document.getElementById('bTm').onclick=()=>{if(ti){clearInterval(ti);ti=null;return}if(!tm)tm=300;ti=setInterval(()=>{tm--;tmEl.textContent=Math.floor(tm/60)+':'+String(tm%60).padStart(2,'0');if(tm<=0){clearInterval(ti);ti=null}},1000)};
+
+// ---- はじめのマップ ----
+const R=add('新しいチームのイベント',null);
+[['食べ物',['屋台','持ち寄り']],['場所',['屋上','会議室']],['遊び',['謎解き']],['時間',[]]].forEach(([t,cs])=>{const k=add(t,R);cs.forEach(c=>add(c,k))});
+render();layoutAll();for(const n of Object.values(N)){n.dx=n.x;n.dy=n.y}
+requestAnimationFrame(()=>{render();layoutAll();for(const n of Object.values(N)){n.dx=n.x;n.dy=n.y}fit();frame()});
+
+// ---- B さん（ほかの参加者のつもり）がときどき枝を足す ----
+const idea={'食べ物':['カレー','おにぎり'],'場所':['公園','オンライン'],'遊び':['クイズ','ビンゴ'],'時間':['金曜の夕方','お昼休み'],'屋台':['たこ焼き'],'謎解き':['チームの歴史']};
+let turns=0;
+function bAdds(){if(turns++>7)return;const c=Object.values(N).filter(n=>idea[n.text]&&idea[n.text].length&&n.id!==editing);if(!c.length)return;
+  const p=c[Math.floor(Math.random()*c.length)],word=idea[p.text].shift(),id=add('',p.id,'B さん 入力中');render();place(id);
+  let i=0;const iv=setInterval(()=>{if(!N[id]){clearInterval(iv);return}N[id].text=word.slice(0,++i);render();
+    if(i>=word.length){clearInterval(iv);setTimeout(()=>{if(N[id]){N[id].by=null;render()}},1000)}},280)}
+setTimeout(bAdds,3000);setInterval(bAdds,8000);
+</script>
+</body>
+</html>

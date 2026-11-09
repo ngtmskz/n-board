@@ -1,0 +1,2886 @@
+:root {
+  --bg: #f5f5f7;
+  --canvas: #fafafa;
+  --dot: #dcdce2;
+  --surface: #ffffff;
+  --text: #1d1d22;
+  --muted: #6b6b76;
+  --border: #e2e2e8;
+  --accent: #3b6cf6;
+  --accent-text: #ffffff;
+  --danger: #d6384a;
+  --shadow: 0 2px 10px rgba(20, 20, 40, 0.12);
+  --radius: 10px;
+  color-scheme: light;
+  /* 英字は Inter、日本語は Noto Sans JP（どちらも main.tsx で読み込む）。
+     日本語の文字はいつも Noto Sans JP になるので、英語の表示でも中国語用の書体にはならない */
+  font-family:
+    'Inter Variable', 'Noto Sans JP Variable', -apple-system, BlinkMacSystemFont, 'Hiragino Sans', 'Segoe UI', Meiryo,
+    sans-serif;
+  /* 行の高さは書体に任せず決めておく（書体によって高さが変わり、言語を切り替えると縦幅がずれるため） */
+  line-height: 1.5;
+  color: var(--text);
+  background: var(--bg);
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html,
+body,
+#root {
+  margin: 0;
+  height: 100%;
+}
+
+button {
+  font: inherit;
+  color: inherit;
+  cursor: pointer;
+}
+
+button:disabled {
+  cursor: default;
+  opacity: 0.4;
+}
+
+.primary-button {
+  border: none;
+  border-radius: 8px;
+  background: var(--accent);
+  color: var(--accent-text);
+  padding: 8px 14px;
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+.primary-button.large {
+  padding: 12px 24px;
+  font-size: 16px;
+}
+
+.secondary-button {
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  background: var(--surface);
+  color: var(--text);
+  padding: 7px 12px;
+  white-space: nowrap;
+}
+
+.secondary-button:hover {
+  background: #f3f4f8;
+}
+
+.danger-button {
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  background: var(--surface);
+  color: var(--danger);
+  padding: 7px 12px;
+  white-space: nowrap;
+}
+
+.text-button {
+  border: none;
+  background: none;
+  color: var(--muted);
+  padding: 4px 8px;
+}
+
+.muted {
+  color: var(--muted);
+}
+
+.center-message {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
+  gap: 12px;
+  padding: 16px;
+  text-align: center;
+  color: var(--muted);
+}
+
+/* 「このボードを開けませんでした」などの見出し */
+.center-message-title {
+  display: inline-block;
+  margin-bottom: 6px;
+  color: var(--text);
+  font-size: 17px;
+}
+
+/* ---- ログイン ---- */
+
+.login-page {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
+  padding: 16px;
+}
+
+.login-card {
+  width: 100%;
+  max-width: 380px;
+  background: var(--surface);
+  border-radius: 16px;
+  box-shadow: var(--shadow);
+  padding: 36px 28px;
+  text-align: center;
+}
+
+.login-card h1 {
+  margin: 0 0 4px;
+}
+
+.login-tagline {
+  margin: 0 0 14px;
+  font-size: 16px;
+}
+
+.login-lead {
+  margin: 0 0 28px;
+  color: var(--muted);
+  font-size: 14px;
+}
+
+/* 共有されたボードのリンクから来た人への一言。枠は文字の幅に合わせ、左右の余白をそろえる */
+.login-shared {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  width: fit-content;
+  margin: 0 auto 18px;
+  padding: 10px 24px 10px 20px;
+  border-radius: 10px;
+  background: #eef3ff;
+  color: #2a4fc4;
+  font-size: 13px;
+  line-height: 1.5;
+  text-align: left;
+}
+
+.login-shared svg {
+  flex: none;
+}
+
+/* ログインのボタンは両端を丸くして、上のメッセージの枠と形で見分けられるようにする */
+.login-card .primary-button {
+  border-radius: 999px;
+  padding-left: 32px;
+  padding-right: 32px;
+}
+
+.login-note {
+  font-size: 13px;
+  color: var(--muted);
+}
+
+.login-error {
+  color: var(--danger);
+  font-size: 14px;
+  /* 文言の中の改行（\n）で改行する */
+  white-space: pre-line;
+}
+
+/* ---- 履歴 ---- */
+
+.history-page {
+  display: flex;
+  flex-direction: column;
+  min-height: 100%;
+}
+
+.history-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 14px 24px;
+  background: var(--surface);
+  border-bottom: 1px solid var(--border);
+}
+
+/* ロゴ：アイコン＋太字の名前＋少し離して通常の文字の説明 */
+.app-logo {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  min-width: 0;
+}
+
+.app-icon {
+  flex: none;
+  display: block;
+}
+
+.app-logo-name {
+  margin: 0;
+  font-size: 20px;
+  font-weight: 700;
+}
+
+.app-logo-tagline {
+  margin-left: 6px;
+  color: var(--muted);
+  font-size: 14px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.login-icon {
+  display: flex;
+  justify-content: center;
+  margin-bottom: 10px;
+}
+
+/* ---- アカウントのメニュー（履歴画面の右上） ---- */
+
+.account-menu {
+  position: relative;
+}
+
+.history-header-actions {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  min-width: 0;
+}
+
+/* 使い方：枠だけの控えめなボタン。高さはアカウントのボタンにそろえる */
+.guide-button {
+  display: inline-flex;
+  flex: none;
+  align-items: center;
+  gap: 6px;
+  height: 38px;
+  padding: 0 14px;
+  border: 1px solid var(--border);
+  border-radius: 999px;
+  color: var(--text);
+  font-size: 14px;
+  text-decoration: none;
+  white-space: nowrap;
+}
+
+.guide-button:hover {
+  background: #f0f2f8;
+}
+
+.guide-button svg {
+  color: var(--muted);
+}
+
+@media (max-width: 560px) {
+  .guide-button {
+    width: 38px;
+    padding: 0;
+    justify-content: center;
+  }
+  .guide-label {
+    display: none;
+  }
+}
+
+.account-button {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  min-width: 0;
+  padding: 4px 8px 4px 4px;
+  border: none;
+  border-radius: 999px;
+  background: none;
+  color: var(--text);
+}
+
+.account-button:hover,
+.account-button[aria-expanded='true'] {
+  background: #f0f2f8;
+}
+
+.account-name {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.account-button svg {
+  flex: none;
+  color: var(--muted);
+}
+
+.menu.account-dropdown {
+  left: auto;
+  right: 0;
+  min-width: 240px;
+}
+
+/* 表示言語の切り替え */
+.language-switch {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 6px 10px;
+  color: var(--muted);
+  font-size: 13px;
+}
+
+.language-switch-label {
+  margin-right: auto;
+}
+
+.language-switch-options {
+  display: inline-flex;
+  padding: 2px;
+  border-radius: 8px;
+  background: #f0f2f8;
+}
+
+.language-switch-options button {
+  padding: 3px 9px;
+  border: none;
+  border-radius: 6px;
+  background: none;
+  color: var(--muted);
+  font-size: 12px;
+}
+
+.language-switch-options button.on {
+  background: var(--surface);
+  color: var(--text);
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+}
+
+/* ログイン画面では、カードの下に小さく出す */
+.login-page .language-switch {
+  margin-top: 14px;
+}
+
+.account-info {
+  padding: 6px 10px 8px;
+}
+
+.account-info-name {
+  font-weight: 600;
+  font-size: 14px;
+}
+
+.account-contact {
+  margin: 0;
+  padding: 6px 10px 4px;
+  font-size: 12px;
+  line-height: 1.5;
+  color: var(--muted);
+}
+
+.account-info-email {
+  font-size: 12px;
+  color: var(--muted);
+  overflow-wrap: anywhere;
+}
+
+.menu-item svg {
+  flex: none;
+  color: var(--muted);
+}
+
+/* ---- ダイアログ（このサービスについて） ---- */
+
+.dialog-backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 30;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 16px;
+  background: rgba(20, 20, 30, 0.35);
+}
+
+.dialog {
+  position: relative;
+  width: 100%;
+  max-width: 440px;
+  max-height: calc(100% - 32px);
+  overflow-y: auto;
+  padding: 24px;
+  border-radius: 16px;
+  background: var(--surface);
+  box-shadow: 0 12px 40px rgba(20, 20, 40, 0.25);
+}
+
+.dialog-close {
+  position: absolute;
+  top: 12px;
+  right: 12px;
+}
+
+.about-dialog h2 {
+  margin: 0;
+  font-size: 22px;
+}
+
+.about-dialog h3 {
+  margin: 20px 0 8px;
+  font-size: 14px;
+}
+
+.about-lead {
+  margin: 4px 0 0;
+  color: var(--muted);
+}
+
+.about-version {
+  margin: 12px 0 0;
+  font-size: 13px;
+}
+
+.about-contact {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  margin: 12px 0 0;
+  font-size: 13px;
+}
+
+.about-list {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  font-size: 13px;
+}
+
+.about-list li + li {
+  margin-top: 6px;
+}
+
+.about-oss li {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.about-note {
+  margin-left: 6px;
+  font-size: 12px;
+  color: var(--muted);
+}
+
+p.about-note {
+  margin: 12px 0 0;
+}
+
+.history-main {
+  flex: 1;
+  width: 100%;
+  max-width: 820px;
+  margin: 0 auto;
+  padding: 24px 16px;
+}
+
+.history-title-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.history-title-row h2 {
+  margin-right: auto;
+}
+
+/* ボード名で探す */
+.history-search {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  width: 220px;
+  height: 36px;
+  padding: 0 10px;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  background: var(--surface);
+  color: var(--muted);
+}
+
+.history-search:focus-within {
+  border-color: var(--accent);
+}
+
+.history-search input {
+  flex: 1;
+  min-width: 0;
+  border: none;
+  outline: none;
+  background: none;
+  font: inherit;
+  font-size: 14px;
+  color: var(--text);
+}
+
+.history-item-title mark {
+  background: #fff2a8;
+  color: inherit;
+  border-radius: 2px;
+}
+
+.history-more {
+  display: block;
+  width: 100%;
+  padding: 12px;
+  border: none;
+  border-top: 1px solid var(--border);
+  background: none;
+  color: var(--accent);
+  font-size: 14px;
+}
+
+.history-more:hover {
+  background: #f7f8fc;
+}
+
+.history-no-match {
+  margin: 12px 0 0;
+  padding: 24px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  background: var(--surface);
+  color: var(--muted);
+  text-align: center;
+}
+
+/* ボードがまだないとき（上のタイトルの行は出さないので、そのぶん少し下げる） */
+.history-empty {
+  margin-top: 40px;
+  padding: 40px 24px 32px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  background: var(--surface);
+  text-align: center;
+}
+
+.history-empty-art {
+  position: relative;
+  width: 150px;
+  height: 96px;
+  margin: 0 auto 20px;
+}
+
+.history-empty-note {
+  position: absolute;
+  width: 52px;
+  height: 52px;
+  border-radius: 3px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.15);
+}
+
+.history-empty-note.note-1 {
+  left: 10px;
+  top: 30px;
+  background: #c9efc6;
+  transform: rotate(-8deg);
+}
+
+.history-empty-note.note-2 {
+  left: 50px;
+  top: 8px;
+  z-index: 1;
+  background: #fff2a8;
+  transform: rotate(3deg);
+}
+
+.history-empty-note.note-3 {
+  left: 90px;
+  top: 34px;
+  background: #ffd1e3;
+  transform: rotate(9deg);
+}
+
+.history-empty-catch {
+  margin: 0 0 6px;
+  font-size: 20px;
+  font-weight: 700;
+}
+
+.history-empty-lead {
+  margin: 0 0 22px;
+  color: var(--muted);
+  font-size: 14px;
+}
+
+/* 「はじめる」は短いので、押しやすい幅を取る */
+.history-empty .primary-button {
+  min-width: 160px;
+}
+
+.history-empty-note-text {
+  margin: 14px 0 0;
+  color: var(--muted);
+  font-size: 12px;
+}
+
+.history-list {
+  list-style: none;
+  margin: 12px 0 0;
+  padding: 0;
+  background: var(--surface);
+  border-radius: var(--radius);
+  border: 1px solid var(--border);
+  /* マウスを乗せた行の背景が、角の丸みからはみ出さないようにする */
+  overflow: hidden;
+}
+
+.history-list ul {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.history-list li + li {
+  border-top: 1px solid var(--border);
+}
+
+.history-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 14px 16px;
+  color: inherit;
+  text-decoration: none;
+}
+
+.history-item:hover {
+  background: #f7f8fc;
+}
+
+.history-item-title {
+  flex: 1;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  font-weight: 600;
+}
+
+.totals {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  color: var(--muted);
+  font-size: 13px;
+  white-space: nowrap;
+}
+
+.totals-item {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+}
+
+/* 桁数でアイコンの位置がずれないよう、数字は等幅にして「999+」が入る幅を取る */
+.totals-number {
+  min-width: 4ch;
+  font-variant-numeric: tabular-nums;
+}
+
+.totals-sticky {
+  width: 11px;
+  height: 11px;
+  border-radius: 2px;
+  background: #fff2a8;
+  border: 1px solid rgba(0, 0, 0, 0.2);
+}
+
+/* ボード画面の左下（ツールバーの下）に出す、付箋とコメントの数 */
+.board-totals {
+  position: absolute;
+  left: 12px;
+  bottom: 12px;
+  height: 36px;
+  display: flex;
+  align-items: center;
+  padding: 0 12px;
+  border-radius: 10px;
+  background: var(--surface);
+  box-shadow: var(--shadow);
+}
+
+.history-item-totals {
+  flex: none;
+  /* 数があるボードとないボードで「自分が作成」の位置をそろえる（数の表示の幅と同じ） */
+  min-width: 105px;
+  /* 「自分が作成」とくっついて見えないよう、少し離す */
+  margin-left: 8px;
+}
+
+.history-item-date {
+  color: var(--muted);
+  font-size: 13px;
+  white-space: nowrap;
+  /* 日時の数字も等幅にして、左の表示の位置がずれないようにする */
+  font-variant-numeric: tabular-nums;
+}
+
+.badge {
+  font-size: 12px;
+  color: var(--accent);
+  background: #eaf0ff;
+  border-radius: 999px;
+  padding: 2px 8px;
+  white-space: nowrap;
+}
+
+/* ---- アバター ---- */
+
+.avatar {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  object-fit: cover;
+  flex: none;
+  border: 2px solid var(--surface);
+  background: #d7def0;
+}
+
+.avatar-initials {
+  color: #34406a;
+  font-weight: 700;
+}
+
+/* 顔のスタンプのイニシャル（.stamp .face-initials と同じ色） */
+.avatar-initials.avatar-stamp {
+  background: #5b6fd6;
+  color: #fff;
+}
+
+/* ---- ボード ---- */
+
+.board-page {
+  position: fixed;
+  inset: 0;
+  overflow: hidden;
+}
+
+.canvas {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+  background-color: var(--canvas);
+  background-image: radial-gradient(var(--dot) 1.2px, transparent 1.2px);
+  touch-action: none;
+  user-select: none;
+  cursor: default;
+}
+
+.canvas.placing,
+.canvas.placing * {
+  cursor: crosshair !important;
+}
+
+/* 置く前のプレビュー（カーソルについてくる半透明の付箋・スタンプ、描画中のセクション） */
+.ghost {
+  position: absolute;
+  pointer-events: none;
+}
+
+.ghost-sticky {
+  opacity: 0.55;
+  border-radius: 3px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.12);
+}
+
+.ghost-stamp {
+  opacity: 0.6;
+}
+
+/* 押す前の見本の顔のスタンプ。貼ったスタンプと同じ太さの白い枠にする */
+.ghost-stamp .avatar {
+  border-width: 3px;
+}
+
+.ghost-section {
+  border: 2px dashed var(--accent);
+  border-radius: 8px;
+  background: rgba(59, 108, 246, 0.06);
+}
+
+.world {
+  position: absolute;
+  left: 0;
+  top: 0;
+  transform-origin: 0 0;
+}
+
+.board-header {
+  position: absolute;
+  top: 12px;
+  left: 12px;
+  right: 12px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  pointer-events: none;
+}
+
+.board-header > * {
+  pointer-events: auto;
+}
+
+.home-link {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 38px;
+  height: 38px;
+  border-radius: 8px;
+  background: var(--surface);
+  box-shadow: var(--shadow);
+  color: var(--text);
+  text-decoration: none;
+  font-size: 18px;
+}
+
+.board-title,
+.board-title-input {
+  height: 38px;
+  min-width: 0;
+  max-width: min(420px, 40vw);
+  padding: 0 12px;
+  border-radius: 8px;
+  border: 1px solid transparent;
+  background: var(--surface);
+  box-shadow: var(--shadow);
+  font-size: 16px;
+  font-weight: 600;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.board-title {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.board-title-text {
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.board-title-input {
+  border-color: var(--accent);
+  outline: none;
+  font-family: inherit;
+}
+
+.board-menu {
+  position: relative;
+}
+
+.board-menu-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 30px;
+  height: 38px;
+  padding: 0;
+  border: none;
+  border-radius: 8px;
+  background: var(--surface);
+  box-shadow: var(--shadow);
+  color: var(--muted);
+}
+
+.board-menu-button:hover,
+.board-menu-button[aria-expanded='true'] {
+  color: var(--text);
+  background: #f0f2f8;
+}
+
+.menu {
+  position: absolute;
+  top: calc(100% + 6px);
+  left: 0;
+  z-index: 5;
+  /* 長い項目（「まとめてダウンロード（画像・CSV）」など）も1行に収める */
+  width: max-content;
+  min-width: 220px;
+  padding: 6px;
+  border-radius: 10px;
+  background: var(--surface);
+  box-shadow: 0 6px 24px rgba(20, 20, 40, 0.16);
+}
+
+.menu-item {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 2px 8px;
+  width: 100%;
+  padding: 8px 10px;
+  border: none;
+  border-radius: 6px;
+  background: none;
+  font-size: 14px;
+  text-align: left;
+}
+
+a.menu-item {
+  box-sizing: border-box;
+  color: inherit;
+  text-decoration: none;
+}
+
+.menu-item:hover:not(:disabled) {
+  background: #f0f2f8;
+}
+
+.menu-item:disabled {
+  opacity: 1;
+  color: var(--muted);
+}
+
+.menu-item.danger:not(:disabled) {
+  color: var(--danger);
+}
+
+.menu-item.danger:hover:not(:disabled) {
+  background: #fdecee;
+}
+
+.menu-badge {
+  margin-left: auto;
+  padding: 1px 7px;
+  border-radius: 999px;
+  background: #eef0f4;
+  color: var(--muted);
+  font-size: 11px;
+}
+
+.menu-note {
+  width: 100%;
+  font-size: 11px;
+}
+
+.menu-separator {
+  height: 1px;
+  margin: 4px 2px;
+  background: var(--border);
+}
+
+/* ---- タイマー（上部の中央） ---- */
+
+.header-center {
+  position: absolute;
+  left: 50%;
+  top: 2px;
+  transform: translateX(-50%);
+}
+
+.timer-area {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.timer {
+  position: relative;
+}
+
+/* ---- 音のボタンと BGM・音量のパネル ---- */
+
+.sound-control {
+  position: relative;
+}
+
+.sound-button {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 34px;
+  height: 34px;
+  padding: 0;
+  border: none;
+  border-radius: 50%;
+  background: var(--surface);
+  box-shadow: var(--shadow);
+  color: var(--muted);
+}
+
+.sound-button:hover,
+.sound-button[aria-expanded='true'] {
+  color: var(--text);
+}
+
+.sound-button.playing {
+  color: var(--accent);
+}
+
+.sound-button.muted {
+  color: var(--danger);
+}
+
+/* BGM が流れている間の、小さく波打つ表示 */
+.sound-eq {
+  display: flex;
+  align-items: flex-end;
+  gap: 2px;
+  height: 14px;
+}
+
+.sound-eq i {
+  width: 3px;
+  height: 6px;
+  border-radius: 1px;
+  background: currentColor;
+  animation: sound-eq 0.9s ease-in-out infinite;
+}
+
+.sound-eq i:nth-child(2) {
+  animation-delay: 0.2s;
+}
+
+.sound-eq i:nth-child(3) {
+  animation-delay: 0.4s;
+}
+
+@keyframes sound-eq {
+  0%,
+  100% {
+    height: 4px;
+  }
+  50% {
+    height: 14px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .sound-eq i {
+    animation: none;
+    height: 10px;
+  }
+}
+
+/* BGM が流れているが、まだ鳴らせない（ページを操作していない）ことを知らせる印 */
+.sound-badge {
+  position: absolute;
+  top: 2px;
+  right: 2px;
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--danger);
+  box-shadow: 0 0 0 2px var(--surface);
+}
+
+.sound-panel {
+  position: absolute;
+  top: calc(100% + 6px);
+  right: 0;
+  z-index: 5;
+  width: 280px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding: 12px;
+  border-radius: 12px;
+  background: var(--surface);
+  box-shadow: 0 6px 24px rgba(20, 20, 40, 0.16);
+}
+
+.sound-section-head {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 8px;
+}
+
+.sound-section-head b {
+  font-size: 13px;
+}
+
+.sound-section-head span {
+  font-size: 11px;
+  color: var(--muted);
+}
+
+.sound-tracks {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.sound-tracks button {
+  height: 32px;
+  padding: 0 10px;
+  border: 1px solid transparent;
+  border-radius: 8px;
+  background: none;
+  font-size: 13px;
+  text-align: left;
+}
+
+.sound-tracks button:hover {
+  background: #f0f2f8;
+}
+
+.sound-tracks button.on {
+  border-color: var(--accent);
+  background: #e3eaff;
+  color: var(--accent);
+}
+
+.sound-divider {
+  height: 1px;
+  margin: 2px 0;
+  background: var(--border);
+}
+
+.sound-volume {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.sound-volume input {
+  flex: 1;
+  accent-color: var(--accent);
+}
+
+.sound-volume-value {
+  min-width: 24px;
+  font-size: 12px;
+  color: var(--muted);
+  text-align: right;
+  font-variant-numeric: tabular-nums;
+}
+
+/* 最後の3秒のカウントダウン（画面中央に大きく、操作の邪魔をしない） */
+.timer-countdown {
+  position: fixed;
+  inset: 0;
+  z-index: 20;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: min(28vw, 220px);
+  font-weight: 700;
+  color: var(--text);
+  pointer-events: none;
+  animation: timer-countdown 1s ease-out forwards;
+}
+
+@keyframes timer-countdown {
+  0% {
+    opacity: 0;
+    transform: scale(0.7);
+  }
+  20% {
+    opacity: 0.3;
+    transform: scale(1);
+  }
+  80% {
+    opacity: 0.22;
+  }
+  100% {
+    opacity: 0;
+    transform: scale(1.15);
+  }
+}
+
+.timer-confetti {
+  position: fixed;
+  inset: 0;
+  z-index: 20;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+}
+
+/* 既定のボタンと動いているときの表示は、幅・余白・アイコンの位置をそろえる
+   （開始したときにアイコンの位置がずれないようにする） */
+.timer-start-button,
+.timer-pill {
+  min-width: 108px;
+  padding: 0 14px;
+  justify-content: flex-start;
+}
+
+.timer-start-button {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  height: 34px;
+  border: none;
+  border-radius: 999px;
+  background: var(--surface);
+  box-shadow: var(--shadow);
+  font-size: 13px;
+  color: var(--muted);
+}
+
+.timer-start-button:hover,
+.timer-start-button[aria-expanded='true'] {
+  color: var(--text);
+}
+
+.timer-panel {
+  position: absolute;
+  top: calc(100% + 6px);
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 5;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  padding: 10px;
+  border-radius: 12px;
+  background: var(--surface);
+  box-shadow: 0 6px 24px rgba(20, 20, 40, 0.16);
+}
+
+.timer-presets {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 6px;
+}
+
+.timer-presets button {
+  height: 32px;
+  padding: 0 10px;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  background: var(--surface);
+  font-size: 13px;
+  white-space: nowrap;
+}
+
+.timer-presets button:hover {
+  background: #f0f2f8;
+}
+
+.timer-presets button.active {
+  border-color: var(--accent);
+  background: #e3eaff;
+  color: var(--accent);
+}
+
+.timer-custom {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.timer-custom-value {
+  min-width: 48px;
+  text-align: center;
+  font-size: 14px;
+  font-variant-numeric: tabular-nums;
+}
+
+.timer-custom .primary-button {
+  margin-left: auto;
+}
+
+.timer-pill {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  height: 34px;
+  border: none;
+  border-radius: 999px;
+  overflow: hidden;
+  background: var(--surface);
+  box-shadow: var(--shadow);
+  color: var(--text);
+}
+
+button.timer-pill {
+  cursor: pointer;
+}
+
+button.timer-pill:hover,
+button.timer-pill[aria-expanded='true'] {
+  box-shadow: var(--shadow), 0 0 0 2px rgba(59, 108, 246, 0.35);
+}
+
+.timer-menu {
+  position: absolute;
+  top: calc(100% + 6px);
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 5;
+  display: flex;
+  gap: 2px;
+  padding: 4px;
+  border-radius: 10px;
+  background: var(--surface);
+  box-shadow: 0 6px 24px rgba(20, 20, 40, 0.16);
+  white-space: nowrap;
+}
+
+.timer-menu button {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  height: 30px;
+  padding: 0 10px;
+  border: none;
+  border-radius: 6px;
+  background: none;
+  font-size: 13px;
+}
+
+.timer-menu button:hover {
+  background: #f0f2f8;
+}
+
+/* 残り時間の割合だけ背景に色を塗る（右から減っていく） */
+.timer-fill {
+  position: absolute;
+  left: 0;
+  top: 0;
+  bottom: 0;
+  transition: width 0.25s linear, background-color 0.5s;
+}
+
+.timer-pill.calm .timer-fill {
+  background: rgba(59, 108, 246, 0.3);
+}
+
+.timer-pill.mid .timer-fill {
+  background: rgba(230, 180, 20, 0.42);
+}
+
+.timer-pill.warn .timer-fill {
+  background: rgba(224, 123, 22, 0.38);
+}
+
+.timer-pill.low .timer-fill {
+  background: rgba(214, 56, 74, 0.36);
+}
+
+/* 時間になったら、ゆっくり2回赤く点滅する（2秒で元の表示に戻る） */
+.timer-pill.finished {
+  color: var(--danger);
+  animation: timer-flash 1s ease-in-out 2;
+}
+
+@keyframes timer-flash {
+  0%,
+  100% {
+    background: var(--surface);
+  }
+  50% {
+    background: #fbe0e3;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .timer-pill.finished {
+    animation: none;
+    background: #fdecee;
+  }
+}
+
+.timer-pill > :not(.timer-fill) {
+  position: relative;
+}
+
+.timer-time {
+  /* 「99:59」が入る幅に固定して右に寄せる（10:00 → 9:59 のように桁が減っても、秒の位置が動かない） */
+  min-width: 5ch;
+  font-size: 17px;
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+  text-align: right;
+}
+
+.timer-pill.paused .timer-time {
+  color: var(--muted);
+}
+
+
+.header-right {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-left: auto;
+}
+
+.primary-button.small,
+.danger-button.small {
+  height: 34px;
+  padding: 0 12px;
+  font-size: 13px;
+  box-shadow: var(--shadow);
+}
+
+.presence-menu {
+  position: relative;
+}
+
+/* ---- 共有の設定（右上の「共有」） ---- */
+
+.share-menu {
+  position: relative;
+}
+
+.share-panel {
+  position: absolute;
+  top: calc(100% + 6px);
+  right: 0;
+  z-index: 5;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  width: 360px;
+  max-width: calc(100vw - 24px);
+  max-height: calc(100vh - 80px);
+  overflow-y: auto;
+  padding: 16px;
+  border-radius: 12px;
+  background: var(--surface);
+  box-shadow: 0 8px 24px rgba(20, 20, 40, 0.14), 0 2px 6px rgba(20, 20, 40, 0.08);
+  font-size: 13px;
+}
+
+.share-title {
+  margin: 0;
+  font-size: 15px;
+}
+
+.share-options {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.share-option {
+  display: flex;
+  gap: 10px;
+  align-items: flex-start;
+  width: 100%;
+  padding: 8px 10px;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  background: var(--surface);
+  color: var(--text);
+  text-align: left;
+}
+
+.share-option svg {
+  flex: none;
+  margin-top: 2px;
+  color: var(--muted);
+}
+
+.share-option:hover {
+  background: #f7f8fb;
+}
+
+.share-option.active {
+  border-color: var(--accent);
+  background: #f3f6ff;
+}
+
+.share-option.active svg {
+  color: var(--accent);
+}
+
+.share-option.readonly {
+  cursor: default;
+}
+
+.share-option-label {
+  display: block;
+  font-weight: 600;
+}
+
+.share-option-note {
+  display: block;
+  margin-top: 2px;
+  color: var(--muted);
+  font-size: 12px;
+}
+
+.share-invite {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.share-invite-row {
+  display: flex;
+  gap: 6px;
+}
+
+.share-invite-row input {
+  flex: 1;
+  min-width: 0;
+  height: 32px;
+  padding: 0 10px;
+  border: 1px solid #d8d8e0;
+  border-radius: 8px;
+  font: inherit;
+}
+
+.share-invite-row .primary-button.small {
+  height: 32px;
+  box-shadow: none;
+}
+
+.share-error {
+  margin: 0;
+  color: var(--danger);
+  font-size: 12px;
+}
+
+.share-suggestions {
+  margin: 0;
+  padding: 4px;
+  list-style: none;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+}
+
+.share-suggestions button {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+  width: 100%;
+  padding: 6px;
+  border: none;
+  border-radius: 6px;
+  background: none;
+  color: var(--text);
+  text-align: left;
+}
+
+.share-suggestions button:hover {
+  background: #f3f4f8;
+}
+
+.share-label {
+  margin: 0;
+  color: var(--muted);
+  font-size: 12px;
+}
+
+.share-members {
+  margin: -6px 0 0;
+  padding: 0;
+  list-style: none;
+}
+
+.share-member {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+  padding: 6px 0;
+  border-bottom: 1px solid #f0f0f4;
+}
+
+.share-member:last-child {
+  border-bottom: none;
+}
+
+.share-person {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  min-width: 0;
+}
+
+.share-person-name,
+.share-person-email {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.share-person-email {
+  color: var(--muted);
+  font-size: 12px;
+}
+
+.share-tag {
+  flex: none;
+  color: var(--muted);
+  font-size: 12px;
+}
+
+.share-remove {
+  flex: none;
+  color: var(--muted);
+}
+
+/* リンクのコピー。入力欄（白地に枠）と見分けられるよう、枠のないグレーの塗りにする */
+.share-copy {
+  display: flex;
+  gap: 6px;
+  align-items: center;
+  justify-content: center;
+  height: 34px;
+  border: none;
+  border-radius: 8px;
+  background: #eef0f5;
+  color: var(--text);
+  font-weight: 600;
+}
+
+.share-copy:hover {
+  background: #e3e6ee;
+}
+
+.share-note {
+  margin: -6px 0 0;
+  color: var(--muted);
+  font-size: 12px;
+}
+
+/* 「招待した人だけ」に切り替えるときの確認 */
+.share-confirm h2 {
+  margin: 0 0 8px;
+  font-size: 17px;
+}
+
+.share-confirm p {
+  margin: 0;
+  color: var(--muted);
+  font-size: 14px;
+}
+
+.dialog-actions {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+  gap: 8px;
+  margin-top: 20px;
+}
+
+/* 「招待した人だけ」のボードの鍵のマーク（ボード名の横） */
+.board-lock {
+  flex: none;
+  color: var(--muted);
+}
+
+.presence {
+  display: flex;
+  height: 34px;
+  align-items: center;
+  padding: 2px 14px 2px 3px;
+  border: none;
+  border-radius: 999px;
+  background: var(--surface);
+  box-shadow: var(--shadow);
+  color: var(--text);
+}
+
+.presence:hover,
+.presence[aria-expanded='true'] {
+  background: #f0f2f8;
+}
+
+/* 参加している人の一覧 */
+.menu.presence-dropdown {
+  left: auto;
+  right: 0;
+  min-width: 220px;
+  padding: 8px 6px;
+}
+
+.presence-dropdown-title {
+  padding: 2px 8px 6px;
+  font-size: 12px;
+  color: var(--muted);
+}
+
+.presence-people {
+  max-height: min(360px, calc(100vh - 120px));
+  overflow-y: auto;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.presence-person {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 5px 8px;
+  font-size: 14px;
+}
+
+.presence-person .avatar {
+  border: none;
+}
+
+.presence-person-name {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.presence-you {
+  flex: none;
+  font-size: 12px;
+  color: var(--muted);
+}
+
+.presence .avatar + .avatar {
+  margin-left: -8px;
+}
+
+.presence-more {
+  margin-left: 4px;
+  font-size: 12px;
+  color: var(--muted);
+}
+
+.presence-count {
+  margin-left: 8px;
+  font-size: 13px;
+  color: var(--muted);
+  white-space: nowrap;
+}
+
+.toolbar {
+  position: absolute;
+  left: 12px;
+  top: 50%;
+  transform: translateY(-50%);
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  padding: 6px;
+  border-radius: 12px;
+  background: var(--surface);
+  box-shadow: var(--shadow);
+}
+
+.toolbar button {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;
+  width: 64px;
+  padding: 6px 2px;
+  border: none;
+  border-radius: 8px;
+  background: none;
+}
+
+.toolbar button:hover:not(:disabled) {
+  background: #f0f2f8;
+}
+
+.toolbar button.active {
+  background: #e3eaff;
+  color: var(--accent);
+}
+
+.tool-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  height: 24px;
+  font-size: 20px;
+  line-height: 1;
+}
+
+.tool-label {
+  font-size: 10px;
+  white-space: nowrap;
+}
+
+.sticky-icon {
+  display: inline-block;
+  width: 20px;
+  height: 20px;
+  background: #fff2a8;
+  border: 1px solid rgba(0, 0, 0, 0.18);
+  border-radius: 2px;
+}
+
+.sticky-icon-wide {
+  width: 32px;
+  height: 16px;
+}
+
+.stamp-picker {
+  position: relative;
+}
+
+/* スタンプの種類を選ぶパネル（スタンプのボタンの右に開く） */
+.toolbar .stamp-flyout {
+  position: absolute;
+  left: calc(100% + 12px);
+  top: 50%;
+  transform: translateY(-50%);
+  display: flex;
+  /* 画面が狭いときは2段に折り返す（ツールバーの右から画面の右端までに収める） */
+  flex-wrap: wrap;
+  width: max-content;
+  max-width: calc(100vw - 100px);
+  gap: 2px;
+  padding: 6px;
+  border-radius: 12px;
+  background: var(--surface);
+  box-shadow: var(--shadow);
+}
+
+.toolbar .stamp-flyout button {
+  width: 40px;
+  padding: 6px 0;
+}
+
+.toolbar-divider {
+  height: 1px;
+  margin: 4px 6px;
+  background: var(--border);
+}
+
+.zoom-controls {
+  position: absolute;
+  right: 12px;
+  bottom: 12px;
+  display: flex;
+  align-items: center;
+  border-radius: 10px;
+  background: var(--surface);
+  box-shadow: var(--shadow);
+}
+
+.zoom-controls button {
+  border: none;
+  background: none;
+  height: 36px;
+  min-width: 36px;
+  font-size: 16px;
+}
+
+.zoom-controls button:not(.zoom-value) {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.pan-hint {
+  position: absolute;
+  right: calc(100% + 10px);
+  top: 50%;
+  transform: translateY(-50%);
+  white-space: nowrap;
+  font-size: 12px;
+  color: var(--muted);
+  pointer-events: none;
+  padding: 3px 8px;
+  border-radius: 6px;
+}
+
+.pan-hint-emphasis {
+  animation: pan-hint-emphasis 1.4s ease-out;
+}
+
+@keyframes pan-hint-emphasis {
+  15%,
+  50% {
+    color: var(--text);
+    background: rgba(59, 108, 246, 0.12);
+  }
+}
+
+.zoom-divider {
+  width: 1px;
+  height: 20px;
+  background: var(--border);
+}
+
+.zoom-controls .zoom-value {
+  font-size: 13px;
+  min-width: 56px;
+}
+
+/* ---- 付箋 ---- */
+
+.sticky {
+  position: absolute;
+  display: flex;
+  flex-direction: column;
+  padding: 12px 12px 6px;
+  border-radius: 3px;
+  box-shadow:
+    0 1px 2px rgba(0, 0, 0, 0.12),
+    0 4px 10px rgba(0, 0, 0, 0.06);
+  cursor: grab;
+}
+
+.sticky.selected,
+.section.selected,
+.image-object.selected,
+.stamp.selected {
+  outline: 3px solid var(--accent);
+  outline-offset: 2px;
+}
+
+/* セクションは自分の枠線（2px）があるので、選択の線を枠線の上に重ねて1本にする（二重線にしない） */
+.section.selected {
+  outline-offset: -2px;
+}
+
+/* スタンプを押す・動かすときに、付く先の付箋を光らせる */
+.sticky.stamp-target {
+  outline: 3px solid rgba(59, 108, 246, 0.55);
+  outline-offset: 2px;
+  box-shadow:
+    0 0 0 6px rgba(59, 108, 246, 0.12),
+    0 4px 10px rgba(0, 0, 0, 0.08);
+}
+
+.sticky-text {
+  flex: 1;
+  min-height: 0;
+  overflow: hidden;
+  line-height: 1.35;
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+  word-break: break-word;
+}
+
+/* 付箋・テキストの中の URL。押すと新しいタブで開く（LinkedText.tsx）。
+   どの付箋の色・テキストの色の上でもリンクとわかるよう、色は固定する */
+.board-link {
+  color: var(--accent);
+  text-decoration: underline;
+  text-underline-offset: 2px;
+  cursor: pointer;
+  -webkit-user-drag: none;
+}
+
+.sticky-editor {
+  width: 100%;
+  margin: 0;
+  padding: 0;
+  border: none;
+  outline: none;
+  resize: none;
+  background: transparent;
+  font-family: inherit;
+  color: inherit;
+  user-select: text;
+  cursor: text;
+}
+
+/* まだ何も書いていない付箋の目印（「ダブルクリックで編集」）。本文より控えめにし、正方形でも1行に収める。 */
+.placeholder {
+  color: rgba(0, 0, 0, 0.3);
+  font-size: 13px;
+}
+
+/* 入力中の案内（「意見を書く」）は、打つ文字・カーソルと同じ大きさにする */
+.sticky-editor::placeholder {
+  color: rgba(0, 0, 0, 0.3);
+}
+
+.sticky-author {
+  flex: none;
+  margin-top: 4px;
+  font-size: 11px;
+  color: rgba(0, 0, 0, 0.5);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+/* ---- セクション ---- */
+
+.section {
+  position: absolute;
+  border: 2px solid;
+  border-radius: 8px;
+}
+
+.section-title {
+  cursor: grab;
+  position: absolute;
+  left: -2px;
+  bottom: 100%;
+  margin-bottom: 4px;
+  max-width: 100%;
+  padding: 4px 10px;
+  border-radius: 6px;
+  color: #fff;
+  font-size: 15px;
+  font-weight: 600;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.section-title-input {
+  width: 220px;
+  border: none;
+  outline: none;
+  background: rgba(255, 255, 255, 0.25);
+  color: inherit;
+  font: inherit;
+  border-radius: 4px;
+  padding: 0 4px;
+}
+
+/* ---- テキスト ---- */
+
+.textbox {
+  position: absolute;
+  padding-left: 6px;
+  padding-right: 6px;
+  border-radius: 4px;
+  cursor: grab;
+}
+
+.textbox.selected {
+  outline: 3px solid var(--accent);
+  outline-offset: 2px;
+}
+
+.textbox-content {
+  display: block;
+  width: 100%;
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+  word-break: break-word;
+}
+
+/* 入力欄は見えない文字（mirror）の上に重ね、大きさは mirror だけで決める。
+   入力欄自体の既定の幅（約20文字分）が、自動の幅に影響しないようにするため。 */
+.textbox-autosize {
+  position: relative;
+}
+
+.textbox-mirror {
+  visibility: hidden;
+}
+
+.textbox-editor {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  margin: 0;
+  padding: 0;
+  border: none;
+  outline: none;
+  resize: none;
+  overflow: hidden;
+  background: transparent;
+  font: inherit;
+  line-height: inherit;
+  color: inherit;
+  user-select: text;
+  cursor: text;
+}
+
+.textbox .placeholder {
+  font-size: inherit;
+}
+
+/* テキストの幅の取っ手。セクションの辺の取っ手と同じ形で、青い線（外側 3.5px が線の中央）の上に置く */
+.text-width-handle {
+  position: absolute;
+  right: -8.5px;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 10px;
+  height: 28px;
+  border-radius: 5px;
+  background: var(--surface);
+  border: 2px solid var(--accent);
+  cursor: ew-resize;
+}
+
+.ghost-text {
+  padding: 0 6px;
+  color: var(--muted);
+  opacity: 0.6;
+  white-space: nowrap;
+}
+
+.size-button {
+  min-width: 30px;
+  height: 26px;
+  padding: 0 6px;
+  border: none;
+  border-radius: 6px;
+  background: none;
+  font-size: 12px;
+  color: var(--muted);
+}
+
+.size-button:hover {
+  background: #f0f2f8;
+}
+
+.size-button.active {
+  background: #e3eaff;
+  color: var(--accent);
+}
+
+.shape-button {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+}
+
+.shape-icon {
+  display: inline-block;
+  height: 11px;
+  border: 1.5px solid currentColor;
+  border-radius: 2px;
+}
+
+.shape-icon-square {
+  width: 11px;
+}
+
+.shape-icon-wide {
+  width: 22px;
+}
+
+/*
+ * 大きさの取っ手は、選んだときの青い線の上に、線の中央が来るように置く。
+ * 画像・テキストの線は外側 2px あけて 3px なので、線の中央はものの外側から 3.5px 外。
+ * セクションの線は枠線（border 2px）に重ねていて、線の中央は枠線の内側の縁から 1.5px 外。
+ */
+.resize-handle {
+  position: absolute;
+  right: -11.5px;
+  bottom: -11.5px;
+  width: 16px;
+  height: 16px;
+  border-radius: 3px;
+  background: var(--surface);
+  border: 2px solid var(--accent);
+  cursor: nwse-resize;
+}
+
+.section > .resize-handle {
+  right: -9.5px;
+  bottom: -9.5px;
+}
+
+/* セクションの右の辺・下の辺。辺の全体をつかめ、真ん中に小さな取っ手を出す（どちらも青い枠線の中央に置く） */
+.resize-edge {
+  position: absolute;
+}
+
+.resize-edge::after {
+  content: '';
+  position: absolute;
+  box-sizing: border-box;
+  border-radius: 5px;
+  background: var(--surface);
+  border: 2px solid var(--accent);
+}
+
+.resize-edge-x {
+  top: 0;
+  bottom: 12px;
+  right: -9.5px;
+  width: 16px;
+  cursor: ew-resize;
+}
+
+.resize-edge-x::after {
+  top: 50%;
+  left: 3px;
+  width: 10px;
+  height: 28px;
+  transform: translateY(-50%);
+}
+
+.resize-edge-y {
+  left: 0;
+  right: 12px;
+  bottom: -9.5px;
+  height: 16px;
+  cursor: ns-resize;
+}
+
+.resize-edge-y::after {
+  left: 50%;
+  top: 3px;
+  width: 28px;
+  height: 10px;
+  transform: translateX(-50%);
+}
+
+/* ---- 画像 ---- */
+
+.image-object {
+  position: absolute;
+  cursor: grab;
+}
+
+.image-object img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  -webkit-user-drag: none;
+  user-select: none;
+  pointer-events: none;
+}
+
+/* 読み込み中・アップロード中は、画像の大きさの枠を出しておく */
+.image-object.loading {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 1px dashed #c3c6d4;
+  border-radius: 6px;
+  background: rgba(255, 255, 255, 0.6);
+}
+
+.image-object.pending {
+  cursor: default;
+  pointer-events: none;
+}
+
+.image-status {
+  padding: 8px;
+  color: var(--muted);
+  font-size: 13px;
+  text-align: center;
+}
+
+/* ---- スタンプ ---- */
+
+.stamp {
+  position: absolute;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  cursor: grab;
+  filter: drop-shadow(0 1px 2px rgba(0, 0, 0, 0.25));
+}
+
+/* スタンプの絵。付箋の色に埋もれないよう、白い縁を付ける（顔のスタンプの白い枠と同じ役目）。
+   Noto Emoji の絵は枠いっぱいに描かれているので、少し小さくして余白をとる */
+.stamp-image,
+.stamp-animation {
+  width: 28px;
+  height: 28px;
+  /* 白い縁は、ボードの中に置いたフィルター（StampEmoji.tsx の StampOutlineFilter）で付ける */
+  filter: url(#stamp-outline);
+}
+
+.stamp-image {
+  display: block;
+  -webkit-user-drag: none;
+  user-select: none;
+}
+
+/* 貼ったときの動き。止まった絵と同じ位置に重ねる */
+.stamp-animation {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  pointer-events: none;
+}
+
+/* ツールバーでは白い縁を付けない（白い背景の上なので要らない） */
+.tool-icon .stamp-image {
+  width: 26px;
+  height: 26px;
+  filter: none;
+}
+
+/* 顔のスタンプのボタン。白い背景の上なので、白い枠を付けない（枠の分だけ写真が小さく見えるため） */
+.tool-icon .avatar {
+  border: none;
+}
+
+.stamp .face {
+  width: 100%;
+  height: 100%;
+  border-radius: 50%;
+  /* 絵文字のスタンプの白い縁（StampEmoji.tsx の OUTLINE_WIDTH）とそろえる */
+  border: 3px solid #fff;
+  object-fit: cover;
+}
+
+.stamp .face-initials {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: #5b6fd6;
+  color: #fff;
+  font-size: 13px;
+  font-weight: 700;
+}
+
+/* 顔のスタンプを貼ったときの動き。下のあたりを支点に、伸びて縮んで、だんだん落ち着く */
+.stamp .face-boing {
+  transform-origin: 50% 90%;
+  animation: face-boing 1.2s ease-out both;
+}
+
+@keyframes face-boing {
+  0% {
+    transform: scale(1);
+  }
+  12% {
+    transform: scale(1.25) rotate(-8deg);
+  }
+  24% {
+    transform: scale(0.9) rotate(4deg);
+  }
+  36% {
+    transform: scale(1.12) rotate(-3deg);
+  }
+  50% {
+    transform: scale(0.96) rotate(1deg);
+  }
+  64% {
+    transform: scale(1.04);
+  }
+  80%,
+  100% {
+    transform: scale(1);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .stamp .face-boing {
+    animation: none;
+  }
+}
+
+/* ---- 選択中の操作パネル ---- */
+
+.selection-toolbar {
+  position: absolute;
+  transform: translateY(calc(-100% - var(--toolbar-gap, 10px)));
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  padding: 5px 6px;
+  border-radius: 10px;
+  background: var(--surface);
+  box-shadow: var(--shadow);
+  white-space: nowrap;
+}
+
+/* 範囲選択の枠 */
+.selection-marquee {
+  position: absolute;
+  pointer-events: none;
+  border: 1px solid var(--accent);
+  background: rgba(59, 108, 246, 0.08);
+}
+
+/* スペースを押している間は、どこでもつかんで画面を動かせる */
+.canvas.space-pan,
+.canvas.space-pan * {
+  cursor: grab !important;
+}
+
+/* 吸着したときのガイド線（薄い青の点線） */
+.snap-guide {
+  position: absolute;
+  pointer-events: none;
+  --guide-color: rgba(59, 108, 246, 0.25);
+}
+
+.snap-guide-x {
+  background: repeating-linear-gradient(to bottom, var(--guide-color) 0 5px, transparent 5px 9px);
+}
+
+.snap-guide-y {
+  background: repeating-linear-gradient(to right, var(--guide-color) 0 5px, transparent 5px 9px);
+}
+
+/* 選んでいる付箋の上下左右の「＋」 */
+.add-next-button {
+  position: absolute;
+  transform: translate(-50%, -50%);
+  width: 24px;
+  height: 24px;
+  padding: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  border: 1px solid var(--accent);
+  background: var(--surface);
+  color: var(--accent);
+  box-shadow: var(--shadow);
+}
+
+.add-next-button:hover {
+  background: var(--accent);
+  color: var(--accent-text);
+}
+
+.swatch {
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  border: 1px solid rgba(0, 0, 0, 0.15);
+  padding: 0;
+}
+
+.swatch.active {
+  outline: 2px solid var(--accent);
+  outline-offset: 1px;
+}
+
+.divider {
+  width: 1px;
+  height: 20px;
+  margin: 0 4px;
+  background: var(--border);
+}
+
+.icon-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 28px;
+  height: 28px;
+  padding: 0;
+  border: none;
+  border-radius: 6px;
+  background: none;
+  color: var(--muted);
+}
+
+.delete-button:hover {
+  background: #fdecee;
+  color: var(--danger);
+}
+
+/* ---- 通知 ---- */
+
+.toast {
+  position: fixed;
+  left: 50%;
+  bottom: 24px;
+  transform: translateX(-50%);
+  max-width: calc(100% - 32px);
+  padding: 10px 16px;
+  border-radius: 8px;
+  background: #2a2a33;
+  color: #fff;
+  font-size: 14px;
+  box-shadow: var(--shadow);
+  z-index: 10;
+}
+
+/* 画面が狭いときは、タイマーをタイトルの下の段に出す */
+@media (max-width: 900px) {
+  .header-center {
+    top: 48px;
+  }
+}
+
+@media (max-width: 640px) {
+  .presence-count {
+    display: none;
+  }
+  /* 人数の文字を出さないときは、アイコンの右の余白を狭いままにする */
+  .presence {
+    padding-right: 10px;
+  }
+  .toolbar button {
+    width: 48px;
+  }
+  .tool-label {
+    display: none;
+  }
+}
+
+/* ---- コメント ---- */
+
+/* コメントのツールでは、付箋を指すとわかるようにする */
+.canvas.commenting .sticky {
+  cursor: pointer;
+}
+
+/* 付箋の右上の件数（コメントがある付箋だけ） */
+.comment-badge {
+  position: absolute;
+  top: -10px;
+  right: -10px;
+  display: inline-flex;
+  align-items: center;
+  gap: 3px;
+  height: 22px;
+  padding: 0 8px 0 7px;
+  border: 1px solid #d6d9e2;
+  border-radius: 11px;
+  background: var(--surface);
+  color: var(--text);
+  font-size: 12px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.12);
+  cursor: pointer;
+}
+
+.comment-badge:hover {
+  border-color: var(--accent);
+  color: var(--accent);
+}
+
+.comment-badge.active {
+  border-color: var(--accent);
+  background: var(--accent);
+  color: var(--accent-text);
+}
+
+/* アイコンと文字を並べたボタン（コメント・つなぐ・テキスト・逆向き） */
+.comment-button,
+.icon-text-button {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+}
+
+/* 付箋の横に開くパネル */
+.comment-panel {
+  position: absolute;
+  z-index: 20;
+  display: flex;
+  flex-direction: column;
+  max-height: min(440px, calc(100vh - 88px));
+  border-radius: 12px;
+  background: var(--surface);
+  box-shadow: 0 6px 24px rgba(20, 20, 40, 0.18);
+  user-select: text;
+  cursor: default;
+}
+
+.comment-panel-header {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 10px 8px 6px 14px;
+}
+
+.comment-panel-title {
+  font-size: 14px;
+  font-weight: 600;
+}
+
+.comment-panel-count {
+  font-size: 12px;
+  color: var(--muted);
+}
+
+.comment-panel-close {
+  margin-left: auto;
+}
+
+.comment-list {
+  flex: 1;
+  min-height: 0;
+  overflow-y: auto;
+  padding: 0 14px;
+}
+
+.comment-empty {
+  margin: 8px 0 12px;
+  font-size: 13px;
+  color: var(--muted);
+}
+
+.comment {
+  display: flex;
+  gap: 8px;
+  padding: 8px 0;
+  border-bottom: 1px solid var(--border);
+}
+
+.comment:last-child {
+  border-bottom: none;
+}
+
+.comment .avatar {
+  border: none;
+}
+
+.comment-body {
+  flex: 1;
+  min-width: 0;
+}
+
+.comment-meta {
+  display: flex;
+  align-items: baseline;
+  gap: 6px;
+  font-size: 12px;
+}
+
+.comment-name {
+  font-weight: 600;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.comment-time {
+  flex: none;
+  color: var(--muted);
+}
+
+/* 編集・削除はマウスを乗せたときだけ出す */
+.comment-actions {
+  margin-left: auto;
+  display: flex;
+  gap: 2px;
+  opacity: 0;
+}
+
+.comment:hover .comment-actions,
+.comment-actions:focus-within {
+  opacity: 1;
+}
+
+.comment-actions button {
+  padding: 1px 5px;
+  border: none;
+  border-radius: 4px;
+  background: none;
+  color: var(--muted);
+  font-size: 11px;
+}
+
+.comment-actions button:hover {
+  background: #f0f2f8;
+  color: var(--text);
+}
+
+.comment-actions button.danger:hover {
+  color: var(--danger);
+}
+
+.comment-text {
+  margin: 2px 0 0;
+  font-size: 13px;
+  line-height: 1.5;
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+}
+
+.comment-edit,
+.comment-input textarea {
+  box-sizing: border-box;
+  width: 100%;
+  resize: none;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 6px 8px;
+  font: inherit;
+  font-size: 13px;
+  line-height: 1.5;
+  outline: none;
+}
+
+.comment-edit {
+  margin-top: 4px;
+  border-color: var(--accent);
+}
+
+.comment-input {
+  display: flex;
+  align-items: flex-end;
+  gap: 6px;
+  padding: 10px 10px 4px;
+  border-top: 1px solid var(--border);
+}
+
+.comment-input textarea:focus {
+  border-color: var(--accent);
+}
+
+.comment-send {
+  flex: none;
+  height: 32px;
+  padding: 0 12px;
+  border: none;
+  border-radius: 8px;
+  background: var(--accent);
+  color: var(--accent-text);
+  font-size: 13px;
+}
+
+.comment-send:disabled {
+  background: #c5cbe0;
+}
+
+.comment-hint {
+  margin: 0;
+  padding: 0 12px 8px;
+  font-size: 11px;
+  color: var(--muted);
+}
+
+/* ---- 矢印（付箋などをつなぐ線） ---- */
+
+.connector-layer {
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 1px;
+  height: 1px;
+  overflow: visible;
+  pointer-events: none;
+}
+
+.connector-line {
+  stroke: #6b6b76;
+  stroke-width: 2.5;
+  stroke-linecap: round;
+  fill: none;
+}
+
+.connector.selected .connector-line {
+  stroke: var(--accent);
+}
+
+/* 細い線でも押しやすいよう、見えない太い線で受け取る */
+.connector-hit {
+  stroke: transparent;
+  stroke-width: 16;
+  pointer-events: stroke;
+  cursor: pointer;
+}
+
+.connector:hover .connector-line {
+  stroke: #45454e;
+}
+
+.connector.selected:hover .connector-line {
+  stroke: var(--accent);
+}
+
+.connector-arrow path {
+  fill: #6b6b76;
+}
+
+.connector-arrow-selected path,
+.connector-arrow-preview path {
+  fill: var(--accent);
+}
+
+.connector-preview-line {
+  stroke: var(--accent);
+  stroke-dasharray: 6 5;
+}
+
+.connect-target {
+  fill: rgba(59, 108, 246, 0.08);
+  stroke: rgba(59, 108, 246, 0.6);
+  stroke-width: 3;
+}
+
+.connect-preview {
+  position: absolute;
+  left: 0;
+  top: 0;
+  pointer-events: none;
+}
+
+.connector-label-box {
+  position: absolute;
+  transform: translate(-50%, -50%);
+  cursor: pointer;
+}
+
+.connector-label {
+  display: block;
+  padding: 2px 8px;
+  border-radius: 6px;
+  background: var(--canvas);
+  border: 1px solid var(--border);
+  color: var(--text);
+  font: inherit;
+  font-size: 14px;
+  line-height: 1.4;
+  white-space: nowrap;
+}
+
+.connector-label-box.selected .connector-label {
+  border-color: var(--accent);
+}
+
+.connector-label-editor {
+  outline: none;
+  border-color: var(--accent);
+  cursor: text;
+}
+
+/* Option＋ドラッグで複製している間 */
+.canvas.duplicating,
+.canvas.duplicating * {
+  cursor: copy !important;
+}
+
+/* 矢印を伸ばして離すとできる付箋（半透明） */
+.connect-ghost-sticky {
+  position: absolute;
+}
+
+/* 矢印の向き（→ ← ↔）。今の向きを選ばれた表示にする */
+.direction-button:hover {
+  background: #f0f2f8;
+}
+
+.direction-button.active {
+  background: #e3eaff;
+  color: var(--accent);
+}
+
+/* ツールを選んでいる間に、画面の下の真ん中に出す案内（矢印のツール） */
+.tool-hint {
+  position: absolute;
+  left: 50%;
+  bottom: 20px;
+  transform: translateX(-50%);
+  padding: 8px 14px;
+  border-radius: 999px;
+  background: var(--surface);
+  box-shadow: var(--shadow);
+  color: var(--text);
+  font-size: 13px;
+  white-space: nowrap;
+  pointer-events: none;
+  z-index: 15;
+}
+
+/* 矢印の始まりの枠（伸ばしている間） */
+.connect-source {
+  fill: none;
+  stroke: rgba(59, 108, 246, 0.6);
+  stroke-width: 3;
+}
+
+/* 「このサービスについて」のいちばん下の Powered by。上の一覧と線で区切る */
+p.about-powered {
+  margin: 16px 0 0;
+  padding-top: 12px;
+  border-top: 1px solid var(--border);
+}

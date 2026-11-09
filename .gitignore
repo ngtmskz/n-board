@@ -1,0 +1,14 @@
+node_modules/
+dist/
+firestore.rules
+storage.rules
+.emulator-data/
+.env.production
+.env.*.local
+*.log
+.firebase/
+firestore-debug.log
+ui-debug.log
+firebase-debug.log
+public/licenses.txt
+.DS_Store

@@ -1,0 +1,778 @@
+<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>N-Board の使い方</title>
+<meta name="description" content="組織の人だけで使える、付箋でブレストできるオンラインホワイトボード N-Board の紹介と操作説明">
+<link rel="icon" href="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCA2NCA2NCI+CiAgPHJlY3QgeD0iNi44IiB5PSI3LjYiIHdpZHRoPSIyNCIgaGVpZ2h0PSIyNCIgcng9IjMiIGZpbGw9InJnYmEoMCwwLDAsLjEyKSIvPgogIDxyZWN0IHg9IjYiIHk9IjYiIHdpZHRoPSIyNCIgaGVpZ2h0PSIyNCIgcng9IjMiIGZpbGw9IiNmZmUwNjYiLz4KICA8cmVjdCB4PSIzNi44IiB5PSI3LjYiIHdpZHRoPSIyNCIgaGVpZ2h0PSIyNCIgcng9IjMiIGZpbGw9InJnYmEoMCwwLDAsLjEyKSIvPgogIDxyZWN0IHg9IjM2IiB5PSI2IiB3aWR0aD0iMjQiIGhlaWdodD0iMjQiIHJ4PSIzIiBmaWxsPSIjZmY5ZmJmIi8+CiAgPHJlY3QgeD0iNi44IiB5PSIzNy42IiB3aWR0aD0iMjQiIGhlaWdodD0iMjQiIHJ4PSIzIiBmaWxsPSJyZ2JhKDAsMCwwLC4xMikiLz4KICA8cmVjdCB4PSI2IiB5PSIzNiIgd2lkdGg9IjI0IiBoZWlnaHQ9IjI0IiByeD0iMyIgZmlsbD0iIzhlYzVmZiIvPgogIDxnIHRyYW5zZm9ybT0icm90YXRlKC0xMiA1MCA0OCkiPgogICAgPHJlY3QgeD0iMzguOCIgeT0iMzcuNiIgd2lkdGg9IjI0IiBoZWlnaHQ9IjI0IiByeD0iMyIgZmlsbD0icmdiYSgwLDAsMCwuMTIpIi8+CiAgICA8cmVjdCB4PSIzOCIgeT0iMzYiIHdpZHRoPSIyNCIgaGVpZ2h0PSIyNCIgcng9IjMiIGZpbGw9IiM4ZWUzOWEiLz4KICA8L2c+Cjwvc3ZnPgo=">
+<style>
+:root {
+  --bg: #f6f5f1;
+  --surface: #ffffff;
+  --text: #1d2330;
+  --muted: #5d6475;
+  --line: #e3e1da;
+  --accent: #3b6cf6;
+  --accent-soft: #e3eaff;
+  --key-bg: #ffffff;
+  --key-border: #cfd3dc;
+  --dot: #d9d6cc;
+  --shadow: 0 1px 2px rgba(20, 24, 40, .06), 0 4px 16px rgba(20, 24, 40, .06);
+  --yellow: #fff2a8; --orange: #ffd3a1; --pink: #ffc7d9; --purple: #dcc9ff;
+  --blue: #c3e2ff; --green: #c8efc1; --gray: #e4e4e4;
+  --sticky-text: #1d2330;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #17191f; --surface: #22252d; --text: #eceef3; --muted: #a3a9b8;
+    --line: #343844; --accent: #7c9dff; --accent-soft: #2a3352;
+    --key-bg: #2b2f39; --key-border: #4a5060; --dot: #30343e;
+    --shadow: 0 1px 2px rgba(0,0,0,.3), 0 4px 16px rgba(0,0,0,.25);
+  }
+}
+:root[data-theme="dark"] {
+  --bg: #17191f; --surface: #22252d; --text: #eceef3; --muted: #a3a9b8;
+  --line: #343844; --accent: #7c9dff; --accent-soft: #2a3352;
+  --key-bg: #2b2f39; --key-border: #4a5060; --dot: #30343e;
+  --shadow: 0 1px 2px rgba(0,0,0,.3), 0 4px 16px rgba(0,0,0,.25);
+}
+
+* { box-sizing: border-box; }
+html { scroll-behavior: smooth; scroll-padding-top: 72px; }
+body {
+  margin: 0;
+  background: var(--bg);
+  color: var(--text);
+  font-family: -apple-system, BlinkMacSystemFont, "Hiragino Sans", "Hiragino Kaku Gothic ProN", "Noto Sans JP", "Yu Gothic UI", Meiryo, sans-serif;
+  font-size: 16px;
+  line-height: 1.8;
+  -webkit-font-smoothing: antialiased;
+}
+a { color: var(--accent); }
+img { max-width: 100%; }
+svg.i { width: 20px; height: 20px; vertical-align: -4px; flex: none; }
+
+/* ---- 上の帯 ---- */
+.topnav {
+  position: sticky; top: 0; z-index: 10;
+  background: color-mix(in srgb, var(--bg) 88%, transparent);
+  backdrop-filter: blur(8px);
+  border-bottom: 1px solid var(--line);
+}
+.topnav-inner {
+  max-width: 1080px; margin: 0 auto; padding: 10px 16px;
+  display: flex; align-items: center; gap: 16px;
+}
+.brand { display: flex; align-items: center; gap: 8px; font-weight: 800; text-decoration: none; color: var(--text); white-space: nowrap; }
+.brand img { width: 26px; height: 26px; }
+.toc { display: flex; gap: 4px; overflow-x: auto; scrollbar-width: none; flex: 1; }
+.toc::-webkit-scrollbar { display: none; }
+.toc a {
+  color: var(--muted); text-decoration: none; font-size: 14px; white-space: nowrap;
+  padding: 4px 10px; border-radius: 999px;
+}
+.toc a:hover { background: var(--surface); color: var(--text); }
+
+/* ---- 共通のレイアウト ---- */
+main { max-width: 1080px; margin: 0 auto; padding: 0 16px 80px; }
+section.block { padding-top: 64px; }
+.eyebrow { font-size: 13px; font-weight: 700; letter-spacing: .08em; color: var(--accent); margin: 0 0 4px; }
+h2 { font-size: clamp(24px, 3.4vw, 32px); line-height: 1.35; margin: 0 0 12px; letter-spacing: -.01em; }
+h3 { font-size: 19px; line-height: 1.45; margin: 0 0 6px; }
+.lead { color: var(--muted); margin: 0 0 28px; max-width: 46em; }
+p { margin: 0 0 10px; }
+ul.plain { margin: 0; padding-left: 1.2em; }
+ul.plain li { margin: 2px 0; }
+.card {
+  background: var(--surface); border-radius: 16px; padding: 22px 24px; box-shadow: var(--shadow);
+}
+.grid { display: grid; gap: 16px; }
+.grid.two { grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); }
+.grid.three { grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); }
+.note {
+  font-size: 14px; color: var(--muted); border-left: 3px solid var(--line); padding: 2px 0 2px 12px; margin-top: 12px;
+}
+.tip {
+  display: flex; gap: 10px; align-items: flex-start;
+  background: var(--accent-soft); border-radius: 12px; padding: 12px 16px; font-size: 15px; margin-top: 14px;
+}
+.tip::before { content: "💡"; }
+
+/* ---- キー ---- */
+kbd {
+  display: inline-block; min-width: 1.8em; padding: 0 .45em; margin: 0 1px;
+  font: 600 13px/1.7 ui-monospace, SFMono-Regular, Menlo, monospace; text-align: center;
+  background: var(--key-bg); color: var(--text);
+  border: 1px solid var(--key-border); border-bottom-width: 2px; border-radius: 6px;
+  vertical-align: 1px; white-space: nowrap;
+}
+
+/* ---- ヒーロー ---- */
+.hero {
+  display: grid; grid-template-columns: 1.05fr 1fr; gap: 40px; align-items: center;
+  padding: 56px 0 8px;
+}
+.hero h1 {
+  font-size: clamp(40px, 7vw, 72px); line-height: 1.05; margin: 0 0 6px; letter-spacing: -.03em;
+  font-family: Inter, -apple-system, "Helvetica Neue", Arial, sans-serif; font-weight: 800;
+}
+.hero .tagline { font-size: clamp(18px, 2.4vw, 24px); font-weight: 700; margin: 0 0 16px; }
+.hero p.desc { color: var(--muted); margin-bottom: 24px; }
+.cta {
+  display: inline-flex; align-items: center; gap: 8px;
+  background: var(--accent); color: #fff; text-decoration: none; font-weight: 700;
+  padding: 12px 22px; border-radius: 12px; box-shadow: 0 6px 16px rgba(59,108,246,.3);
+}
+.cta:hover { filter: brightness(1.05); }
+.cta-sub { display: block; font-size: 13px; color: var(--muted); margin-top: 10px; }
+.facts { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 22px; }
+.facts span {
+  font-size: 13px; background: var(--surface); border: 1px solid var(--line); border-radius: 999px; padding: 2px 12px;
+}
+
+/* ヒーローのボードの絵 */
+.board-art {
+  position: relative; aspect-ratio: 5 / 4; border-radius: 20px; overflow: hidden;
+  background-color: var(--surface);
+  background-image: radial-gradient(var(--dot) 1.2px, transparent 1.3px);
+  background-size: 18px 18px;
+  box-shadow: var(--shadow);
+}
+.art-section {
+  position: absolute; border: 2px solid; border-radius: 10px;
+}
+.art-section b {
+  position: absolute; top: -13px; left: 10px; font-size: 12px; padding: 0 8px; border-radius: 6px; color: #fff; line-height: 22px;
+}
+.sticky {
+  position: absolute; color: var(--sticky-text);
+  border-radius: 3px; box-shadow: 0 1px 1px rgba(0,0,0,.08), 0 4px 10px rgba(0,0,0,.08);
+  display: flex; align-items: center; justify-content: center; text-align: center;
+  font-size: 12px; line-height: 1.4; padding: 6px; font-weight: 600;
+}
+.stamp { position: absolute; width: 26px; height: 26px; filter: drop-shadow(0 1px 1px rgba(0,0,0,.2)); }
+.cursor {
+  position: absolute; font-size: 11px; font-weight: 700; color: #fff; display: flex; align-items: flex-start; gap: 2px;
+}
+.cursor svg { width: 16px; height: 16px; }
+.cursor span { padding: 1px 8px; border-radius: 6px; margin-top: 12px; }
+.pop { animation: pop 3.6s ease-in-out infinite; }
+@keyframes pop {
+  0%, 60%, 100% { transform: scale(1); }
+  66% { transform: scale(1.35) rotate(-8deg); }
+  72% { transform: scale(.95); }
+  78% { transform: scale(1.05); }
+}
+@media (prefers-reduced-motion: reduce) { .pop { animation: none; } }
+
+/* ---- 使いみち ---- */
+.uses .card { position: relative; padding-top: 26px; }
+.uses .emoji { font-size: 30px; line-height: 1; display: block; margin-bottom: 10px; }
+.uses p { color: var(--muted); font-size: 15px; margin: 0; }
+
+/* ---- はじめかた ---- */
+.steps { counter-reset: step; display: grid; gap: 16px; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); }
+.step { position: relative; padding-top: 52px; }
+.step::before {
+  counter-increment: step; content: counter(step);
+  position: absolute; top: 18px; left: 24px;
+  width: 28px; height: 28px; border-radius: 50%; background: var(--accent); color: #fff;
+  font-weight: 800; display: grid; place-items: center; font-size: 14px; line-height: 1;
+}
+.step p { font-size: 15px; color: var(--muted); margin: 0; }
+.btn-chip {
+  display: inline-flex; align-items: center; gap: 4px; font-size: 13px; font-weight: 700;
+  padding: 0 8px; border-radius: 6px; border: 1px solid var(--line); background: var(--bg); color: var(--text);
+  white-space: nowrap; vertical-align: 1px;
+}
+.btn-chip.primary { background: var(--accent); color: #fff; border-color: var(--accent); }
+.btn-chip svg.i { width: 14px; height: 14px; vertical-align: -2px; }
+
+/* ---- 画面の見方 ---- */
+.screen {
+  position: relative; aspect-ratio: 16 / 9; border-radius: 16px; overflow: hidden;
+  background-color: #fbfbfa;
+  background-image: radial-gradient(#d9d9d4 1.1px, transparent 1.2px);
+  background-size: 16px 16px;
+  box-shadow: var(--shadow); border: 1px solid var(--line);
+  color: #1d2330; font-size: 12px; min-height: 300px;
+}
+.scr-pill {
+  position: absolute; background: #fff; border-radius: 10px; box-shadow: 0 1px 3px rgba(0,0,0,.12);
+  display: flex; align-items: center; gap: 6px; padding: 5px 10px; white-space: nowrap; line-height: 1.4;
+}
+.scr-pill svg.i { width: 15px; height: 15px; vertical-align: -3px; }
+.scr-toolbar {
+  position: absolute; left: 1.5%; top: 50%; transform: translateY(-50%);
+  background: #fff; border-radius: 10px; box-shadow: 0 1px 3px rgba(0,0,0,.12);
+  display: flex; flex-direction: column; gap: 1px; padding: 4px;
+}
+.scr-toolbar div {
+  width: 46px; display: flex; flex-direction: column; align-items: center; font-size: 8.5px; padding: 3px 0; border-radius: 6px; line-height: 1.3;
+}
+.scr-toolbar div.on { background: #e3eaff; color: #3b6cf6; }
+.scr-toolbar svg.i { width: 15px; height: 15px; vertical-align: 0; }
+.scr-toolbar hr { border: 0; border-top: 1px solid #eee; margin: 2px 4px; }
+.mini-sticky { width: 13px; height: 13px; border-radius: 2px; background: var(--yellow); border: 1px solid rgba(0,0,0,.18); }
+.avatars { display: flex; }
+.avatars i { width: 18px; height: 18px; border-radius: 50%; border: 2px solid #fff; margin-left: -5px; display: block; }
+.avatars i:first-child { margin-left: 0; }
+.callout {
+  position: absolute; width: 24px; height: 24px; border-radius: 50%;
+  background: #e5484d; color: #fff; font-weight: 800; font-size: 13px; line-height: 1;
+  display: grid; place-items: center; box-shadow: 0 0 0 3px rgba(229,72,77,.25); z-index: 2;
+}
+.legend { display: grid; gap: 10px; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); margin-top: 20px; counter-reset: lg; }
+.legend div { display: flex; gap: 10px; align-items: flex-start; font-size: 15px; }
+.legend div::before {
+  counter-increment: lg; content: counter(lg);
+  flex: none; width: 22px; height: 22px; border-radius: 50%; background: #e5484d; color: #fff;
+  font-weight: 800; font-size: 12px; display: grid; place-items: center; margin-top: 3px; line-height: 1;
+}
+.legend b { display: block; }
+.legend span { color: var(--muted); font-size: 14px; }
+
+/* ---- ツールの一覧 ---- */
+.tools { display: grid; gap: 12px; grid-template-columns: repeat(auto-fit, minmax(310px, 1fr)); }
+.tool {
+  display: grid; grid-template-columns: 52px 1fr; gap: 14px; align-items: start;
+  background: var(--surface); border-radius: 14px; padding: 16px 18px; box-shadow: var(--shadow);
+}
+.tool-badge {
+  width: 52px; height: 52px; border-radius: 12px; background: var(--accent-soft); color: var(--accent);
+  display: grid; place-items: center;
+}
+.tool-badge svg.i { width: 24px; height: 24px; }
+.tool-badge .mini-sticky { width: 22px; height: 22px; border-radius: 3px; }
+.tool-badge img { width: 26px; height: 26px; }
+.tool h3 { display: flex; align-items: center; gap: 8px; font-size: 17px; margin: 0 0 2px; }
+.tool p { font-size: 14.5px; color: var(--muted); margin: 0; line-height: 1.7; }
+
+/* ---- 詳しい操作 ---- */
+.howto { display: grid; gap: 16px; }
+.howto .card { display: grid; grid-template-columns: minmax(0, 1fr) 260px; gap: 24px; align-items: center; }
+.howto .card.no-art { grid-template-columns: 1fr; }
+.howto ul { margin: 6px 0 0; padding-left: 1.2em; font-size: 15px; }
+.howto li { margin: 4px 0; }
+.art {
+  position: relative; height: 170px; border-radius: 12px; overflow: hidden;
+  background-color: var(--bg);
+  background-image: radial-gradient(var(--dot) 1.1px, transparent 1.2px);
+  background-size: 14px 14px;
+}
+.sel { outline: 3px solid #3b6cf6; outline-offset: 3px; }
+.plus {
+  position: absolute; width: 20px; height: 20px; border-radius: 50%; background: #3b6cf6; color: #fff;
+  display: grid; place-items: center; font-weight: 700; font-size: 15px; line-height: 1;
+}
+.ghost { opacity: .45; border: 2px dashed #3b6cf6; box-shadow: none; }
+.arrow-svg { position: absolute; inset: 0; width: 100%; height: 100%; }
+.comment-badge {
+  position: absolute; background: #fff; border-radius: 999px; padding: 0 6px; font-size: 10.5px; color: #1d2330;
+  box-shadow: 0 1px 3px rgba(0,0,0,.2); line-height: 1.6;
+}
+.comment-panel {
+  position: absolute; background: #fff; color: #1d2330; border-radius: 10px; box-shadow: 0 4px 14px rgba(0,0,0,.16);
+  padding: 8px 10px; font-size: 10.5px; line-height: 1.45; width: 120px;
+}
+.comment-panel b { display: block; font-size: 10px; color: #5d6475; }
+.comment-panel p { margin: 0 0 6px; }
+.guide-line { position: absolute; border-left: 2px dashed rgba(59,108,246,.5); }
+
+/* ---- 進行（タイマー・BGM） ---- */
+.timer-demo { display: flex; gap: 10px; align-items: center; flex-wrap: wrap; margin: 12px 0 4px; }
+.timer-pill {
+  position: relative; overflow: hidden; display: inline-flex; align-items: center; gap: 6px;
+  padding: 6px 14px; border-radius: 999px; background: var(--surface); border: 1px solid var(--line);
+  font-weight: 700; font-variant-numeric: tabular-nums;
+}
+.timer-pill .fill { position: absolute; inset: 0 auto 0 0; background: #c3e2ff; z-index: 0; }
+.timer-pill > :not(.fill) { position: relative; z-index: 1; }
+.preset { font-size: 13px; padding: 2px 10px; border: 1px solid var(--line); border-radius: 8px; background: var(--surface); }
+.bgm-list { display: flex; gap: 8px; flex-wrap: wrap; margin: 12px 0 4px; }
+.bgm-list span { font-size: 14px; padding: 4px 12px; border-radius: 999px; background: var(--accent-soft); color: var(--accent); font-weight: 600; }
+
+/* ---- 共有 ---- */
+.scope { display: grid; gap: 12px; margin-top: 10px; }
+.scope div { border: 1px solid var(--line); border-radius: 12px; padding: 12px 14px; }
+.scope b { display: flex; gap: 8px; align-items: center; }
+.scope span { display: block; font-size: 14px; color: var(--muted); }
+
+/* ---- 書き出し ---- */
+.export .card h3 { display: flex; align-items: center; gap: 8px; }
+.export .fmt {
+  font: 800 12px/1 Inter, Arial, sans-serif; letter-spacing: .04em; padding: 5px 7px; border-radius: 6px; color: #fff;
+}
+.export p { font-size: 15px; }
+.export .for { font-size: 14px; color: var(--muted); margin-top: 8px; }
+
+/* ---- ショートカット ---- */
+.keys-wrap { display: grid; gap: 16px; grid-template-columns: 1fr; }
+.kp { margin: 0 2px; color: var(--muted); font-size: 13px; }
+table.keys { width: 100%; border-collapse: collapse; font-size: 15px; }
+table.keys caption { text-align: left; font-weight: 700; font-size: 16px; padding-bottom: 6px; }
+table.keys td { padding: 8px 0; border-top: 1px solid var(--line); vertical-align: top; }
+table.keys td:first-child { color: var(--muted); padding-right: 12px; }
+table.keys th { font-size: 12px; font-weight: 700; color: var(--muted); text-align: left; padding: 0 0 6px; }
+table.keys th:not(:first-child), table.keys td:not(:first-child) { padding-left: 10px; }
+table.keys td:not(:first-child) { line-height: 2.1; }
+table.keys th:first-child { width: 36%; }
+table.keys th:nth-child(2) { width: 34%; }
+table.keys td:not(:first-child) { white-space: nowrap; }
+@media (max-width: 560px) { table.keys td:not(:first-child) { white-space: normal; } table.keys th:first-child { width: 30%; } }
+@media (max-width: 560px) { table.keys { font-size: 14px; } }
+
+/* ---- よくある質問 ---- */
+details.faq {
+  background: var(--surface); border-radius: 14px; box-shadow: var(--shadow); padding: 0 20px; margin-bottom: 10px;
+}
+details.faq summary {
+  cursor: pointer; list-style: none; padding: 16px 28px 16px 0; font-weight: 700; position: relative;
+}
+details.faq summary::-webkit-details-marker { display: none; }
+details.faq summary::after {
+  content: "+"; position: absolute; right: 0; top: 12px; font-size: 22px; color: var(--muted); font-weight: 400;
+}
+details.faq[open] summary::after { content: "−"; }
+details.faq div { padding: 0 0 16px; color: var(--muted); font-size: 15px; }
+
+footer {
+  border-top: 1px solid var(--line); margin-top: 64px; padding: 28px 16px 40px; text-align: center; color: var(--muted); font-size: 14px;
+}
+footer .cta { margin-bottom: 18px; }
+
+@media (max-width: 820px) {
+  .hero { grid-template-columns: 1fr; gap: 28px; padding-top: 36px; }
+  .howto .card { grid-template-columns: 1fr; }
+  .art { height: 160px; }
+  .screen-scroll { overflow-x: auto; margin: 0 -16px; padding: 4px 16px 8px; }
+  .screen { min-width: 760px; aspect-ratio: auto; height: 470px; }
+  .scroll-hint { display: block !important; }
+}
+@media (max-width: 560px) {
+  .card { padding: 18px; }
+  .tool { grid-template-columns: 44px 1fr; padding: 14px; }
+  .tool-badge { width: 44px; height: 44px; }
+}
+</style>
+</head>
+<body>
+
+<header class="topnav">
+  <div class="topnav-inner">
+    <a class="brand" href="#top"><img src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCA2NCA2NCI+CiAgPHJlY3QgeD0iNi44IiB5PSI3LjYiIHdpZHRoPSIyNCIgaGVpZ2h0PSIyNCIgcng9IjMiIGZpbGw9InJnYmEoMCwwLDAsLjEyKSIvPgogIDxyZWN0IHg9IjYiIHk9IjYiIHdpZHRoPSIyNCIgaGVpZ2h0PSIyNCIgcng9IjMiIGZpbGw9IiNmZmUwNjYiLz4KICA8cmVjdCB4PSIzNi44IiB5PSI3LjYiIHdpZHRoPSIyNCIgaGVpZ2h0PSIyNCIgcng9IjMiIGZpbGw9InJnYmEoMCwwLDAsLjEyKSIvPgogIDxyZWN0IHg9IjM2IiB5PSI2IiB3aWR0aD0iMjQiIGhlaWdodD0iMjQiIHJ4PSIzIiBmaWxsPSIjZmY5ZmJmIi8+CiAgPHJlY3QgeD0iNi44IiB5PSIzNy42IiB3aWR0aD0iMjQiIGhlaWdodD0iMjQiIHJ4PSIzIiBmaWxsPSJyZ2JhKDAsMCwwLC4xMikiLz4KICA8cmVjdCB4PSI2IiB5PSIzNiIgd2lkdGg9IjI0IiBoZWlnaHQ9IjI0IiByeD0iMyIgZmlsbD0iIzhlYzVmZiIvPgogIDxnIHRyYW5zZm9ybT0icm90YXRlKC0xMiA1MCA0OCkiPgogICAgPHJlY3QgeD0iMzguOCIgeT0iMzcuNiIgd2lkdGg9IjI0IiBoZWlnaHQ9IjI0IiByeD0iMyIgZmlsbD0icmdiYSgwLDAsMCwuMTIpIi8+CiAgICA8cmVjdCB4PSIzOCIgeT0iMzYiIHdpZHRoPSIyNCIgaGVpZ2h0PSIyNCIgcng9IjMiIGZpbGw9IiM4ZWUzOWEiLz4KICA8L2c+Cjwvc3ZnPgo=" alt="">N-Board</a>
+    <nav class="toc" aria-label="目次">
+      <a href="#start">はじめかた</a>
+      <a href="#screen">画面の見方</a>
+      <a href="#tools">ツール</a>
+      <a href="#howto">操作のコツ</a>
+      <a href="#facilitate">進行</a>
+      <a href="#share">共有</a>
+      <a href="#export">書き出し</a>
+      <a href="#keys">ショートカット</a>
+      <a href="#faq">よくある質問</a>
+    </nav>
+  </div>
+</header>
+
+<main id="top">
+
+<!-- ===== ヒーロー ===== -->
+<section class="hero">
+  <div>
+    <h1>N-Board</h1>
+    <p class="tagline">付箋を貼って、みんなで同時に考える<br>チームのホワイトボード</p>
+    <p class="desc">ブレスト、ふりかえり、業務フローの整理に。付箋・スタンプ・矢印を、参加者全員がリアルタイムに同時に編集できます。組織の Google アカウントでログインするだけで、すぐに使えます。</p>
+    <a class="cta" href="/">N-Board を開く <svg class="i" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M7 7h10v10"/><path d="M7 17 17 7"/></svg></a>
+        <div class="facts">
+      <span>🔒 組織の人だけ</span>
+      <span>👥 同時編集</span>
+      <span>⏱ タイマー・BGM</span>
+      <span>📄 CSV・画像・HTML で書き出し</span>
+    </div>
+  </div>
+
+  <div class="board-art" aria-hidden="true">
+    <div class="art-section" style="left:6%; top:12%; width:41%; height:74%; border-color:#4fa86a; background:rgba(50,170,90,.07)"><b style="background:#4fa86a">Keep</b></div>
+    <div class="art-section" style="left:53%; top:12%; width:41%; height:74%; border-color:#d9649a; background:rgba(230,80,140,.07)"><b style="background:#d9649a">Try</b></div>
+    <div class="sticky" style="left:10%; top:20%; width:16%; aspect-ratio:1; background:var(--yellow)">朝会が<br>短くなった</div>
+    <div class="sticky" style="left:28%; top:24%; width:16%; aspect-ratio:1; background:var(--green)">レビューが<br>早い</div>
+    <div class="sticky" style="left:10%; top:52%; width:34%; height:20%; background:var(--blue)">ドキュメントを先に書く</div>
+    <div class="sticky" style="left:57%; top:20%; width:16%; aspect-ratio:1; background:var(--pink)">AI に<br>要約を頼む</div>
+    <div class="sticky" style="left:75%; top:27%; width:16%; aspect-ratio:1; background:var(--orange)">週1で<br>もくもく会</div>
+    <div class="sticky" style="left:57%; top:54%; width:16%; aspect-ratio:1; background:var(--purple)">ペアで<br>作業する</div>
+    <img class="stamp pop" src="data:image/svg+xml;base64,PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0idXRmLTgiPz4KPCEtLSBHZW5lcmF0b3I6IEFkb2JlIElsbHVzdHJhdG9yIDI2LjMuMSwgU1ZHIEV4cG9ydCBQbHVnLUluIC4gU1ZHIFZlcnNpb246IDYuMDAgQnVpbGQgMCkgIC0tPgo8c3ZnIHZlcnNpb249IjEuMSIgaWQ9IkxheWVyXzJfMDAwMDAxMzg1NjI0NDAxODA1MzI1OTQ0MTAwMDAwMDE3NTc4MTc4Mjg1NTUzMzc2MzJfIgoJIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyIgeG1sbnM6eGxpbms9Imh0dHA6Ly93d3cudzMub3JnLzE5OTkveGxpbmsiIHg9IjBweCIgeT0iMHB4IiB2aWV3Qm94PSIwIDAgMTI4IDEyOCIKCSBzdHlsZT0iZW5hYmxlLWJhY2tncm91bmQ6bmV3IDAgMCAxMjggMTI4OyIgeG1sOnNwYWNlPSJwcmVzZXJ2ZSI+CjxwYXRoIHN0eWxlPSJmaWxsOiNGRkNBMjg7IiBkPSJNNzcuNiw0OC44YzctMS40LDEzLjgtMC43LDE3LjItMC4yYzMuOCwwLjUsOS4xLDEuMywxMy4yLDMuMmM0LjcsMi4xLDUuOSw1LjcsNiwxMAoJYzAuMSw0LTEuMSw2LjQtMi41LDcuN2M0LjIsMi4zLDUuMiw1LDUsOS41Yy0wLjIsNC0yLDcuMS01LjYsOC45YzIuOSwzLjEsMy41LDUuNSwzLDEwLjJjLTAuNCw0LjQtMi4xLDctOSw5YzEuMywxLjQsMS43LDMuOCwxLjYsNgoJYy0wLjIsMi42LTEsNS4xLTQuNiw2LjljLTEsMC41LTYuOSwzLjQtMTkuMi0wLjVjLTEwLjQsMS44LTI0LjksMC45LTM2LjQtNC42Yy0xMC45LTAuMS0yMy44LTEtMjQuOC0xYy0xLjEsMC0zLjItMC41LTQuMi0zLjMKCVMxMy4yLDg2LjcsMTYuMSw3NGMwLjQtMS44LDEuOS0yLjgsMy4yLTIuOXM4LjYtMC45LDEwLjMtMS4xYzktMS4xLDYuOC04LjksMTcuMi0yMS4zYzQuOS01LjksMTQuOS0xMCwxNS41LTIzLjEKCWMwLjItNC40LDAuNS0xMS42LDAuNS0xMi42YzAtNi4zLDEyLjItNy41LDE2LjYsMS4yQzg3LjMsMjkuNyw4MC44LDM3LjMsNzcuNiw0OC44eiIvPgo8Zz4KCTxnPgoJCTxkZWZzPgoJCQk8cGF0aCBpZD0iU1ZHSURfMV8iIGQ9Ik03Ny42LDQ4LjhjNy0xLjQsMTMuOC0wLjcsMTcuMi0wLjJjMy44LDAuNSw5LjEsMS4zLDEzLjIsMy4yYzQuNywyLjEsNS45LDUuNyw2LDEwYzAuMSw0LTEuMSw2LjQtMi41LDcuNwoJCQkJYzQuMiwyLjMsNS4yLDUsNSw5LjVjLTAuMiw0LTIsNy4xLTUuNiw4LjljMi45LDMuMSwzLjUsNS41LDMsMTAuMmMtMC40LDQuNC0yLjEsNy05LDljMS4zLDEuNCwxLjcsMy44LDEuNiw2CgkJCQljLTAuMiwyLjYtMSw1LjEtNC42LDYuOWMtMSwwLjUtNi45LDMuNC0xOS4yLTAuNWMtMTAuNCwxLjgtMjQuOSwwLjktMzYuNC00LjZjLTEwLjktMC4xLTIzLjgtMS0yNC44LTFjLTEuMSwwLTMuMi0wLjUtNC4yLTMuMwoJCQkJUzEzLjIsODYuNywxNi4xLDc0YzAuNC0xLjgsMS45LTIuOCwzLjItMi45czguNi0wLjksMTAuMy0xLjFjOS0xLjEsNi44LTguOSwxNy4yLTIxLjNjNC45LTUuOSwxNC45LTEwLDE1LjUtMjMuMQoJCQkJYzAuMi00LjQsMC41LTExLjYsMC41LTEyLjZjMC02LjMsMTIuMi03LjUsMTYuNiwxLjJDODcuMywyOS43LDgwLjgsMzcuMyw3Ny42LDQ4Ljh6Ii8+CgkJPC9kZWZzPgoJCTxjbGlwUGF0aCBpZD0iU1ZHSURfMDAwMDAwODY2ODUxMzAxOTQ1MjkyNjU2MDAwMDAwMDA2NjAwOTg3NzU2NzMzMTc3OThfIj4KCQkJPHVzZSB4bGluazpocmVmPSIjU1ZHSURfMV8iICBzdHlsZT0ib3ZlcmZsb3c6dmlzaWJsZTsiLz4KCQk8L2NsaXBQYXRoPgoJCTxnIHN0eWxlPSJjbGlwLXBhdGg6dXJsKCNTVkdJRF8wMDAwMDA4NjY4NTEzMDE5NDUyOTI2NTYwMDAwMDAwMDY2MDA5ODc3NTY3MzMxNzc5OF8pOyI+CgkJCTxwYXRoIHN0eWxlPSJmaWxsOiNGQUE3MDA7IiBkPSJNMTYsNzIuMmMwLjEsMS41LDAsMy43LDIuOCwzLjdzOS41LTAuNywxMC45LTAuOWMyLjctMC4zLDctMi41LDguNi02YzEuNC0yLjksNC43LTEwLjUsNC43LTEwLjUKCQkJCXM3LTIwLDkuNi0yMC4zYzQuMS0wLjUsMTEuOS0xLjQsMTEuOS0xM2MwLTMuNiwwLjQtOSwwLjQtMTBjMC4zLTcuNyw4LjktNC44LDEyLjMtMS4xbDMuNi0zbC02LjQtNS43YzAsMC0xMy40LDAuNy0xMy4zLDAuOAoJCQkJQzYxLjQsNi4zLDE2LDcyLjIsMTYsNzIuMnoiLz4KCQkJPHBvbHlnb24gc3R5bGU9ImZpbGw6I0ZBQTcwMDsiIHBvaW50cz0iMTYuNiwxMTAuOCA0NC4xLDExMS44IDQ0LjEsMTE2IDE3LjQsMTE0LjYgCQkJIi8+CgkJCTxwYXRoIHN0eWxlPSJmaWxsOiNGQUE3MDA7IiBkPSJNMTExLjQsNDguNmw3LDEyLjZsLTEuOCw0MS43bC0xMy40LDIwLjNsLTIwLTAuNWMwLDAtNS42LTExLjMtNi40LTEzLjRjLTAuOC0yLTMtNi03LjMtMTIuMgoJCQkJYy00LjItNi4yLTEuMy0xMS42LDEuNi0xMy43YzEuNy0xLjIsMy4xLTUuMiwzLjMtNy42czEtMjAuNywxLjItMjYuMXM1LjEtNi43LDcuMi02LjdMMTExLjQsNDguNnogTTkxLjYsNTUuNgoJCQkJYy0zLjYsMC40LTUuNCw0LjUtNS40LDguOGMwLjEsNy4yLDIuOSw3LjEsNS45LDcuN2MwLjgsMC4yLDEuMiwxLjUsMCwxLjdjLTUuMiwwLjUtNi4yLDUtNi4yLDguNWMwLDYuNiw0LjgsNy4yLDUuNiw3LjIKCQkJCWMxLjMsMC4xLDEuNywxLjcsMCwxLjhjLTMuMywwLjItNS4zLDMuNS01LjMsNy40YzAsMywwLjksNi4xLDYuMSw3LjZjMC42LDAuMiwxLjUsMS42LTAuMiwxLjhjLTQuNSwwLjctNC42LDIuOS00LjcsNS44CgkJCQljMCwzLjMsMS42LDQuMywzLjYsNC45YzEuNywwLjQsNS4xLDAuNSw3LDAuMmM0LjYtMC44LDguNC01LjksNC40LTExLjRjLTAuOCwwLTUuOCwwLTYuNCwwcy0wLjYtMC44LDAuMi0wLjgKCQkJCWMxMC45LTAuNiwxNC4xLTQuNSwxNC43LTguOWMwLjQtMy4yLTAuNS02LjUtMy4yLTguOWMtMC40LTAuNC0xLTAuMi0xLjctMC4yYzEyLTYuNSw3LjYtMTYuNiwxLjgtMTcuNmMtMS4xLTAuMi0yLjEtMC4zLTEuMS0wLjcKCQkJCWM1LjktMi4xLDcuNC0xOC41LTYtMThDMTAwLjksNTIuNSw5NC41LDU1LjMsOTEuNiw1NS42eiIvPgoJCTwvZz4KCTwvZz4KPC9nPgo8Zz4KCTxnPgoJCTxkZWZzPgoJCQk8cGF0aCBpZD0iU1ZHSURfMDAwMDAxNTI5NzQ3ODM5NjU3MjA0NDA4NjAwMDAwMTAxMTc5NzAxNjE3NDQ5ODI3MDNfIiBkPSJNNzcuNiw0OC44YzctMS40LDEzLjgtMC43LDE3LjItMC4yCgkJCQljMy44LDAuNSw5LjEsMS4zLDEzLjIsMy4yYzQuNywyLjEsNS45LDUuNyw2LDEwYzAuMSw0LTEuMSw2LjQtMi41LDcuN2M0LjIsMi4zLDUuMiw1LDUsOS41Yy0wLjIsNC0yLDcuMS01LjYsOC45CgkJCQljMi45LDMuMSwzLjUsNS41LDMsMTAuMmMtMC40LDQuNC0yLjEsNy05LDljMS4zLDEuNCwxLjcsMy44LDEuNiw2Yy0wLjIsMi42LTEsNS4xLTQuNiw2LjljLTEsMC41LTYuOSwzLjQtMTkuMi0wLjUKCQkJCWMtMTAuNCwxLjgtMjQuOSwwLjktMzYuNC00LjZjLTEwLjktMC4xLTIzLjgtMS0yNC44LTFjLTEuMSwwLTMuMi0wLjUtNC4yLTMuM1MxMy4yLDg2LjcsMTYuMSw3NGMwLjQtMS44LDEuOS0yLjgsMy4yLTIuOQoJCQkJczguNi0wLjksMTAuMy0xLjFjOS0xLjEsNi44LTguOSwxNy4yLTIxLjNjNC45LTUuOSwxNC45LTEwLDE1LjUtMjMuMWMwLjItNC40LDAuNS0xMS42LDAuNS0xMi42YzAtNi4zLDEyLjItNy41LDE2LjYsMS4yCgkJCQlDODcuMywyOS43LDgwLjgsMzcuMyw3Ny42LDQ4Ljh6Ii8+CgkJPC9kZWZzPgoJCTxjbGlwUGF0aCBpZD0iU1ZHSURfMDAwMDAwMjMyNjkxMjA1OTU5NTgzMDg3MjAwMDAwMTA2NDQ0NDM2MzIzODY3NTAxMjlfIj4KCQkJPHVzZSB4bGluazpocmVmPSIjU1ZHSURfMDAwMDAxNTI5NzQ3ODM5NjU3MjA0NDA4NjAwMDAwMTAxMTc5NzAxNjE3NDQ5ODI3MDNfIiAgc3R5bGU9Im92ZXJmbG93OnZpc2libGU7Ii8+CgkJPC9jbGlwUGF0aD4KCQk8ZyBzdHlsZT0iY2xpcC1wYXRoOnVybCgjU1ZHSURfMDAwMDAwMjMyNjkxMjA1OTU5NTgzMDg3MjAwMDAwMTA2NDQ0NDM2MzIzODY3NTAxMjlfKTsiPgoJCQk8cGF0aCBzdHlsZT0iZmlsbDojQjU1RTE5OyIgZD0iTTMxLjMsNjguM2MwLjgsMi43LDQsMi41LDUuOCwwLjZDNDEuNSw2NCw0NC44LDU0LjYsNDksNTAuM2M2LjktNy4xLDE0LjYtMTIuNiwxNC42LTIwCgkJCQljMC0yLjQsMS04LjgtMi4xLTEwLjFjLTEuNi0wLjctMi44LDAuNS0yLjgsMS40YzAsMS0wLjcsMTAuNS0wLjcsMTAuNUwzMS4zLDY4LjN6Ii8+CgkJCTxwYXRoIHN0eWxlPSJmaWxsOiNCNTVFMTk7IiBkPSJNNzIuNyw3LjFjLTAuNCwxLjEtMC4yLDIuNCwxLjQsMy45YzE1LjEsMTQtMC43LDMxLjUtMC41LDQwLjZjMC4xLDIuNSwwLDE4LjYtMC4yLDIwLjMKCQkJCWMtMS42LDEwLjktOCwxNC44LTExLjYsMTYuOWMtMC41LDAuMy0wLjQsMS40LDAuNCwxLjJjMC43LTAuMiw4LTEuNiwxMS45LTljMC4zLDIuMiwyLjYsNi4yLDQuNSw3Yy0yLDAuOS03LjUsOS4xLDEuNCwxNi41CgkJCQljLTMuNCwxLjMtNS44LDcuOS0wLjksMTIuMmMtMy41LDEuMS0yMiwxLjQtMzIuNy01LjZjLTEtMC43LTIuNy0wLjUtMy41LDAuM2MtMC45LDAuOC0xLjQsMC44LTEuOSwwLjdzLTE0LjksMC42LTE1LjksMC42CgkJCQlzLTMuMiwwLjItMy4yLDEuNnMyNC42LDEuNiwyNC42LDEuNmwxMy42LDZsMjMuMy0wLjljMCwwLDEzLjksMS4zLDEyLjEsMC45cy0xMC42LTIuNC0xNC41LTYuNWMtNC41LTQuOS0wLjYtOC4xLDAuNS04LjQKCQkJCWMwLjctMC4yLDEuNS0wLjQsMi42LDBjMS4yLDAuNCwxNCwzLjUsMjAuMiwwLjZjMC44LTAuNCwwLjUtMC45LTAuMi0wLjljLTEwLjIsMC41LTE4LjktMS4yLTIzLTQuN2MtNS45LTUuMS0zLjMtMTAuNi0xLjMtMTEuOAoJCQkJYzAuNy0wLjQsMS41LTAuMywxLjktMC4xYzgsMy40LDI0LjEsMS41LDI4LjctMS40YzAuNS0wLjMsMC4zLTEtMC40LTAuOGMtMS41LDAuNC0yMi4yLDQuMS0yOS40LTEuOGMtNS00LjEtNS45LTguNi0yLjYtMTIuMQoJCQkJYzEtMS4xLDIuOC0wLjgsMy4yLTAuN2MxMy4yLDIuNywyNy4yLDAsMjkuNy0yLjZjMC42LTAuNiwwLjMtMS40LTAuNy0xLjFjLTMuNSwxLjEtMTcuNSwzLTIzLjgsMi4yYy0xLjYtMC4yLTMuMi0wLjQtNS40LTEuOQoJCQkJYy0xLjItMC44LTIuNi0xLjgtMy42LTIuOHMtMS45LTIuOS0xLjUtNi40YzAuMi0yLDEuMy00LDQuOC00LjdjMi0wLjQsNS4yLDAuMyw2LjEsMC41czIuNiwwLjIsMy43LTAuMQoJCQkJYzEuOC0wLjUsNy44LTIuMSwxMS42LTIuNGMxLjItMC4xLDEuNC0xLjUtMC4xLTEuNmMtMS40LTAuMS02LjgtMC4yLTEwLjksMC44Yy0wLjUsMC4xLTAuOC0wLjItMC41LTAuNWMwLjMtMC40LDEuMS0xLDEuMy0xLjIKCQkJCWMwLjMtMC4yLDAuNC0xLjItMS4xLTAuOGMtMC45LDAuMi0yLjUsMS4zLTMuMywyLjRjLTAuNCwwLjYtMS4xLDAuNy0xLjUsMC43Yy00LjgtMC4zLTcuOCwwLjItOS40LDEuOWMtMC4xLTIuNSwwLjMtNS4yLDAuOC02LjYKCQkJCWMwLjMtMC45LDguOS05LDguMi0yMy40Qzg0LjksMTAuOSw3NC40LDIuOCw3Mi43LDcuMXoiLz4KCQk8L2c+Cgk8L2c+CjwvZz4KPC9zdmc+Cg==" style="left:38%; top:20%" alt="">
+    <img class="stamp" src="data:image/svg+xml;base64,PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0idXRmLTgiPz4KPCEtLSBHZW5lcmF0b3I6IEFkb2JlIElsbHVzdHJhdG9yIDI0LjEuMiwgU1ZHIEV4cG9ydCBQbHVnLUluIC4gU1ZHIFZlcnNpb246IDYuMDAgQnVpbGQgMCkgIC0tPgo8c3ZnIHZlcnNpb249IjEuMSIgaWQ9IkxheWVyXzIiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyIgeG1sbnM6eGxpbms9Imh0dHA6Ly93d3cudzMub3JnLzE5OTkveGxpbmsiIHg9IjBweCIgeT0iMHB4IgoJIHZpZXdCb3g9IjAgMCAxMjggMTI4IiBzdHlsZT0iZW5hYmxlLWJhY2tncm91bmQ6bmV3IDAgMCAxMjggMTI4OyIgeG1sOnNwYWNlPSJwcmVzZXJ2ZSI+CjxnPgoJPHBhdGggc3R5bGU9ImZpbGw6I0Y0NDMzNjsiIGQ9Ik05My45OSw4Ljk3Yy0yMS45MSwwLTI5Ljk2LDIyLjM5LTI5Ljk2LDIyLjM5UzU2LjA5LDguOTcsMzQuMDMsOC45NwoJCWMtMTYuNTgsMC0zNS40OCwxMy4xNC0yOC41LDQzLjAxYzYuOTgsMjkuODcsNTguNTYsNjcuMDgsNTguNTYsNjcuMDhzNTEuMzktMzcuMjEsNTguMzgtNjcuMDgKCQlDMTI5LjQ1LDIyLjExLDExMS45MSw4Ljk3LDkzLjk5LDguOTd6Ii8+Cgk8Zz4KCQk8cGF0aCBzdHlsZT0iZmlsbDojQ0MzMzMzOyIgZD0iTTMwLjY1LDExLjJjMTcuMiwwLDI1Ljc0LDE4LjQ5LDI4LjUsMjUuOThjMC4zOSwxLjA3LDEuODgsMS4xLDIuMzMsMC4wNkw2NCwzMS4zNQoJCQlDNjAuNDUsMjAuMDEsNTAuNjksOC45NywzNC4wMyw4Ljk3Yy02LjksMC0xNC4xOSwyLjI4LTE5Ljg2LDcuMDlDMTkuMTgsMTIuNzcsMjUuMDUsMTEuMiwzMC42NSwxMS4yeiIvPgoJCTxwYXRoIHN0eWxlPSJmaWxsOiNDQzMzMzM7IiBkPSJNOTMuOTksOC45N2MtNS4yOSwwLTEwLjExLDEuMTUtMTMuODcsMy40N2MyLjY0LTEuMDIsNS45MS0xLjI0LDkuMTUtMS4yNAoJCQljMTYuMjEsMCwzMC43MiwxMi4yOSwyNC4xNyw0MC43Yy01LjYyLDI0LjM5LTM4LjQ2LDUzLjk4LTQ4LjQ5LDY1LjI3Yy0wLjY0LDAuNzItMC44NiwxLjg4LTAuODYsMS44OHM1MS4zOS0zNy4yMSw1OC4zOC02Ny4wOAoJCQlDMTI5LjQ1LDIyLjExLDExMS45NCw4Ljk3LDkzLjk5LDguOTd6Ii8+Cgk8L2c+Cgk8Zz4KCQk8Zz4KCQkJPGc+CgkJCQk8cGF0aCBzdHlsZT0iZmlsbDojRkY4QTgwOyIgZD0iTTE3LjA0LDI0LjgyYzMuNzUtNC42OCwxMC40NS04LjU1LDE2LjEzLTQuMDljMy4wNywyLjQxLDEuNzMsNy4zNS0xLjAyLDkuNDMKCQkJCQljLTQsMy4wNC03LjQ4LDQuODctOS45Miw5LjYzYy0xLjQ2LDIuODYtMi4zNCw1Ljk5LTIuNzksOS4xOGMtMC4xOCwxLjI2LTEuODMsMS41Ny0yLjQ1LDAuNDYKCQkJCQlDMTIuNzcsNDEuOTUsMTEuNTcsMzEuNjUsMTcuMDQsMjQuODJ6Ii8+CgkJCTwvZz4KCQk8L2c+Cgk8L2c+Cgk8cGF0aCBzdHlsZT0iZmlsbDojRkY4QTgwOyIgZD0iTTc3LjE2LDM0LjY2Yy0xLjc2LDAtMy0xLjctMi4zNi0zLjM0YzEuMTktMy4wMiwyLjczLTUuOTQsNC41OC04LjU0CgkJYzIuNzQtMy44NCw3Ljk1LTYuMDgsMTEuMjUtMy43NWMzLjM4LDIuMzgsMi45NCw3LjE0LDAuNTcsOS40NEM4Ni4xMSwzMy40LDc5LjY5LDM0LjY2LDc3LjE2LDM0LjY2eiIvPgo8L2c+Cjwvc3ZnPgo=" style="left:21%; top:44%" alt="">
+    <img class="stamp pop" src="data:image/svg+xml;base64,PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0idXRmLTgiPz4KPCEtLSBHZW5lcmF0b3I6IEFkb2JlIElsbHVzdHJhdG9yIDI1LjIuMywgU1ZHIEV4cG9ydCBQbHVnLUluIC4gU1ZHIFZlcnNpb246IDYuMDAgQnVpbGQgMCkgIC0tPgo8c3ZnIHZlcnNpb249IjEuMSIgaWQ9IkxheWVyXzMiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyIgeG1sbnM6eGxpbms9Imh0dHA6Ly93d3cudzMub3JnLzE5OTkveGxpbmsiIHg9IjBweCIgeT0iMHB4IgoJIHZpZXdCb3g9IjAgMCAxMjggMTI4IiBzdHlsZT0iZW5hYmxlLWJhY2tncm91bmQ6bmV3IDAgMCAxMjggMTI4OyIgeG1sOnNwYWNlPSJwcmVzZXJ2ZSI+CjxnPgoJPGc+CgkJPGVsbGlwc2Ugc3R5bGU9ImZpbGw6IzQyNDI0MjsiIGN4PSI2NCIgY3k9IjExNi44NyIgcng9IjEyLjA5IiByeT0iNy4xMyIvPgoJCTxwYXRoIHN0eWxlPSJmaWxsOiNGRkQ2MDA7IiBkPSJNNjQsNEM0Mi45Miw0LDI1LjgyLDE5LjY3LDI1LjgyLDM4Ljk5YzAsNS4wNCwxLjUyLDEwLjQzLDMuNzUsMTUuMTgKCQkJYzMuMTMsNi42OCw2LjU0LDExLjYyLDcuNTQsMTMuNDRjMi43OCw1LjA2LDIuMzgsMTAuMzksMy4xNSwxMy43M2MxLjQ1LDYuMjQsNS43OSw4LjUsMjMuNzMsOC41czIxLjgtMi4xNSwyMy40MS03LjkKCQkJYzEuMS0zLjkxLDAuMDMtOC4xOCwyLjgtMTMuMjNjMS0xLjgyLDUuMDctNy44NSw4LjIxLTE0LjU0YzIuMjMtNC43NSwzLjc1LTEwLjE0LDMuNzUtMTUuMThDMTAyLjE4LDE5LjY3LDg1LjA4LDQsNjQsNHoiLz4KCQk8ZWxsaXBzZSBzdHlsZT0iZmlsbDojQjI2NTAwOyIgY3g9IjY0IiBjeT0iODYuMTMiIHJ4PSIyMS45NCIgcnk9IjQuNDYiLz4KCQk8ZWxsaXBzZSBzdHlsZT0iZmlsbDojQjI2NTAwOyIgY3g9IjY0IiBjeT0iODYuMTMiIHJ4PSIyMS45NCIgcnk9IjQuNDYiLz4KCQk8ZWxsaXBzZSBzdHlsZT0iZmlsbDojRkZBMDAwOyIgY3g9IjY0IiBjeT0iODYuMTMiIHJ4PSIxNS45OSIgcnk9IjIuMDYiLz4KCQk8Zz4KCQkJPHBhdGggc3R5bGU9ImZpbGw6bm9uZTtzdHJva2U6I0IyNjUwMDtzdHJva2Utd2lkdGg6MjtzdHJva2UtbWl0ZXJsaW1pdDoxMDsiIGQ9Ik01My4zLDU2Ljc3Yy0wLjYyLDEuNTYtMi4yMyw0Ljc3LTEuMzksNi4yMQoJCQkJYzEuOTUsMy4zNSw2LjYsNC41NSw2LjYsNy42M2MwLDQuNy0zLjQyLDE5LjkzLTMuNDIsMTkuOTMiLz4KCQkJPHBhdGggc3R5bGU9ImZpbGw6bm9uZTtzdHJva2U6I0IyNjUwMDtzdHJva2Utd2lkdGg6MjtzdHJva2UtbWl0ZXJsaW1pdDoxMDsiIGQ9Ik03NC4wMyw1Ni4yMWMwLDAsMi4yNCw0LjgsMS4yOSw2Ljk1CgkJCQljLTAuNzEsMS42LTQuOTgsNC4xOC01LjUzLDQuNjFjLTIuNTUsMiwwLjg0LDIyLjc4LDAuODQsMjIuNzgiLz4KCQkJPHBhdGggc3R5bGU9ImZpbGw6bm9uZTtzdHJva2U6I0ZGRkZGRjtzdHJva2Utd2lkdGg6MjtzdHJva2UtbWl0ZXJsaW1pdDoxMDsiIGQ9Ik01My4zLDU2Ljc3YzMuNDQtNi44LDUuMjEtMjIuMzIsMC44NC0yMS41MwoJCQkJYy03LjM3LDEuMzMsMS43MSwyNi44Myw2LjE4LDIzLjlzMTAuMDEtMjMuODUsMy4yMS0yMy45M2MtNi44LTAuMDgsMC40NiwyNi42Niw1LjA4LDIzLjY5YzMuNjUtMi4zNSwxMi41Ni0yMy42Niw1LjI0LTIzLjY2CgkJCQljLTYuMjMsMCwwLjE5LDIwLjk3LDAuMTksMjAuOTciLz4KCQk8L2c+CgkJPHBhdGggc3R5bGU9ImZpbGw6IzgyQUVDMDsiIGQ9Ik04NS44OSw4Ny4wNmMwLDAtNS43NiwyLjc4LTIxLjg5LDIuNzhzLTIxLjg5LTIuNzgtMjEuODktMi43OHMtMC4zNiw1LjE0LDAuODMsNy40NwoJCQljMS40MywyLjgsMi41MywzLjc3LDIuNTMsMy43N2wwLjYsMi44NWwtMC4yNCwwLjc1Yy0wLjMxLDAuOTgtMC4wOSwyLjA2LDAuNiwyLjgzbDAuNTIsMC41OGwwLjU4LDIuNzRsLTAuMiwwLjU1CgkJCWMtMC4zOCwxLjA1LTAuMTIsMi4yMiwwLjY2LDMuMDJsMC4zOCwwLjM5bDAuNDcsMi4yNGMwLDAsMi4zOCw1LjA4LDE1LjE2LDUuMDhzMTUuMTYtNS4wOCwxNS4xNi01LjA4bDAuMDQtMC4xOWwwLjI2LTAuMjYKCQkJYzAuNTItMC41MSwwLjY5LTEuMjcsMC40NC0xLjk1bC0wLjE1LTAuMzlsMC42Mi0yLjk2bDEuMDktMS4xNWMwLjU0LTAuNTcsMC42Ni0xLjQxLDAuMzEtMi4xMWwtMC41LTAuOTlsMC42My0yLjk3bDAuNC0wLjMxCgkJCWMwLjU5LTAuNjUsMC42LTEuNjMsMC4zNC0yLjNjLTAuMi0wLjUzLTAuMDQtMS4xMywwLjM3LTEuNTJjMC42My0wLjYsMS40NC0xLjUxLDIuMDQtMi42NEM4Ni4yOCw5Mi4yMiw4NS44OSw4Ny4wNiw4NS44OSw4Ny4wNnoiCgkJCS8+CgkJPGc+CgkJCTxnPgoJCQkJPHBhdGggc3R5bGU9ImZpbGw6IzJGNzg4OTsiIGQ9Ik00NS40Nyw5OC4zbDAuNTQsMi44N2M1LjgyLTAuMDMsMTMuNTksMC4yNiwyOC41LTIuMTFjMi42OS0wLjYxLDUuOTItMS44MiwyLjM1LTEuMzIKCQkJCQlDNzYuODYsOTcuNzMsNjMuMTcsOTkuMDQsNDUuNDcsOTguM3oiLz4KCQkJPC9nPgoJCQk8Zz4KCQkJCTxwYXRoIHN0eWxlPSJmaWxsOiMyRjc4ODk7IiBkPSJNNDcuNDcsMTA4LjA3YzYuNDQtMC4xMSwxOS42LTAuNzUsMzMuNzQtMy44MmwwLjYzLTIuOTdjLTE0Ljc5LDMuMzYtMjguNywzLjk2LTM0Ljk1LDQuMDQKCQkJCQlMNDcuNDcsMTA4LjA3eiIvPgoJCQk8L2c+CgkJPC9nPgoJCTxwYXRoIHN0eWxlPSJmaWxsOiMyRjc4ODk7IiBkPSJNODAuMzEsMTA4LjQ5Yy0xMy4wOSwyLjg0LTI1LjM0LDMuNTctMzEuOTcsMy43M2wwLjQzLDIuMDRjMCwwLDAuMjEsNi4zMywxNS4xNiw2LjMzCgkJCXMxNS4xNi02LjMzLDE1LjE2LTYuMzNzLTYuMzgsMS44Mi0xNC4yMywwLjkzYy0wLjgtMC4wOS0wLjgxLTEuMTYtMC4wMS0xLjI2YzQuNjktMC42MiwxMC4yOS0xLjU0LDE0Ljg0LTIuNDhMODAuMzEsMTA4LjQ5eiIvPgoJCTxwYXRoIHN0eWxlPSJmaWxsOm5vbmU7c3Ryb2tlOiM4MkFFQzA7c3Ryb2tlLXdpZHRoOjMuOTk3MTtzdHJva2UtbGluZWNhcDpyb3VuZDtzdHJva2UtbWl0ZXJsaW1pdDoxMDsiIGQ9Ik00Mi4xOCw4Ny4wNgoJCQljMCwwLDYuNDYsMi43OCwyMS43NiwyLjc4czIxLjg4LTIuNzgsMjEuODgtMi43OCIvPgoJCTxwYXRoIHN0eWxlPSJmaWxsOiNGRkZGOEQ7IiBkPSJNNDkuODgsMTAuMzJjMy45MS0wLjk2LDgtMC40OCwxMC44LDIuOTJjMC43OSwwLjk2LDEuNCwyLjEsMS41NCwzLjM0CgkJCWMwLjI4LDIuMzktMS4yLDQuNjUtMi45Niw2LjMxYy01LjAyLDQuNzQtMTIuMTUsNy4wNC0xNS4zOSwxMy41OGMtMC43NiwxLjUzLTEuMzYsMy4xOC0yLjUyLDQuNDNjLTEuMTYsMS4yNS0zLjA5LDIuMDEtNC42LDEuMjEKCQkJYy0wLjgtMC40Mi0xLjM1LTEuMjEtMS44LTJjLTIuODQtNS4wNi0yLjYzLTExLjUxLTAuMTMtMTYuNzVDMzcuNTcsMTcuNjIsNDMuNiwxMS44Niw0OS44OCwxMC4zMnoiLz4KCQk8cGF0aCBzdHlsZT0iZmlsbDojRkZENjAwOyIgZD0iTTQ2LjQ1LDkxLjkzYy0wLjg4LTAuNC0wLjUzLTEuNzIsMC40My0xLjY1YzMuMjIsMC4yNSw4LjcsMC41NiwxNS45NSwwLjU2CgkJCWM3LjY0LDAsMTQuMzYtMC41NywxOC4yOC0wLjk5YzAuOTctMC4xLDEuMzQsMS4yMywwLjQ1LDEuNjRjLTMuMDIsMS40Mi04LjU1LDMuMDQtMTguMDMsMy4wNAoJCQlDNTQuMjgsOTQuNTMsNDkuMTgsOTMuMTYsNDYuNDUsOTEuOTN6Ii8+CgkJPHBhdGggc3R5bGU9ImZpbGw6Izk0RDFFMDsiIGQ9Ik01MS45NCwxMDIuMDNjLTAuNjcsMC4yNC0xLjM2LDAuNTctMS43LDEuMTljLTAuMTIsMC4yMy0wLjE5LDAuNDktMC4xNCwwLjc1CgkJCWMwLjA4LDAuMzgsMC40MywwLjY1LDAuNzgsMC44MmMwLjcsMC4zNCwxLjQ5LDAuNDMsMi4yNiwwLjQ0YzEuNTksMC4wMiwzLjE3LTAuMjgsNC43NC0wLjU4YzAuNDctMC4wOSwwLjk1LTAuMTgsMS4zNy0wLjQxCgkJCWMwLjQyLTAuMjMsMC43OC0wLjYyLDAuODUtMS4wOWMwLjEtMC42My0wLjM1LTEuMjQtMC45LTEuNTRDNTcuMywxMDAuNTYsNTMuODYsMTAxLjM0LDUxLjk0LDEwMi4wM3oiLz4KCQk8cGF0aCBzdHlsZT0iZmlsbDojOTREMUUwOyIgZD0iTTUzLjQzLDEwOC42MmMtMC42NywwLjI0LTEuMzYsMC41Ny0xLjcsMS4xOWMtMC4xMiwwLjIzLTAuMTksMC40OS0wLjE0LDAuNzUKCQkJYzAuMDgsMC4zOCwwLjQzLDAuNjUsMC43OCwwLjgyYzAuNywwLjM0LDEuNDksMC40MywyLjI2LDAuNDRjMS41OSwwLjAyLDMuMTctMC4yOCw0Ljc0LTAuNThjMC40Ny0wLjA5LDAuOTUtMC4xOCwxLjM3LTAuNDEKCQkJYzAuNDItMC4yMywwLjc4LTAuNjIsMC44NS0xLjA5YzAuMS0wLjYzLTAuMzUtMS4yNC0wLjktMS41NEM1OC43OSwxMDcuMTYsNTUuMzQsMTA3Ljk0LDUzLjQzLDEwOC42MnoiLz4KCQk8cGF0aCBzdHlsZT0iZmlsbDojRkZGRjhEOyIgZD0iTTUwLjAxLDg0LjJjMC45MSwwLjA5LDEuODcsMC4wMSwyLjY0LTAuNDhjMC43Ny0wLjQ5LDEuMjYtMS40OSwwLjk1LTIuMzUKCQkJYy0wLjE2LTAuNDUtMC41MS0wLjgxLTAuODUtMS4xNUM1Miw3OS40OCw1MS4yNSw3OC43NCw1MC41MSw3OGMtMC44My0wLjgzLTEuNjYtMS42NS0yLjU2LTIuNGMtMS4zOS0xLjE2LTMuMjYtMi4yNS01LjA5LTEuNAoJCQljLTEuNTYsMC43Mi0xLjkzLDIuMTQtMS4yNCwzLjYzQzQzLjA5LDgwLjk2LDQ2LjUxLDgzLjg0LDUwLjAxLDg0LjJ6Ii8+Cgk8L2c+CjwvZz4KPC9zdmc+Cg==" style="left:67%; top:15%; animation-delay:1.2s" alt="">
+    <img class="stamp" src="data:image/svg+xml;base64,PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0idXRmLTgiPz4KPCEtLSBHZW5lcmF0b3I6IEFkb2JlIElsbHVzdHJhdG9yIDI0LjEuMiwgU1ZHIEV4cG9ydCBQbHVnLUluIC4gU1ZHIFZlcnNpb246IDYuMDAgQnVpbGQgMCkgIC0tPgo8c3ZnIHZlcnNpb249IjEuMSIgaWQ9IkxheWVyXzMiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyIgeG1sbnM6eGxpbms9Imh0dHA6Ly93d3cudzMub3JnLzE5OTkveGxpbmsiIHg9IjBweCIgeT0iMHB4IgoJIHZpZXdCb3g9IjAgMCAxMjggMTI4IiBzdHlsZT0iZW5hYmxlLWJhY2tncm91bmQ6bmV3IDAgMCAxMjggMTI4OyIgeG1sOnNwYWNlPSJwcmVzZXJ2ZSI+CjxnPgoJCgkJPHJhZGlhbEdyYWRpZW50IGlkPSJTVkdJRF8xXyIgY3g9IjY4Ljg4MzkiIGN5PSIxMjQuMjk2MyIgcj0iNzAuNTg3IiBncmFkaWVudFRyYW5zZm9ybT0ibWF0cml4KC0xIC00LjM0MzAxMWUtMDMgLTcuMTI1OTE3ZS0wMyAxLjY0MDggMTMxLjk4NTcgLTc5LjM0NTIpIiBncmFkaWVudFVuaXRzPSJ1c2VyU3BhY2VPblVzZSI+CgkJPHN0b3AgIG9mZnNldD0iMC4zMTQ0IiBzdHlsZT0ic3RvcC1jb2xvcjojRkY5ODAwIi8+CgkJPHN0b3AgIG9mZnNldD0iMC42NjE2IiBzdHlsZT0ic3RvcC1jb2xvcjojRkY2RDAwIi8+CgkJPHN0b3AgIG9mZnNldD0iMC45NzE1IiBzdHlsZT0ic3RvcC1jb2xvcjojRjQ0MzM2Ii8+Cgk8L3JhZGlhbEdyYWRpZW50PgoJPHBhdGggc3R5bGU9ImZpbGw6dXJsKCNTVkdJRF8xXyk7IiBkPSJNMzUuNTYsNDAuNzNjLTAuNTcsNi4wOC0wLjk3LDE2Ljg0LDIuNjIsMjEuNDJjMCwwLTEuNjktMTEuODIsMTMuNDYtMjYuNjUKCQljNi4xLTUuOTcsNy41MS0xNC4wOSw1LjM4LTIwLjE4Yy0xLjIxLTMuNDUtMy40Mi02LjMtNS4zNC04LjI5QzUwLjU2LDUuODYsNTEuNDIsMy45Myw1My4wNSw0YzkuODYsMC40NCwyNS44NCwzLjE4LDMyLjYzLDIwLjIyCgkJYzIuOTgsNy40OCwzLjIsMTUuMjEsMS43OCwyMy4wN2MtMC45LDUuMDItNC4xLDE2LjE4LDMuMiwxNy41NWM1LjIxLDAuOTgsNy43My0zLjE2LDguODYtNi4xNGMwLjQ3LTEuMjQsMi4xLTEuNTUsMi45OC0wLjU2CgkJYzguOCwxMC4wMSw5LjU1LDIxLjgsNy43MywzMS45NWMtMy41MiwxOS42Mi0yMy4zOSwzMy45LTQzLjEzLDMzLjljLTI0LjY2LDAtNDQuMjktMTQuMTEtNDkuMzgtMzkuNjUKCQljLTIuMDUtMTAuMzEtMS4wMS0zMC43MSwxNC44OS00NS4xMUMzMy43OSwzOC4xNSwzNS43MiwzOS4xMSwzNS41Niw0MC43M3oiLz4KCTxnPgoJCQoJCQk8cmFkaWFsR3JhZGllbnQgaWQ9IlNWR0lEXzJfIiBjeD0iNjQuOTIxMSIgY3k9IjU0LjA2MjEiIHI9IjczLjg1OTkiIGdyYWRpZW50VHJhbnNmb3JtPSJtYXRyaXgoLTAuMDEwMSAwLjk5OTkgMC43NTI1IDcuNjAzNzc3ZS0wMyAyNi4xNTM4IC0xMS4yNjY4KSIgZ3JhZGllbnRVbml0cz0idXNlclNwYWNlT25Vc2UiPgoJCQk8c3RvcCAgb2Zmc2V0PSIwLjIxNDEiIHN0eWxlPSJzdG9wLWNvbG9yOiNGRkYxNzYiLz4KCQkJPHN0b3AgIG9mZnNldD0iMC4zMjc1IiBzdHlsZT0ic3RvcC1jb2xvcjojRkZGMjdEIi8+CgkJCTxzdG9wICBvZmZzZXQ9IjAuNDg2OCIgc3R5bGU9InN0b3AtY29sb3I6I0ZGRjQ4RiIvPgoJCQk8c3RvcCAgb2Zmc2V0PSIwLjY3MjIiIHN0eWxlPSJzdG9wLWNvbG9yOiNGRkY3QUQiLz4KCQkJPHN0b3AgIG9mZnNldD0iMC43OTMxIiBzdHlsZT0ic3RvcC1jb2xvcjojRkZGOUM0Ii8+CgkJCTxzdG9wICBvZmZzZXQ9IjAuODIyMSIgc3R5bGU9InN0b3AtY29sb3I6I0ZGRjhCRDtzdG9wLW9wYWNpdHk6MC44MDQiLz4KCQkJPHN0b3AgIG9mZnNldD0iMC44NjI3IiBzdHlsZT0ic3RvcC1jb2xvcjojRkZGNkFCO3N0b3Atb3BhY2l0eTowLjUyOSIvPgoJCQk8c3RvcCAgb2Zmc2V0PSIwLjkxMDEiIHN0eWxlPSJzdG9wLWNvbG9yOiNGRkYzOEQ7c3RvcC1vcGFjaXR5OjAuMjA4OCIvPgoJCQk8c3RvcCAgb2Zmc2V0PSIwLjk0MDkiIHN0eWxlPSJzdG9wLWNvbG9yOiNGRkYxNzY7c3RvcC1vcGFjaXR5OjAiLz4KCQk8L3JhZGlhbEdyYWRpZW50PgoJCTxwYXRoIHN0eWxlPSJmaWxsOnVybCgjU1ZHSURfMl8pOyIgZD0iTTc2LjExLDc3LjQyYy05LjA5LTExLjctNS4wMi0yNS4wNS0yLjc5LTMwLjM3YzAuMy0wLjctMC41LTEuMzYtMS4xMy0wLjkzCgkJCWMtMy45MSwyLjY2LTExLjkyLDguOTItMTUuNjUsMTcuNzNjLTUuMDUsMTEuOTEtNC42OSwxNy43NC0xLjcsMjQuODZjMS44LDQuMjktMC4yOSw1LjItMS4zNCw1LjM2CgkJCWMtMS4wMiwwLjE2LTEuOTYtMC41Mi0yLjcxLTEuMjNjLTIuMTUtMi4wNS0zLjctNC43Mi00LjQ0LTcuNmMtMC4xNi0wLjYyLTAuOTctMC43OS0xLjM0LTAuMjhjLTIuOCwzLjg3LTQuMjUsMTAuMDgtNC4zMiwxNC40NwoJCQlDNDAuNDcsMTEzLDUxLjY4LDEyNCw2NS4yNCwxMjRjMTcuMDksMCwyOS41NC0xOC45LDE5LjcyLTM0LjdDODIuMTEsODQuNyw3OS40Myw4MS42OSw3Ni4xMSw3Ny40MnoiLz4KCTwvZz4KPC9nPgo8L3N2Zz4K" style="left:86%; top:22%" alt="">
+    <img class="stamp pop" src="data:image/svg+xml;base64,PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0idXRmLTgiPz4KPCEtLSBHZW5lcmF0b3I6IEFkb2JlIElsbHVzdHJhdG9yIDI0LjEuMiwgU1ZHIEV4cG9ydCBQbHVnLUluIC4gU1ZHIFZlcnNpb246IDYuMDAgQnVpbGQgMCkgIC0tPgo8c3ZnIHZlcnNpb249IjEuMSIgaWQ9Il94MzFfIiB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHhtbG5zOnhsaW5rPSJodHRwOi8vd3d3LnczLm9yZy8xOTk5L3hsaW5rIiB4PSIwcHgiIHk9IjBweCIKCSB2aWV3Qm94PSIwIDAgMTI4IDEyOCIgc3R5bGU9ImVuYWJsZS1iYWNrZ3JvdW5kOm5ldyAwIDAgMTI4IDEyODsiIHhtbDpzcGFjZT0icHJlc2VydmUiPgo8Zz4KCTxnPgoJCTxwYXRoIHN0eWxlPSJmaWxsOiNGNDQzMzY7IiBkPSJNMjcuMTIsOTAuMjljMTAuODItMy4xMSwzOC45NC0xMi4wNSw3NS45My05Ljk4YzEuMTcsMC4wNywxLjMsMS43NSwwLjE2LDEuOTgKCQkJYy0xNy4xNywzLjUzLTYwLjQ2LDEyLjY3LTcyLjU3LDE3LjQzYy0xLjkzLDAuNzYtNC4xMS0wLjA3LTUuMDQtMS45M2MtMC4zLTAuNjEtMC42Mi0xLjI1LTAuOTQtMS44OAoJCQlDMjMuNTMsOTMuNjgsMjQuNzEsOTAuOTgsMjcuMTIsOTAuMjl6Ii8+CgkJPHBhdGggc3R5bGU9ImZpbGw6I0Y0NDMzNjtzdHJva2U6I0Y0NDMzNjtzdHJva2UtbWl0ZXJsaW1pdDoxMDsiIGQ9Ik02Ljk2LDExMy4zYzE3LjAxLTQuMjQsODguNC0yMi4xMywxMTYuMDQtMjEuODQKCQkJYzEuMiwwLjAxLDEuMzgsMS43MiwwLjIxLDEuOThjLTIxLjUsNC42NS05NS42MiwyMS44NS0xMTIuNjEsMzAuMTdjLTIuMTcsMS4wNi00Ljc3LTAuMDctNS41My0yLjM2bC0wLjgtMi4zOQoJCQlDMy40LDExNi4yMyw0LjcsMTEzLjg2LDYuOTYsMTEzLjN6Ii8+CgkJPHBhdGggc3R5bGU9ImZpbGw6I0Y0NDMzNjtzdHJva2U6I0Y0NDMzNjtzdHJva2UtbWl0ZXJsaW1pdDoxMDsiIGQ9Ik02LjUsMjcuMzNjLTMuNSwxLjQ4LTIuOTktNS40NS0wLjU3LTcuMzMKCQkJQzEyLjk0LDE0LjU1LDMwLjA4LDguMTQsNDAsNC4xOGMyLjA0LTAuODEsNC4wNCwxLjI4LDMuMTUsMy4yOUMzNy43NSwxOS42OCwyMS44OCw1NS4yNSwxMiw4Ni43MmMtMC41MSwxLjYyLTMuODMsMS43MS00LDAuMDEKCQkJYy0wLjktOS4yLDUuNS0zNC41NywxOS4xMS02NC4yM2MwLjQ5LTEuMDYtMC41OC0yLjItMS43Mi0xLjk0QzIxLjQsMjEuNSwxNS4yOCwyMy42Myw2LjUsMjcuMzN6Ii8+CgkJPHBhdGggc3R5bGU9ImZpbGw6I0Y0NDMzNjtzdHJva2U6I0Y0NDMzNjtzdHJva2UtbWl0ZXJsaW1pdDoxMDsiIGQ9Ik0xMTEuOCw4LjdjLTAuMTktMC4wNS0xLjM5LTAuMzctMS44NC0wLjM5CgkJCWMtMjkuOTgtMS4wNC00My45Nyw4LjQ4LTQ0LjQ3LDguODhjLTEuNzIsMS4zOS0xLjk5LDMuOTEtMC42LDUuNjJjMS4xMSwxLjM3LDIuMjQsMS41NCwyLjg0LDEuNTNjMC4yNS0wLjAxLDAuNDcsMC4xNSwwLjU0LDAuNAoJCQljMS4yMyw0LjkxLDEuNDQsMTEuOTQtMC43NSwyMC4xOEM2My43Myw1OS4xNCw1NS40Niw2Nyw1MS4xOSw2N2MtMC4yNCwwLTAuNDctMC4wMy0wLjY4LTAuMDljLTEuNzQtMC40Ni0zLjUyLTMuMjEtNC41My03CgkJCWMtMS41MS01LjcxLTEuMjYtMTMuMTksMC42OS0yMC41M2MyLjY1LTkuOTgsNy41Mi0xNi44MiwxMS42Ni0yMC4wMWMxLjktMS40NiwzLjQyLTMuMzYsNC41My01LjQ5YzAuMDEtMC4wMSwwLjAxLTAuMDMsMC4wMi0wLjA0CgkJCWMwLjUtMC45NiwyLjgzLTUuNDgsMC4xMS01LjU0Yy05LjgzLDAtMjAuNTYsMTIuMDEtMjUuMDEsMjguNzZjLTQuOTEsMTguNDgtMC4zMywzNS43MywxMC4yMywzOC41NGMwLjk4LDAuMjYsMS45OCwwLjM5LDMsMC4zOQoJCQljOS44MywwLDIwLjU2LTEyLjAxLDI1LjAxLTI4Ljc2YzIuNDgtOS4zMiwyLjUzLTE4LjMyLDAuNjItMjUuMzFjLTAuMjMtMC44MywwLjIzLTEuNjksMS4wNS0xLjk3YzIuOTktMS4wMyw4Ljc2LTIuMDgsMTMuOC0yLjgKCQkJYzAuNzktMC4xMSwxLjMzLDAuNzksMC44NCwxLjQyYy0zLjcsNC44OC02LjgsMTEuMjQtOC43MywxOC41Yy00LjkxLDE4LjQ4LTAuMzMsMzUuNzMsMTAuMjMsMzguNTRjMC45OCwwLjI2LDEuOTgsMC4zOSwzLDAuMzkKCQkJYzkuODMsMCwyMC41Ni0xMi4wMSwyNS4wMS0yOC43NkMxMjYuOTQsMjguNzYsMTIyLjM2LDExLjUsMTExLjgsOC43eiBNMTEzLjMzLDQ0LjkyQzEwOS41NSw1OS4xNCwxMDEuMjksNjcsOTcuMDIsNjcKCQkJYy0wLjI0LDAtMC40Ny0wLjAzLTAuNjgtMC4wOWMtMS43NC0wLjQ2LTMuNTItMy4yMS00LjUzLTdjLTEuNTEtNS43MS0xLjI2LTEzLjE5LDAuNjktMjAuNTNjMy43OC0xNC4yMSwxMi4wNC0yMi4wOCwxNi4zMi0yMi4wOAoJCQljMC4yNCwwLDAuNDYsMC4wMywwLjY4LDAuMDlDMTEzLjE2LDE4LjM3LDExNy40MSwyOS41NywxMTMuMzMsNDQuOTJ6Ii8+Cgk8L2c+CjwvZz4KPC9zdmc+Cg==" style="left:68%; top:50%; animation-delay:2.2s" alt="">
+    <div class="cursor" style="left:44%; top:62%; color:#e07b16"><svg class="i" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4.037 4.688a.495.495 0 0 1 .651-.651l16 6.5a.5.5 0 0 1-.063.947l-6.124 1.58a2 2 0 0 0-1.438 1.435l-1.579 6.126a.5.5 0 0 1-.947.063z"/></svg><span style="background:#e07b16">佐藤</span></div>
+    <div class="cursor" style="left:80%; top:66%; color:#7c4ddb"><svg class="i" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4.037 4.688a.495.495 0 0 1 .651-.651l16 6.5a.5.5 0 0 1-.063.947l-6.124 1.58a2 2 0 0 0-1.438 1.435l-1.579 6.126a.5.5 0 0 1-.947.063z"/></svg><span style="background:#7c4ddb">田中</span></div>
+  </div>
+</section>
+
+<!-- ===== 使いみち ===== -->
+<section class="block uses" aria-labelledby="uses-h">
+  <p class="eyebrow">USE CASES</p>
+  <h2 id="uses-h">こんなときに使えます</h2>
+  <div class="grid three">
+    <div class="card"><span class="emoji">🔁</span><h3>ふりかえり</h3><p>Keep / Problem / Try のセクションを作って、みんなで付箋を貼る。共感した付箋にはスタンプで投票して、CSV で票数をそのまま集計。</p></div>
+    <div class="card"><span class="emoji">💡</span><h3>アイデア出し</h3><p>タイマーで5分区切って、とにかく数を出す。BGM を流すと、黙々と書く時間も気まずくなりません。</p></div>
+    <div class="card"><span class="emoji">🧭</span><h3>業務フローの整理</h3><p>付箋を矢印でつないで、手順や因果関係を見える化。画面のスクリーンショットを貼って画面遷移図も作れます。</p></div>
+    <div class="card"><span class="emoji">🤖</span><h3>AI でまとめる</h3><p>CSV で書き出して AI に渡せば、意見の分類や要約がすぐにできます。説明の行つきなので、そのまま貼るだけ。</p></div>
+  </div>
+</section>
+
+<!-- ===== はじめかた ===== -->
+<section class="block" id="start" aria-labelledby="start-h">
+  <p class="eyebrow">GETTING STARTED</p>
+  <h2 id="start-h">はじめかた</h2>
+  <p class="lead">インストールは不要です。ブラウザ（Chrome をおすすめします）で開くだけで使えます。</p>
+  <div class="steps">
+    <div class="card step"><h3>開いてログイン</h3><p><a href="/">N-Board</a> を開き、<span class="btn-chip">Google でログイン</span> を押します。組織の Google アカウントでのみ利用できます。</p></div>
+    <div class="card step"><h3>ボードを作る</h3><p><span class="btn-chip primary">＋ 新しいボード</span> を押すと、新しいボードが開きます。左上のタイトルを押すと名前を変えられます。</p></div>
+    <div class="card step"><h3>リンクを共有</h3><p>右上の <span class="btn-chip">共有</span> から <span class="btn-chip"><svg class="i" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 17H7A5 5 0 0 1 7 7h2"/><path d="M15 7h2a5 5 0 1 1 0 10h-2"/><line x1="8" x2="16" y1="12" y2="12"/></svg> リンクをコピー</span> して、Slack などで参加者に送ります。</p></div>
+    <div class="card step"><h3>みんなで書く</h3><p>キャンバスをダブルクリックすると付箋ができます。誰かが書いた内容は、すぐに全員の画面に出ます。</p></div>
+  </div>
+  <p class="note">トップ画面には「参加しているボード」が並びます。一度開いたボードは、ここからいつでも開き直せます。ボード名で探すこともできます。</p>
+</section>
+
+<!-- ===== 画面の見方 ===== -->
+<section class="block" id="screen" aria-labelledby="screen-h">
+  <p class="eyebrow">SCREEN</p>
+  <h2 id="screen-h">画面の見方</h2>
+  <p class="lead">ボードの画面は、真ん中の広いキャンバスと、それを囲むボタンでできています。</p>
+
+  <p class="scroll-hint" style="display:none; font-size:13px; color:var(--muted); margin:0 0 6px">← 図は横にスクロールできます →</p>
+  <div class="screen-scroll">
+  <div class="screen" role="img" aria-label="ボード画面の配置図">
+    <!-- 左上 -->
+    <div class="scr-pill" style="left:1.5%; top:3%"><svg class="i" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m12 19-7-7 7-7"/><path d="M19 12H5"/></svg></div>
+    <div class="scr-pill" style="left:calc(1.5% + 44px); top:3%"><b>チームのふりかえり</b><svg class="i" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m6 9 6 6 6-6"/></svg></div>
+    <div class="callout" style="left:calc(1.5% + 70px); top:calc(3% + 36px)">1</div>
+    <!-- 上の中央 -->
+    <div class="scr-pill" style="left:50%; top:3%; transform:translateX(-50%)"><svg class="i" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><line x1="10" x2="14" y1="2" y2="2"/><line x1="12" x2="15" y1="14" y2="11"/><circle cx="12" cy="14" r="8"/></svg> <b>05:00</b> <span style="color:#c9ccd4">|</span> <svg class="i" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 16V3a1 1 0 0 0-1.28-.96l-10 2.917a1 1 0 0 0-.72.96V19"/><circle cx="18" cy="16" r="3"/><circle cx="6" cy="19" r="3"/></svg></div>
+    <div class="callout" style="left:calc(50% - 12px); top:calc(3% + 36px)">2</div>
+    <!-- 右上 -->
+    <div class="scr-pill scr-hide-sm" style="right:calc(1.5% + 76px); top:3%"><span class="avatars"><i style="background:#e07b16"></i><i style="background:#7c4ddb"></i><i style="background:#2f8f4e"></i></span>3人が参加中</div>
+    <div class="scr-pill" style="right:1.5%; top:3%; background:#3b6cf6; color:#fff"><svg class="i" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 17H7A5 5 0 0 1 7 7h2"/><path d="M15 7h2a5 5 0 1 1 0 10h-2"/><line x1="8" x2="16" y1="12" y2="12"/></svg> 共有</div>
+    <div class="callout" style="right:calc(1.5% + 70px); top:calc(3% + 36px)">3</div>
+    <!-- ツールバー -->
+    <div class="scr-toolbar">
+      <div class="on"><svg class="i" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4.037 4.688a.495.495 0 0 1 .651-.651l16 6.5a.5.5 0 0 1-.063.947l-6.124 1.58a2 2 0 0 0-1.438 1.435l-1.579 6.126a.5.5 0 0 1-.947.063z"/></svg>選択</div>
+      <div><svg class="i" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M18 11V6a2 2 0 0 0-2-2a2 2 0 0 0-2 2"/><path d="M14 10V4a2 2 0 0 0-2-2a2 2 0 0 0-2 2v2"/><path d="M10 10.5V6a2 2 0 0 0-2-2a2 2 0 0 0-2 2v8"/><path d="M18 8a2 2 0 1 1 4 0v6a8 8 0 0 1-8 8h-2c-2.8 0-4.5-.86-5.99-2.34l-3.6-3.6a2 2 0 0 1 2.83-2.82L7 15"/></svg>画面移動</div>
+      <div><span class="mini-sticky" style="margin:1px 0 1px"></span>付箋</div>
+      <div><svg class="i" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 4v16"/><path d="M4 7V5a1 1 0 0 1 1-1h14a1 1 0 0 1 1 1v2"/><path d="M9 20h6"/></svg>テキスト</div>
+      <div><svg class="i" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="3" width="18" height="18" rx="2"/><rect x="6" y="6" width="7" height="3.5" rx="1" fill="currentColor" stroke="none"/></svg>セクション</div>
+      <div><svg class="i" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M13 5H19V11"/><path d="M19 5L5 19"/></svg>矢印</div>
+      <div><svg class="i" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect width="18" height="18" x="3" y="3" rx="2" ry="2"/><circle cx="9" cy="9" r="2"/><path d="m21 15-3.086-3.086a2 2 0 0 0-2.828 0L6 21"/></svg>画像</div>
+      <div><img src="data:image/svg+xml;base64,PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0idXRmLTgiPz4KPCEtLSBHZW5lcmF0b3I6IEFkb2JlIElsbHVzdHJhdG9yIDI2LjMuMSwgU1ZHIEV4cG9ydCBQbHVnLUluIC4gU1ZHIFZlcnNpb246IDYuMDAgQnVpbGQgMCkgIC0tPgo8c3ZnIHZlcnNpb249IjEuMSIgaWQ9IkxheWVyXzJfMDAwMDAxMzg1NjI0NDAxODA1MzI1OTQ0MTAwMDAwMDE3NTc4MTc4Mjg1NTUzMzc2MzJfIgoJIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyIgeG1sbnM6eGxpbms9Imh0dHA6Ly93d3cudzMub3JnLzE5OTkveGxpbmsiIHg9IjBweCIgeT0iMHB4IiB2aWV3Qm94PSIwIDAgMTI4IDEyOCIKCSBzdHlsZT0iZW5hYmxlLWJhY2tncm91bmQ6bmV3IDAgMCAxMjggMTI4OyIgeG1sOnNwYWNlPSJwcmVzZXJ2ZSI+CjxwYXRoIHN0eWxlPSJmaWxsOiNGRkNBMjg7IiBkPSJNNzcuNiw0OC44YzctMS40LDEzLjgtMC43LDE3LjItMC4yYzMuOCwwLjUsOS4xLDEuMywxMy4yLDMuMmM0LjcsMi4xLDUuOSw1LjcsNiwxMAoJYzAuMSw0LTEuMSw2LjQtMi41LDcuN2M0LjIsMi4zLDUuMiw1LDUsOS41Yy0wLjIsNC0yLDcuMS01LjYsOC45YzIuOSwzLjEsMy41LDUuNSwzLDEwLjJjLTAuNCw0LjQtMi4xLDctOSw5YzEuMywxLjQsMS43LDMuOCwxLjYsNgoJYy0wLjIsMi42LTEsNS4xLTQuNiw2LjljLTEsMC41LTYuOSwzLjQtMTkuMi0wLjVjLTEwLjQsMS44LTI0LjksMC45LTM2LjQtNC42Yy0xMC45LTAuMS0yMy44LTEtMjQuOC0xYy0xLjEsMC0zLjItMC41LTQuMi0zLjMKCVMxMy4yLDg2LjcsMTYuMSw3NGMwLjQtMS44LDEuOS0yLjgsMy4yLTIuOXM4LjYtMC45LDEwLjMtMS4xYzktMS4xLDYuOC04LjksMTcuMi0yMS4zYzQuOS01LjksMTQuOS0xMCwxNS41LTIzLjEKCWMwLjItNC40LDAuNS0xMS42LDAuNS0xMi42YzAtNi4zLDEyLjItNy41LDE2LjYsMS4yQzg3LjMsMjkuNyw4MC44LDM3LjMsNzcuNiw0OC44eiIvPgo8Zz4KCTxnPgoJCTxkZWZzPgoJCQk8cGF0aCBpZD0iU1ZHSURfMV8iIGQ9Ik03Ny42LDQ4LjhjNy0xLjQsMTMuOC0wLjcsMTcuMi0wLjJjMy44LDAuNSw5LjEsMS4zLDEzLjIsMy4yYzQuNywyLjEsNS45LDUuNyw2LDEwYzAuMSw0LTEuMSw2LjQtMi41LDcuNwoJCQkJYzQuMiwyLjMsNS4yLDUsNSw5LjVjLTAuMiw0LTIsNy4xLTUuNiw4LjljMi45LDMuMSwzLjUsNS41LDMsMTAuMmMtMC40LDQuNC0yLjEsNy05LDljMS4zLDEuNCwxLjcsMy44LDEuNiw2CgkJCQljLTAuMiwyLjYtMSw1LjEtNC42LDYuOWMtMSwwLjUtNi45LDMuNC0xOS4yLTAuNWMtMTAuNCwxLjgtMjQuOSwwLjktMzYuNC00LjZjLTEwLjktMC4xLTIzLjgtMS0yNC44LTFjLTEuMSwwLTMuMi0wLjUtNC4yLTMuMwoJCQkJUzEzLjIsODYuNywxNi4xLDc0YzAuNC0xLjgsMS45LTIuOCwzLjItMi45czguNi0wLjksMTAuMy0xLjFjOS0xLjEsNi44LTguOSwxNy4yLTIxLjNjNC45LTUuOSwxNC45LTEwLDE1LjUtMjMuMQoJCQkJYzAuMi00LjQsMC41LTExLjYsMC41LTEyLjZjMC02LjMsMTIuMi03LjUsMTYuNiwxLjJDODcuMywyOS43LDgwLjgsMzcuMyw3Ny42LDQ4Ljh6Ii8+CgkJPC9kZWZzPgoJCTxjbGlwUGF0aCBpZD0iU1ZHSURfMDAwMDAwODY2ODUxMzAxOTQ1MjkyNjU2MDAwMDAwMDA2NjAwOTg3NzU2NzMzMTc3OThfIj4KCQkJPHVzZSB4bGluazpocmVmPSIjU1ZHSURfMV8iICBzdHlsZT0ib3ZlcmZsb3c6dmlzaWJsZTsiLz4KCQk8L2NsaXBQYXRoPgoJCTxnIHN0eWxlPSJjbGlwLXBhdGg6dXJsKCNTVkdJRF8wMDAwMDA4NjY4NTEzMDE5NDUyOTI2NTYwMDAwMDAwMDY2MDA5ODc3NTY3MzMxNzc5OF8pOyI+CgkJCTxwYXRoIHN0eWxlPSJmaWxsOiNGQUE3MDA7IiBkPSJNMTYsNzIuMmMwLjEsMS41LDAsMy43LDIuOCwzLjdzOS41LTAuNywxMC45LTAuOWMyLjctMC4zLDctMi41LDguNi02YzEuNC0yLjksNC43LTEwLjUsNC43LTEwLjUKCQkJCXM3LTIwLDkuNi0yMC4zYzQuMS0wLjUsMTEuOS0xLjQsMTEuOS0xM2MwLTMuNiwwLjQtOSwwLjQtMTBjMC4zLTcuNyw4LjktNC44LDEyLjMtMS4xbDMuNi0zbC02LjQtNS43YzAsMC0xMy40LDAuNy0xMy4zLDAuOAoJCQkJQzYxLjQsNi4zLDE2LDcyLjIsMTYsNzIuMnoiLz4KCQkJPHBvbHlnb24gc3R5bGU9ImZpbGw6I0ZBQTcwMDsiIHBvaW50cz0iMTYuNiwxMTAuOCA0NC4xLDExMS44IDQ0LjEsMTE2IDE3LjQsMTE0LjYgCQkJIi8+CgkJCTxwYXRoIHN0eWxlPSJmaWxsOiNGQUE3MDA7IiBkPSJNMTExLjQsNDguNmw3LDEyLjZsLTEuOCw0MS43bC0xMy40LDIwLjNsLTIwLTAuNWMwLDAtNS42LTExLjMtNi40LTEzLjRjLTAuOC0yLTMtNi03LjMtMTIuMgoJCQkJYy00LjItNi4yLTEuMy0xMS42LDEuNi0xMy43YzEuNy0xLjIsMy4xLTUuMiwzLjMtNy42czEtMjAuNywxLjItMjYuMXM1LjEtNi43LDcuMi02LjdMMTExLjQsNDguNnogTTkxLjYsNTUuNgoJCQkJYy0zLjYsMC40LTUuNCw0LjUtNS40LDguOGMwLjEsNy4yLDIuOSw3LjEsNS45LDcuN2MwLjgsMC4yLDEuMiwxLjUsMCwxLjdjLTUuMiwwLjUtNi4yLDUtNi4yLDguNWMwLDYuNiw0LjgsNy4yLDUuNiw3LjIKCQkJCWMxLjMsMC4xLDEuNywxLjcsMCwxLjhjLTMuMywwLjItNS4zLDMuNS01LjMsNy40YzAsMywwLjksNi4xLDYuMSw3LjZjMC42LDAuMiwxLjUsMS42LTAuMiwxLjhjLTQuNSwwLjctNC42LDIuOS00LjcsNS44CgkJCQljMCwzLjMsMS42LDQuMywzLjYsNC45YzEuNywwLjQsNS4xLDAuNSw3LDAuMmM0LjYtMC44LDguNC01LjksNC40LTExLjRjLTAuOCwwLTUuOCwwLTYuNCwwcy0wLjYtMC44LDAuMi0wLjgKCQkJCWMxMC45LTAuNiwxNC4xLTQuNSwxNC43LTguOWMwLjQtMy4yLTAuNS02LjUtMy4yLTguOWMtMC40LTAuNC0xLTAuMi0xLjctMC4yYzEyLTYuNSw3LjYtMTYuNiwxLjgtMTcuNmMtMS4xLTAuMi0yLjEtMC4zLTEuMS0wLjcKCQkJCWM1LjktMi4xLDcuNC0xOC41LTYtMThDMTAwLjksNTIuNSw5NC41LDU1LjMsOTEuNiw1NS42eiIvPgoJCTwvZz4KCTwvZz4KPC9nPgo8Zz4KCTxnPgoJCTxkZWZzPgoJCQk8cGF0aCBpZD0iU1ZHSURfMDAwMDAxNTI5NzQ3ODM5NjU3MjA0NDA4NjAwMDAwMTAxMTc5NzAxNjE3NDQ5ODI3MDNfIiBkPSJNNzcuNiw0OC44YzctMS40LDEzLjgtMC43LDE3LjItMC4yCgkJCQljMy44LDAuNSw5LjEsMS4zLDEzLjIsMy4yYzQuNywyLjEsNS45LDUuNyw2LDEwYzAuMSw0LTEuMSw2LjQtMi41LDcuN2M0LjIsMi4zLDUuMiw1LDUsOS41Yy0wLjIsNC0yLDcuMS01LjYsOC45CgkJCQljMi45LDMuMSwzLjUsNS41LDMsMTAuMmMtMC40LDQuNC0yLjEsNy05LDljMS4zLDEuNCwxLjcsMy44LDEuNiw2Yy0wLjIsMi42LTEsNS4xLTQuNiw2LjljLTEsMC41LTYuOSwzLjQtMTkuMi0wLjUKCQkJCWMtMTAuNCwxLjgtMjQuOSwwLjktMzYuNC00LjZjLTEwLjktMC4xLTIzLjgtMS0yNC44LTFjLTEuMSwwLTMuMi0wLjUtNC4yLTMuM1MxMy4yLDg2LjcsMTYuMSw3NGMwLjQtMS44LDEuOS0yLjgsMy4yLTIuOQoJCQkJczguNi0wLjksMTAuMy0xLjFjOS0xLjEsNi44LTguOSwxNy4yLTIxLjNjNC45LTUuOSwxNC45LTEwLDE1LjUtMjMuMWMwLjItNC40LDAuNS0xMS42LDAuNS0xMi42YzAtNi4zLDEyLjItNy41LDE2LjYsMS4yCgkJCQlDODcuMywyOS43LDgwLjgsMzcuMyw3Ny42LDQ4Ljh6Ii8+CgkJPC9kZWZzPgoJCTxjbGlwUGF0aCBpZD0iU1ZHSURfMDAwMDAwMjMyNjkxMjA1OTU5NTgzMDg3MjAwMDAwMTA2NDQ0NDM2MzIzODY3NTAxMjlfIj4KCQkJPHVzZSB4bGluazpocmVmPSIjU1ZHSURfMDAwMDAxNTI5NzQ3ODM5NjU3MjA0NDA4NjAwMDAwMTAxMTc5NzAxNjE3NDQ5ODI3MDNfIiAgc3R5bGU9Im92ZXJmbG93OnZpc2libGU7Ii8+CgkJPC9jbGlwUGF0aD4KCQk8ZyBzdHlsZT0iY2xpcC1wYXRoOnVybCgjU1ZHSURfMDAwMDAwMjMyNjkxMjA1OTU5NTgzMDg3MjAwMDAwMTA2NDQ0NDM2MzIzODY3NTAxMjlfKTsiPgoJCQk8cGF0aCBzdHlsZT0iZmlsbDojQjU1RTE5OyIgZD0iTTMxLjMsNjguM2MwLjgsMi43LDQsMi41LDUuOCwwLjZDNDEuNSw2NCw0NC44LDU0LjYsNDksNTAuM2M2LjktNy4xLDE0LjYtMTIuNiwxNC42LTIwCgkJCQljMC0yLjQsMS04LjgtMi4xLTEwLjFjLTEuNi0wLjctMi44LDAuNS0yLjgsMS40YzAsMS0wLjcsMTAuNS0wLjcsMTAuNUwzMS4zLDY4LjN6Ii8+CgkJCTxwYXRoIHN0eWxlPSJmaWxsOiNCNTVFMTk7IiBkPSJNNzIuNyw3LjFjLTAuNCwxLjEtMC4yLDIuNCwxLjQsMy45YzE1LjEsMTQtMC43LDMxLjUtMC41LDQwLjZjMC4xLDIuNSwwLDE4LjYtMC4yLDIwLjMKCQkJCWMtMS42LDEwLjktOCwxNC44LTExLjYsMTYuOWMtMC41LDAuMy0wLjQsMS40LDAuNCwxLjJjMC43LTAuMiw4LTEuNiwxMS45LTljMC4zLDIuMiwyLjYsNi4yLDQuNSw3Yy0yLDAuOS03LjUsOS4xLDEuNCwxNi41CgkJCQljLTMuNCwxLjMtNS44LDcuOS0wLjksMTIuMmMtMy41LDEuMS0yMiwxLjQtMzIuNy01LjZjLTEtMC43LTIuNy0wLjUtMy41LDAuM2MtMC45LDAuOC0xLjQsMC44LTEuOSwwLjdzLTE0LjksMC42LTE1LjksMC42CgkJCQlzLTMuMiwwLjItMy4yLDEuNnMyNC42LDEuNiwyNC42LDEuNmwxMy42LDZsMjMuMy0wLjljMCwwLDEzLjksMS4zLDEyLjEsMC45cy0xMC42LTIuNC0xNC41LTYuNWMtNC41LTQuOS0wLjYtOC4xLDAuNS04LjQKCQkJCWMwLjctMC4yLDEuNS0wLjQsMi42LDBjMS4yLDAuNCwxNCwzLjUsMjAuMiwwLjZjMC44LTAuNCwwLjUtMC45LTAuMi0wLjljLTEwLjIsMC41LTE4LjktMS4yLTIzLTQuN2MtNS45LTUuMS0zLjMtMTAuNi0xLjMtMTEuOAoJCQkJYzAuNy0wLjQsMS41LTAuMywxLjktMC4xYzgsMy40LDI0LjEsMS41LDI4LjctMS40YzAuNS0wLjMsMC4zLTEtMC40LTAuOGMtMS41LDAuNC0yMi4yLDQuMS0yOS40LTEuOGMtNS00LjEtNS45LTguNi0yLjYtMTIuMQoJCQkJYzEtMS4xLDIuOC0wLjgsMy4yLTAuN2MxMy4yLDIuNywyNy4yLDAsMjkuNy0yLjZjMC42LTAuNiwwLjMtMS40LTAuNy0xLjFjLTMuNSwxLjEtMTcuNSwzLTIzLjgsMi4yYy0xLjYtMC4yLTMuMi0wLjQtNS40LTEuOQoJCQkJYy0xLjItMC44LTIuNi0xLjgtMy42LTIuOHMtMS45LTIuOS0xLjUtNi40YzAuMi0yLDEuMy00LDQuOC00LjdjMi0wLjQsNS4yLDAuMyw2LjEsMC41czIuNiwwLjIsMy43LTAuMQoJCQkJYzEuOC0wLjUsNy44LTIuMSwxMS42LTIuNGMxLjItMC4xLDEuNC0xLjUtMC4xLTEuNmMtMS40LTAuMS02LjgtMC4yLTEwLjksMC44Yy0wLjUsMC4xLTAuOC0wLjItMC41LTAuNWMwLjMtMC40LDEuMS0xLDEuMy0xLjIKCQkJCWMwLjMtMC4yLDAuNC0xLjItMS4xLTAuOGMtMC45LDAuMi0yLjUsMS4zLTMuMywyLjRjLTAuNCwwLjYtMS4xLDAuNy0xLjUsMC43Yy00LjgtMC4zLTcuOCwwLjItOS40LDEuOWMtMC4xLTIuNSwwLjMtNS4yLDAuOC02LjYKCQkJCWMwLjMtMC45LDguOS05LDguMi0yMy40Qzg0LjksMTAuOSw3NC40LDIuOCw3Mi43LDcuMXoiLz4KCQk8L2c+Cgk8L2c+CjwvZz4KPC9zdmc+Cg==" alt="" style="width:15px;height:15px">スタンプ</div>
+      <div><svg class="i" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M22 17a2 2 0 0 1-2 2H6.828a2 2 0 0 0-1.414.586l-2.202 2.202A.71.71 0 0 1 2 21.286V5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2z"/></svg>コメント</div>
+      <hr>
+      <div><svg class="i" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 14 4 9l5-5"/><path d="M4 9h10.5a5.5 5.5 0 0 1 5.5 5.5a5.5 5.5 0 0 1-5.5 5.5H11"/></svg>元に戻す</div>
+      <div><svg class="i" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m15 14 5-5-5-5"/><path d="M20 9H9.5A5.5 5.5 0 0 0 4 14.5A5.5 5.5 0 0 0 9.5 20H13"/></svg>やり直し</div>
+    </div>
+    <div class="callout" style="left:calc(1.5% + 52px); top:calc(50% - 12px)">4</div>
+    <!-- キャンバス -->
+    <div class="sticky" style="left:34%; top:30%; width:12%; aspect-ratio:1; background:var(--yellow); font-size:11px">朝会が<br>短くなった</div>
+    <div class="sticky" style="left:48%; top:30%; width:12%; aspect-ratio:1; background:var(--pink); font-size:11px">AI に<br>要約を頼む</div>
+    <div class="comment-badge" style="left:calc(48% + 12% - 26px); top:calc(30% - 8px)">💬 2</div>
+    <div class="sticky" style="left:62%; top:30%; width:12%; aspect-ratio:1; background:var(--blue); font-size:11px">ペアで<br>作業する</div>
+    <img class="stamp" src="data:image/svg+xml;base64,PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0idXRmLTgiPz4KPCEtLSBHZW5lcmF0b3I6IEFkb2JlIElsbHVzdHJhdG9yIDI2LjMuMSwgU1ZHIEV4cG9ydCBQbHVnLUluIC4gU1ZHIFZlcnNpb246IDYuMDAgQnVpbGQgMCkgIC0tPgo8c3ZnIHZlcnNpb249IjEuMSIgaWQ9IkxheWVyXzJfMDAwMDAxMzg1NjI0NDAxODA1MzI1OTQ0MTAwMDAwMDE3NTc4MTc4Mjg1NTUzMzc2MzJfIgoJIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyIgeG1sbnM6eGxpbms9Imh0dHA6Ly93d3cudzMub3JnLzE5OTkveGxpbmsiIHg9IjBweCIgeT0iMHB4IiB2aWV3Qm94PSIwIDAgMTI4IDEyOCIKCSBzdHlsZT0iZW5hYmxlLWJhY2tncm91bmQ6bmV3IDAgMCAxMjggMTI4OyIgeG1sOnNwYWNlPSJwcmVzZXJ2ZSI+CjxwYXRoIHN0eWxlPSJmaWxsOiNGRkNBMjg7IiBkPSJNNzcuNiw0OC44YzctMS40LDEzLjgtMC43LDE3LjItMC4yYzMuOCwwLjUsOS4xLDEuMywxMy4yLDMuMmM0LjcsMi4xLDUuOSw1LjcsNiwxMAoJYzAuMSw0LTEuMSw2LjQtMi41LDcuN2M0LjIsMi4zLDUuMiw1LDUsOS41Yy0wLjIsNC0yLDcuMS01LjYsOC45YzIuOSwzLjEsMy41LDUuNSwzLDEwLjJjLTAuNCw0LjQtMi4xLDctOSw5YzEuMywxLjQsMS43LDMuOCwxLjYsNgoJYy0wLjIsMi42LTEsNS4xLTQuNiw2LjljLTEsMC41LTYuOSwzLjQtMTkuMi0wLjVjLTEwLjQsMS44LTI0LjksMC45LTM2LjQtNC42Yy0xMC45LTAuMS0yMy44LTEtMjQuOC0xYy0xLjEsMC0zLjItMC41LTQuMi0zLjMKCVMxMy4yLDg2LjcsMTYuMSw3NGMwLjQtMS44LDEuOS0yLjgsMy4yLTIuOXM4LjYtMC45LDEwLjMtMS4xYzktMS4xLDYuOC04LjksMTcuMi0yMS4zYzQuOS01LjksMTQuOS0xMCwxNS41LTIzLjEKCWMwLjItNC40LDAuNS0xMS42LDAuNS0xMi42YzAtNi4zLDEyLjItNy41LDE2LjYsMS4yQzg3LjMsMjkuNyw4MC44LDM3LjMsNzcuNiw0OC44eiIvPgo8Zz4KCTxnPgoJCTxkZWZzPgoJCQk8cGF0aCBpZD0iU1ZHSURfMV8iIGQ9Ik03Ny42LDQ4LjhjNy0xLjQsMTMuOC0wLjcsMTcuMi0wLjJjMy44LDAuNSw5LjEsMS4zLDEzLjIsMy4yYzQuNywyLjEsNS45LDUuNyw2LDEwYzAuMSw0LTEuMSw2LjQtMi41LDcuNwoJCQkJYzQuMiwyLjMsNS4yLDUsNSw5LjVjLTAuMiw0LTIsNy4xLTUuNiw4LjljMi45LDMuMSwzLjUsNS41LDMsMTAuMmMtMC40LDQuNC0yLjEsNy05LDljMS4zLDEuNCwxLjcsMy44LDEuNiw2CgkJCQljLTAuMiwyLjYtMSw1LjEtNC42LDYuOWMtMSwwLjUtNi45LDMuNC0xOS4yLTAuNWMtMTAuNCwxLjgtMjQuOSwwLjktMzYuNC00LjZjLTEwLjktMC4xLTIzLjgtMS0yNC44LTFjLTEuMSwwLTMuMi0wLjUtNC4yLTMuMwoJCQkJUzEzLjIsODYuNywxNi4xLDc0YzAuNC0xLjgsMS45LTIuOCwzLjItMi45czguNi0wLjksMTAuMy0xLjFjOS0xLjEsNi44LTguOSwxNy4yLTIxLjNjNC45LTUuOSwxNC45LTEwLDE1LjUtMjMuMQoJCQkJYzAuMi00LjQsMC41LTExLjYsMC41LTEyLjZjMC02LjMsMTIuMi03LjUsMTYuNiwxLjJDODcuMywyOS43LDgwLjgsMzcuMyw3Ny42LDQ4Ljh6Ii8+CgkJPC9kZWZzPgoJCTxjbGlwUGF0aCBpZD0iU1ZHSURfMDAwMDAwODY2ODUxMzAxOTQ1MjkyNjU2MDAwMDAwMDA2NjAwOTg3NzU2NzMzMTc3OThfIj4KCQkJPHVzZSB4bGluazpocmVmPSIjU1ZHSURfMV8iICBzdHlsZT0ib3ZlcmZsb3c6dmlzaWJsZTsiLz4KCQk8L2NsaXBQYXRoPgoJCTxnIHN0eWxlPSJjbGlwLXBhdGg6dXJsKCNTVkdJRF8wMDAwMDA4NjY4NTEzMDE5NDUyOTI2NTYwMDAwMDAwMDY2MDA5ODc3NTY3MzMxNzc5OF8pOyI+CgkJCTxwYXRoIHN0eWxlPSJmaWxsOiNGQUE3MDA7IiBkPSJNMTYsNzIuMmMwLjEsMS41LDAsMy43LDIuOCwzLjdzOS41LTAuNywxMC45LTAuOWMyLjctMC4zLDctMi41LDguNi02YzEuNC0yLjksNC43LTEwLjUsNC43LTEwLjUKCQkJCXM3LTIwLDkuNi0yMC4zYzQuMS0wLjUsMTEuOS0xLjQsMTEuOS0xM2MwLTMuNiwwLjQtOSwwLjQtMTBjMC4zLTcuNyw4LjktNC44LDEyLjMtMS4xbDMuNi0zbC02LjQtNS43YzAsMC0xMy40LDAuNy0xMy4zLDAuOAoJCQkJQzYxLjQsNi4zLDE2LDcyLjIsMTYsNzIuMnoiLz4KCQkJPHBvbHlnb24gc3R5bGU9ImZpbGw6I0ZBQTcwMDsiIHBvaW50cz0iMTYuNiwxMTAuOCA0NC4xLDExMS44IDQ0LjEsMTE2IDE3LjQsMTE0LjYgCQkJIi8+CgkJCTxwYXRoIHN0eWxlPSJmaWxsOiNGQUE3MDA7IiBkPSJNMTExLjQsNDguNmw3LDEyLjZsLTEuOCw0MS43bC0xMy40LDIwLjNsLTIwLTAuNWMwLDAtNS42LTExLjMtNi40LTEzLjRjLTAuOC0yLTMtNi03LjMtMTIuMgoJCQkJYy00LjItNi4yLTEuMy0xMS42LDEuNi0xMy43YzEuNy0xLjIsMy4xLTUuMiwzLjMtNy42czEtMjAuNywxLjItMjYuMXM1LjEtNi43LDcuMi02LjdMMTExLjQsNDguNnogTTkxLjYsNTUuNgoJCQkJYy0zLjYsMC40LTUuNCw0LjUtNS40LDguOGMwLjEsNy4yLDIuOSw3LjEsNS45LDcuN2MwLjgsMC4yLDEuMiwxLjUsMCwxLjdjLTUuMiwwLjUtNi4yLDUtNi4yLDguNWMwLDYuNiw0LjgsNy4yLDUuNiw3LjIKCQkJCWMxLjMsMC4xLDEuNywxLjcsMCwxLjhjLTMuMywwLjItNS4zLDMuNS01LjMsNy40YzAsMywwLjksNi4xLDYuMSw3LjZjMC42LDAuMiwxLjUsMS42LTAuMiwxLjhjLTQuNSwwLjctNC42LDIuOS00LjcsNS44CgkJCQljMCwzLjMsMS42LDQuMywzLjYsNC45YzEuNywwLjQsNS4xLDAuNSw3LDAuMmM0LjYtMC44LDguNC01LjksNC40LTExLjRjLTAuOCwwLTUuOCwwLTYuNCwwcy0wLjYtMC44LDAuMi0wLjgKCQkJCWMxMC45LTAuNiwxNC4xLTQuNSwxNC43LTguOWMwLjQtMy4yLTAuNS02LjUtMy4yLTguOWMtMC40LTAuNC0xLTAuMi0xLjctMC4yYzEyLTYuNSw3LjYtMTYuNiwxLjgtMTcuNmMtMS4xLTAuMi0yLjEtMC4zLTEuMS0wLjcKCQkJCWM1LjktMi4xLDcuNC0xOC41LTYtMThDMTAwLjksNTIuNSw5NC41LDU1LjMsOTEuNiw1NS42eiIvPgoJCTwvZz4KCTwvZz4KPC9nPgo8Zz4KCTxnPgoJCTxkZWZzPgoJCQk8cGF0aCBpZD0iU1ZHSURfMDAwMDAxNTI5NzQ3ODM5NjU3MjA0NDA4NjAwMDAwMTAxMTc5NzAxNjE3NDQ5ODI3MDNfIiBkPSJNNzcuNiw0OC44YzctMS40LDEzLjgtMC43LDE3LjItMC4yCgkJCQljMy44LDAuNSw5LjEsMS4zLDEzLjIsMy4yYzQuNywyLjEsNS45LDUuNyw2LDEwYzAuMSw0LTEuMSw2LjQtMi41LDcuN2M0LjIsMi4zLDUuMiw1LDUsOS41Yy0wLjIsNC0yLDcuMS01LjYsOC45CgkJCQljMi45LDMuMSwzLjUsNS41LDMsMTAuMmMtMC40LDQuNC0yLjEsNy05LDljMS4zLDEuNCwxLjcsMy44LDEuNiw2Yy0wLjIsMi42LTEsNS4xLTQuNiw2LjljLTEsMC41LTYuOSwzLjQtMTkuMi0wLjUKCQkJCWMtMTAuNCwxLjgtMjQuOSwwLjktMzYuNC00LjZjLTEwLjktMC4xLTIzLjgtMS0yNC44LTFjLTEuMSwwLTMuMi0wLjUtNC4yLTMuM1MxMy4yLDg2LjcsMTYuMSw3NGMwLjQtMS44LDEuOS0yLjgsMy4yLTIuOQoJCQkJczguNi0wLjksMTAuMy0xLjFjOS0xLjEsNi44LTguOSwxNy4yLTIxLjNjNC45LTUuOSwxNC45LTEwLDE1LjUtMjMuMWMwLjItNC40LDAuNS0xMS42LDAuNS0xMi42YzAtNi4zLDEyLjItNy41LDE2LjYsMS4yCgkJCQlDODcuMywyOS43LDgwLjgsMzcuMyw3Ny42LDQ4Ljh6Ii8+CgkJPC9kZWZzPgoJCTxjbGlwUGF0aCBpZD0iU1ZHSURfMDAwMDAwMjMyNjkxMjA1OTU5NTgzMDg3MjAwMDAwMTA2NDQ0NDM2MzIzODY3NTAxMjlfIj4KCQkJPHVzZSB4bGluazpocmVmPSIjU1ZHSURfMDAwMDAxNTI5NzQ3ODM5NjU3MjA0NDA4NjAwMDAwMTAxMTc5NzAxNjE3NDQ5ODI3MDNfIiAgc3R5bGU9Im92ZXJmbG93OnZpc2libGU7Ii8+CgkJPC9jbGlwUGF0aD4KCQk8ZyBzdHlsZT0iY2xpcC1wYXRoOnVybCgjU1ZHSURfMDAwMDAwMjMyNjkxMjA1OTU5NTgzMDg3MjAwMDAwMTA2NDQ0NDM2MzIzODY3NTAxMjlfKTsiPgoJCQk8cGF0aCBzdHlsZT0iZmlsbDojQjU1RTE5OyIgZD0iTTMxLjMsNjguM2MwLjgsMi43LDQsMi41LDUuOCwwLjZDNDEuNSw2NCw0NC44LDU0LjYsNDksNTAuM2M2LjktNy4xLDE0LjYtMTIuNiwxNC42LTIwCgkJCQljMC0yLjQsMS04LjgtMi4xLTEwLjFjLTEuNi0wLjctMi44LDAuNS0yLjgsMS40YzAsMS0wLjcsMTAuNS0wLjcsMTAuNUwzMS4zLDY4LjN6Ii8+CgkJCTxwYXRoIHN0eWxlPSJmaWxsOiNCNTVFMTk7IiBkPSJNNzIuNyw3LjFjLTAuNCwxLjEtMC4yLDIuNCwxLjQsMy45YzE1LjEsMTQtMC43LDMxLjUtMC41LDQwLjZjMC4xLDIuNSwwLDE4LjYtMC4yLDIwLjMKCQkJCWMtMS42LDEwLjktOCwxNC44LTExLjYsMTYuOWMtMC41LDAuMy0wLjQsMS40LDAuNCwxLjJjMC43LTAuMiw4LTEuNiwxMS45LTljMC4zLDIuMiwyLjYsNi4yLDQuNSw3Yy0yLDAuOS03LjUsOS4xLDEuNCwxNi41CgkJCQljLTMuNCwxLjMtNS44LDcuOS0wLjksMTIuMmMtMy41LDEuMS0yMiwxLjQtMzIuNy01LjZjLTEtMC43LTIuNy0wLjUtMy41LDAuM2MtMC45LDAuOC0xLjQsMC44LTEuOSwwLjdzLTE0LjksMC42LTE1LjksMC42CgkJCQlzLTMuMiwwLjItMy4yLDEuNnMyNC42LDEuNiwyNC42LDEuNmwxMy42LDZsMjMuMy0wLjljMCwwLDEzLjksMS4zLDEyLjEsMC45cy0xMC42LTIuNC0xNC41LTYuNWMtNC41LTQuOS0wLjYtOC4xLDAuNS04LjQKCQkJCWMwLjctMC4yLDEuNS0wLjQsMi42LDBjMS4yLDAuNCwxNCwzLjUsMjAuMiwwLjZjMC44LTAuNCwwLjUtMC45LTAuMi0wLjljLTEwLjIsMC41LTE4LjktMS4yLTIzLTQuN2MtNS45LTUuMS0zLjMtMTAuNi0xLjMtMTEuOAoJCQkJYzAuNy0wLjQsMS41LTAuMywxLjktMC4xYzgsMy40LDI0LjEsMS41LDI4LjctMS40YzAuNS0wLjMsMC4zLTEtMC40LTAuOGMtMS41LDAuNC0yMi4yLDQuMS0yOS40LTEuOGMtNS00LjEtNS45LTguNi0yLjYtMTIuMQoJCQkJYzEtMS4xLDIuOC0wLjgsMy4yLTAuN2MxMy4yLDIuNywyNy4yLDAsMjkuNy0yLjZjMC42LTAuNiwwLjMtMS40LTAuNy0xLjFjLTMuNSwxLjEtMTcuNSwzLTIzLjgsMi4yYy0xLjYtMC4yLTMuMi0wLjQtNS40LTEuOQoJCQkJYy0xLjItMC44LTIuNi0xLjgtMy42LTIuOHMtMS45LTIuOS0xLjUtNi40YzAuMi0yLDEuMy00LDQuOC00LjdjMi0wLjQsNS4yLDAuMyw2LjEsMC41czIuNiwwLjIsMy43LTAuMQoJCQkJYzEuOC0wLjUsNy44LTIuMSwxMS42LTIuNGMxLjItMC4xLDEuNC0xLjUtMC4xLTEuNmMtMS40LTAuMS02LjgtMC4yLTEwLjksMC44Yy0wLjUsMC4xLTAuOC0wLjItMC41LTAuNWMwLjMtMC40LDEuMS0xLDEuMy0xLjIKCQkJCWMwLjMtMC4yLDAuNC0xLjItMS4xLTAuOGMtMC45LDAuMi0yLjUsMS4zLTMuMywyLjRjLTAuNCwwLjYtMS4xLDAuNy0xLjUsMC43Yy00LjgtMC4zLTcuOCwwLjItOS40LDEuOWMtMC4xLTIuNSwwLjMtNS4yLDAuOC02LjYKCQkJCWMwLjMtMC45LDguOS05LDguMi0yMy40Qzg0LjksMTAuOSw3NC40LDIuOCw3Mi43LDcuMXoiLz4KCQk8L2c+Cgk8L2c+CjwvZz4KPC9zdmc+Cg==" style="left:43%; top:27%; width:22px; height:22px" alt="">
+    <div class="callout" style="left:54%; top:62%">5</div>
+    <!-- 左下・右下 -->
+    <div class="scr-pill scr-hide-sm" style="left:1.5%; bottom:3%; background:transparent; box-shadow:none; color:#5d6475"><span class="mini-sticky"></span>付箋 12枚　<svg class="i" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M22 17a2 2 0 0 1-2 2H6.828a2 2 0 0 0-1.414.586l-2.202 2.202A.71.71 0 0 1 2 21.286V5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2z"/></svg>コメント 4件</div>
+    <div class="callout scr-hide-sm" style="left:calc(1.5% + 4px); bottom:calc(3% + 26px)">6</div>
+    <div class="scr-pill" style="right:1.5%; bottom:3%"><svg class="i" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M8 3H5a2 2 0 0 0-2 2v3"/><path d="M21 8V5a2 2 0 0 0-2-2h-3"/><path d="M3 16v3a2 2 0 0 0 2 2h3"/><path d="M16 21h3a2 2 0 0 0 2-2v-3"/></svg> <span style="color:#c9ccd4">|</span> <svg class="i" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14"/></svg> 100% <svg class="i" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14"/><path d="M12 5v14"/></svg></div>
+    <div class="callout" style="right:calc(1.5% + 8px); bottom:calc(3% + 30px)">7</div>
+  </div>
+  </div>
+
+  <div class="legend">
+    <div><p><b>ボード名とメニュー</b><span>← でトップ画面へ。名前を押すと変更、<svg class="i" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m6 9 6 6 6-6"/></svg> で書き出し・削除。</span></p></div>
+    <div><p><b>タイマーと BGM</b><span>全員の画面で同じタイマーが動きます。🎵 で BGM と音量。</span></p></div>
+    <div><p><b>参加中の人と共有</b><span>今ボードを開いている人の顔が並びます。共有でリンクをコピー。</span></p></div>
+    <div><p><b>ツールバー</b><span>付箋・テキスト・セクションなどを置く道具です。</span></p></div>
+    <div><p><b>キャンバス</b><span>果てしなく広がっています。好きな場所に置いて使います。</span></p></div>
+    <div><p><b>付箋とコメントの数</b><span>文字が入っている付箋の枚数と、コメントの件数。</span></p></div>
+    <div><p><b>表示の倍率</b><span>拡大・縮小と、ボード全体が入る表示（全体を表示）。</span></p></div>
+  </div>
+</section>
+
+<!-- ===== ツール ===== -->
+<section class="block" id="tools" aria-labelledby="tools-h">
+  <p class="eyebrow">TOOLS</p>
+  <h2 id="tools-h">ツールバーの道具</h2>
+  <p class="lead">左のツールバーから道具を選んで、キャンバスをクリックすると置けます。ボタンにマウスを乗せると、使い方が出ます。<kbd>Esc</kbd> でいつでも「選択」に戻ります。</p>
+
+  <div class="tools">
+    <div class="tool"><div class="tool-badge"><svg class="i" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4.037 4.688a.495.495 0 0 1 .651-.651l16 6.5a.5.5 0 0 1-.063.947l-6.124 1.58a2 2 0 0 0-1.438 1.435l-1.579 6.126a.5.5 0 0 1-.947.063z"/></svg></div><div><h3>選択 <kbd>V</kbd></h3><p>付箋などを選んで、動かしたり、色を変えたりします。ふだんはこの状態で使います。</p></div></div>
+    <div class="tool"><div class="tool-badge"><svg class="i" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M18 11V6a2 2 0 0 0-2-2a2 2 0 0 0-2 2"/><path d="M14 10V4a2 2 0 0 0-2-2a2 2 0 0 0-2 2v2"/><path d="M10 10.5V6a2 2 0 0 0-2-2a2 2 0 0 0-2 2v8"/><path d="M18 8a2 2 0 1 1 4 0v6a8 8 0 0 1-8 8h-2c-2.8 0-4.5-.86-5.99-2.34l-3.6-3.6a2 2 0 0 1 2.83-2.82L7 15"/></svg></div><div><h3>画面移動 <kbd>H</kbd></h3><p>どこをドラッグしても画面だけが動きます。付箋をうっかり動かしたくないときに。</p></div></div>
+    <div class="tool"><div class="tool-badge"><span class="mini-sticky"></span></div><div><h3>付箋</h3><p>クリックした場所に付箋を置きます。ボタンを押すと横に出るパネルで「正方形」と「横長」を選べます。キャンバスをダブルクリックしても置けます。</p></div></div>
+    <div class="tool"><div class="tool-badge"><svg class="i" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 4v16"/><path d="M4 7V5a1 1 0 0 1 1-1h14a1 1 0 0 1 1 1v2"/><path d="M9 20h6"/></svg></div><div><h3>テキスト</h3><p>背景のない文字。お題や見出しに。大きさは 小・中・大・特大 の4段階、色も変えられます。</p></div></div>
+    <div class="tool"><div class="tool-badge"><svg class="i" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="3" width="18" height="18" rx="2"/><rect x="6" y="6" width="7" height="3.5" rx="1" fill="currentColor" stroke="none"/></svg></div><div><h3>セクション</h3><p>付箋をまとめる枠。ドラッグで範囲を決めます（クリックなら標準の大きさ）。見出しをつかむと、中の付箋ごと動きます。</p></div></div>
+    <div class="tool"><div class="tool-badge"><svg class="i" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M13 5H19V11"/><path d="M19 5L5 19"/></svg></div><div><h3>矢印 <kbd>L</kbd></h3><p>付箋・テキスト・画像をつなぎます。始まりをクリック → 先をクリック。何もないところで離すと、つないだ先に同じ付箋ができます。</p></div></div>
+    <div class="tool"><div class="tool-badge"><svg class="i" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect width="18" height="18" x="3" y="3" rx="2" ry="2"/><circle cx="9" cy="9" r="2"/><path d="m21 15-3.086-3.086a2 2 0 0 0-2.828 0L6 21"/></svg></div><div><h3>画像</h3><p>ファイルを選んで貼ります。<kbd>command ⌘</kbd><span class="kp">+</span><kbd>V</kbd>（Windows は <kbd>Ctrl</kbd><span class="kp">+</span><kbd>V</kbd>）やドラッグ＆ドロップでも貼れます（PNG・JPEG・GIF・WebP、10MB まで）。</p></div></div>
+    <div class="tool"><div class="tool-badge"><img src="data:image/svg+xml;base64,PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0idXRmLTgiPz4KPCEtLSBHZW5lcmF0b3I6IEFkb2JlIElsbHVzdHJhdG9yIDI2LjMuMSwgU1ZHIEV4cG9ydCBQbHVnLUluIC4gU1ZHIFZlcnNpb246IDYuMDAgQnVpbGQgMCkgIC0tPgo8c3ZnIHZlcnNpb249IjEuMSIgaWQ9IkxheWVyXzJfMDAwMDAxMzg1NjI0NDAxODA1MzI1OTQ0MTAwMDAwMDE3NTc4MTc4Mjg1NTUzMzc2MzJfIgoJIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyIgeG1sbnM6eGxpbms9Imh0dHA6Ly93d3cudzMub3JnLzE5OTkveGxpbmsiIHg9IjBweCIgeT0iMHB4IiB2aWV3Qm94PSIwIDAgMTI4IDEyOCIKCSBzdHlsZT0iZW5hYmxlLWJhY2tncm91bmQ6bmV3IDAgMCAxMjggMTI4OyIgeG1sOnNwYWNlPSJwcmVzZXJ2ZSI+CjxwYXRoIHN0eWxlPSJmaWxsOiNGRkNBMjg7IiBkPSJNNzcuNiw0OC44YzctMS40LDEzLjgtMC43LDE3LjItMC4yYzMuOCwwLjUsOS4xLDEuMywxMy4yLDMuMmM0LjcsMi4xLDUuOSw1LjcsNiwxMAoJYzAuMSw0LTEuMSw2LjQtMi41LDcuN2M0LjIsMi4zLDUuMiw1LDUsOS41Yy0wLjIsNC0yLDcuMS01LjYsOC45YzIuOSwzLjEsMy41LDUuNSwzLDEwLjJjLTAuNCw0LjQtMi4xLDctOSw5YzEuMywxLjQsMS43LDMuOCwxLjYsNgoJYy0wLjIsMi42LTEsNS4xLTQuNiw2LjljLTEsMC41LTYuOSwzLjQtMTkuMi0wLjVjLTEwLjQsMS44LTI0LjksMC45LTM2LjQtNC42Yy0xMC45LTAuMS0yMy44LTEtMjQuOC0xYy0xLjEsMC0zLjItMC41LTQuMi0zLjMKCVMxMy4yLDg2LjcsMTYuMSw3NGMwLjQtMS44LDEuOS0yLjgsMy4yLTIuOXM4LjYtMC45LDEwLjMtMS4xYzktMS4xLDYuOC04LjksMTcuMi0yMS4zYzQuOS01LjksMTQuOS0xMCwxNS41LTIzLjEKCWMwLjItNC40LDAuNS0xMS42LDAuNS0xMi42YzAtNi4zLDEyLjItNy41LDE2LjYsMS4yQzg3LjMsMjkuNyw4MC44LDM3LjMsNzcuNiw0OC44eiIvPgo8Zz4KCTxnPgoJCTxkZWZzPgoJCQk8cGF0aCBpZD0iU1ZHSURfMV8iIGQ9Ik03Ny42LDQ4LjhjNy0xLjQsMTMuOC0wLjcsMTcuMi0wLjJjMy44LDAuNSw5LjEsMS4zLDEzLjIsMy4yYzQuNywyLjEsNS45LDUuNyw2LDEwYzAuMSw0LTEuMSw2LjQtMi41LDcuNwoJCQkJYzQuMiwyLjMsNS4yLDUsNSw5LjVjLTAuMiw0LTIsNy4xLTUuNiw4LjljMi45LDMuMSwzLjUsNS41LDMsMTAuMmMtMC40LDQuNC0yLjEsNy05LDljMS4zLDEuNCwxLjcsMy44LDEuNiw2CgkJCQljLTAuMiwyLjYtMSw1LjEtNC42LDYuOWMtMSwwLjUtNi45LDMuNC0xOS4yLTAuNWMtMTAuNCwxLjgtMjQuOSwwLjktMzYuNC00LjZjLTEwLjktMC4xLTIzLjgtMS0yNC44LTFjLTEuMSwwLTMuMi0wLjUtNC4yLTMuMwoJCQkJUzEzLjIsODYuNywxNi4xLDc0YzAuNC0xLjgsMS45LTIuOCwzLjItMi45czguNi0wLjksMTAuMy0xLjFjOS0xLjEsNi44LTguOSwxNy4yLTIxLjNjNC45LTUuOSwxNC45LTEwLDE1LjUtMjMuMQoJCQkJYzAuMi00LjQsMC41LTExLjYsMC41LTEyLjZjMC02LjMsMTIuMi03LjUsMTYuNiwxLjJDODcuMywyOS43LDgwLjgsMzcuMyw3Ny42LDQ4Ljh6Ii8+CgkJPC9kZWZzPgoJCTxjbGlwUGF0aCBpZD0iU1ZHSURfMDAwMDAwODY2ODUxMzAxOTQ1MjkyNjU2MDAwMDAwMDA2NjAwOTg3NzU2NzMzMTc3OThfIj4KCQkJPHVzZSB4bGluazpocmVmPSIjU1ZHSURfMV8iICBzdHlsZT0ib3ZlcmZsb3c6dmlzaWJsZTsiLz4KCQk8L2NsaXBQYXRoPgoJCTxnIHN0eWxlPSJjbGlwLXBhdGg6dXJsKCNTVkdJRF8wMDAwMDA4NjY4NTEzMDE5NDUyOTI2NTYwMDAwMDAwMDY2MDA5ODc3NTY3MzMxNzc5OF8pOyI+CgkJCTxwYXRoIHN0eWxlPSJmaWxsOiNGQUE3MDA7IiBkPSJNMTYsNzIuMmMwLjEsMS41LDAsMy43LDIuOCwzLjdzOS41LTAuNywxMC45LTAuOWMyLjctMC4zLDctMi41LDguNi02YzEuNC0yLjksNC43LTEwLjUsNC43LTEwLjUKCQkJCXM3LTIwLDkuNi0yMC4zYzQuMS0wLjUsMTEuOS0xLjQsMTEuOS0xM2MwLTMuNiwwLjQtOSwwLjQtMTBjMC4zLTcuNyw4LjktNC44LDEyLjMtMS4xbDMuNi0zbC02LjQtNS43YzAsMC0xMy40LDAuNy0xMy4zLDAuOAoJCQkJQzYxLjQsNi4zLDE2LDcyLjIsMTYsNzIuMnoiLz4KCQkJPHBvbHlnb24gc3R5bGU9ImZpbGw6I0ZBQTcwMDsiIHBvaW50cz0iMTYuNiwxMTAuOCA0NC4xLDExMS44IDQ0LjEsMTE2IDE3LjQsMTE0LjYgCQkJIi8+CgkJCTxwYXRoIHN0eWxlPSJmaWxsOiNGQUE3MDA7IiBkPSJNMTExLjQsNDguNmw3LDEyLjZsLTEuOCw0MS43bC0xMy40LDIwLjNsLTIwLTAuNWMwLDAtNS42LTExLjMtNi40LTEzLjRjLTAuOC0yLTMtNi03LjMtMTIuMgoJCQkJYy00LjItNi4yLTEuMy0xMS42LDEuNi0xMy43YzEuNy0xLjIsMy4xLTUuMiwzLjMtNy42czEtMjAuNywxLjItMjYuMXM1LjEtNi43LDcuMi02LjdMMTExLjQsNDguNnogTTkxLjYsNTUuNgoJCQkJYy0zLjYsMC40LTUuNCw0LjUtNS40LDguOGMwLjEsNy4yLDIuOSw3LjEsNS45LDcuN2MwLjgsMC4yLDEuMiwxLjUsMCwxLjdjLTUuMiwwLjUtNi4yLDUtNi4yLDguNWMwLDYuNiw0LjgsNy4yLDUuNiw3LjIKCQkJCWMxLjMsMC4xLDEuNywxLjcsMCwxLjhjLTMuMywwLjItNS4zLDMuNS01LjMsNy40YzAsMywwLjksNi4xLDYuMSw3LjZjMC42LDAuMiwxLjUsMS42LTAuMiwxLjhjLTQuNSwwLjctNC42LDIuOS00LjcsNS44CgkJCQljMCwzLjMsMS42LDQuMywzLjYsNC45YzEuNywwLjQsNS4xLDAuNSw3LDAuMmM0LjYtMC44LDguNC01LjksNC40LTExLjRjLTAuOCwwLTUuOCwwLTYuNCwwcy0wLjYtMC44LDAuMi0wLjgKCQkJCWMxMC45LTAuNiwxNC4xLTQuNSwxNC43LTguOWMwLjQtMy4yLTAuNS02LjUtMy4yLTguOWMtMC40LTAuNC0xLTAuMi0xLjctMC4yYzEyLTYuNSw3LjYtMTYuNiwxLjgtMTcuNmMtMS4xLTAuMi0yLjEtMC4zLTEuMS0wLjcKCQkJCWM1LjktMi4xLDcuNC0xOC41LTYtMThDMTAwLjksNTIuNSw5NC41LDU1LjMsOTEuNiw1NS42eiIvPgoJCTwvZz4KCTwvZz4KPC9nPgo8Zz4KCTxnPgoJCTxkZWZzPgoJCQk8cGF0aCBpZD0iU1ZHSURfMDAwMDAxNTI5NzQ3ODM5NjU3MjA0NDA4NjAwMDAwMTAxMTc5NzAxNjE3NDQ5ODI3MDNfIiBkPSJNNzcuNiw0OC44YzctMS40LDEzLjgtMC43LDE3LjItMC4yCgkJCQljMy44LDAuNSw5LjEsMS4zLDEzLjIsMy4yYzQuNywyLjEsNS45LDUuNyw2LDEwYzAuMSw0LTEuMSw2LjQtMi41LDcuN2M0LjIsMi4zLDUuMiw1LDUsOS41Yy0wLjIsNC0yLDcuMS01LjYsOC45CgkJCQljMi45LDMuMSwzLjUsNS41LDMsMTAuMmMtMC40LDQuNC0yLjEsNy05LDljMS4zLDEuNCwxLjcsMy44LDEuNiw2Yy0wLjIsMi42LTEsNS4xLTQuNiw2LjljLTEsMC41LTYuOSwzLjQtMTkuMi0wLjUKCQkJCWMtMTAuNCwxLjgtMjQuOSwwLjktMzYuNC00LjZjLTEwLjktMC4xLTIzLjgtMS0yNC44LTFjLTEuMSwwLTMuMi0wLjUtNC4yLTMuM1MxMy4yLDg2LjcsMTYuMSw3NGMwLjQtMS44LDEuOS0yLjgsMy4yLTIuOQoJCQkJczguNi0wLjksMTAuMy0xLjFjOS0xLjEsNi44LTguOSwxNy4yLTIxLjNjNC45LTUuOSwxNC45LTEwLDE1LjUtMjMuMWMwLjItNC40LDAuNS0xMS42LDAuNS0xMi42YzAtNi4zLDEyLjItNy41LDE2LjYsMS4yCgkJCQlDODcuMywyOS43LDgwLjgsMzcuMyw3Ny42LDQ4Ljh6Ii8+CgkJPC9kZWZzPgoJCTxjbGlwUGF0aCBpZD0iU1ZHSURfMDAwMDAwMjMyNjkxMjA1OTU5NTgzMDg3MjAwMDAwMTA2NDQ0NDM2MzIzODY3NTAxMjlfIj4KCQkJPHVzZSB4bGluazpocmVmPSIjU1ZHSURfMDAwMDAxNTI5NzQ3ODM5NjU3MjA0NDA4NjAwMDAwMTAxMTc5NzAxNjE3NDQ5ODI3MDNfIiAgc3R5bGU9Im92ZXJmbG93OnZpc2libGU7Ii8+CgkJPC9jbGlwUGF0aD4KCQk8ZyBzdHlsZT0iY2xpcC1wYXRoOnVybCgjU1ZHSURfMDAwMDAwMjMyNjkxMjA1OTU5NTgzMDg3MjAwMDAwMTA2NDQ0NDM2MzIzODY3NTAxMjlfKTsiPgoJCQk8cGF0aCBzdHlsZT0iZmlsbDojQjU1RTE5OyIgZD0iTTMxLjMsNjguM2MwLjgsMi43LDQsMi41LDUuOCwwLjZDNDEuNSw2NCw0NC44LDU0LjYsNDksNTAuM2M2LjktNy4xLDE0LjYtMTIuNiwxNC42LTIwCgkJCQljMC0yLjQsMS04LjgtMi4xLTEwLjFjLTEuNi0wLjctMi44LDAuNS0yLjgsMS40YzAsMS0wLjcsMTAuNS0wLjcsMTAuNUwzMS4zLDY4LjN6Ii8+CgkJCTxwYXRoIHN0eWxlPSJmaWxsOiNCNTVFMTk7IiBkPSJNNzIuNyw3LjFjLTAuNCwxLjEtMC4yLDIuNCwxLjQsMy45YzE1LjEsMTQtMC43LDMxLjUtMC41LDQwLjZjMC4xLDIuNSwwLDE4LjYtMC4yLDIwLjMKCQkJCWMtMS42LDEwLjktOCwxNC44LTExLjYsMTYuOWMtMC41LDAuMy0wLjQsMS40LDAuNCwxLjJjMC43LTAuMiw4LTEuNiwxMS45LTljMC4zLDIuMiwyLjYsNi4yLDQuNSw3Yy0yLDAuOS03LjUsOS4xLDEuNCwxNi41CgkJCQljLTMuNCwxLjMtNS44LDcuOS0wLjksMTIuMmMtMy41LDEuMS0yMiwxLjQtMzIuNy01LjZjLTEtMC43LTIuNy0wLjUtMy41LDAuM2MtMC45LDAuOC0xLjQsMC44LTEuOSwwLjdzLTE0LjksMC42LTE1LjksMC42CgkJCQlzLTMuMiwwLjItMy4yLDEuNnMyNC42LDEuNiwyNC42LDEuNmwxMy42LDZsMjMuMy0wLjljMCwwLDEzLjksMS4zLDEyLjEsMC45cy0xMC42LTIuNC0xNC41LTYuNWMtNC41LTQuOS0wLjYtOC4xLDAuNS04LjQKCQkJCWMwLjctMC4yLDEuNS0wLjQsMi42LDBjMS4yLDAuNCwxNCwzLjUsMjAuMiwwLjZjMC44LTAuNCwwLjUtMC45LTAuMi0wLjljLTEwLjIsMC41LTE4LjktMS4yLTIzLTQuN2MtNS45LTUuMS0zLjMtMTAuNi0xLjMtMTEuOAoJCQkJYzAuNy0wLjQsMS41LTAuMywxLjktMC4xYzgsMy40LDI0LjEsMS41LDI4LjctMS40YzAuNS0wLjMsMC4zLTEtMC40LTAuOGMtMS41LDAuNC0yMi4yLDQuMS0yOS40LTEuOGMtNS00LjEtNS45LTguNi0yLjYtMTIuMQoJCQkJYzEtMS4xLDIuOC0wLjgsMy4yLTAuN2MxMy4yLDIuNywyNy4yLDAsMjkuNy0yLjZjMC42LTAuNiwwLjMtMS40LTAuNy0xLjFjLTMuNSwxLjEtMTcuNSwzLTIzLjgsMi4yYy0xLjYtMC4yLTMuMi0wLjQtNS40LTEuOQoJCQkJYy0xLjItMC44LTIuNi0xLjgtMy42LTIuOHMtMS45LTIuOS0xLjUtNi40YzAuMi0yLDEuMy00LDQuOC00LjdjMi0wLjQsNS4yLDAuMyw2LjEsMC41czIuNiwwLjIsMy43LTAuMQoJCQkJYzEuOC0wLjUsNy44LTIuMSwxMS42LTIuNGMxLjItMC4xLDEuNC0xLjUtMC4xLTEuNmMtMS40LTAuMS02LjgtMC4yLTEwLjksMC44Yy0wLjUsMC4xLTAuOC0wLjItMC41LTAuNWMwLjMtMC40LDEuMS0xLDEuMy0xLjIKCQkJCWMwLjMtMC4yLDAuNC0xLjItMS4xLTAuOGMtMC45LDAuMi0yLjUsMS4zLTMuMywyLjRjLTAuNCwwLjYtMS4xLDAuNy0xLjUsMC43Yy00LjgtMC4zLTcuOCwwLjItOS40LDEuOWMtMC4xLTIuNSwwLjMtNS4yLDAuOC02LjYKCQkJCWMwLjMtMC45LDguOS05LDguMi0yMy40Qzg0LjksMTAuOSw3NC40LDIuOCw3Mi43LDcuMXoiLz4KCQk8L2c+Cgk8L2c+CjwvZz4KPC9zdmc+Cg==" alt=""></div><div><h3>スタンプ</h3><p>👍 ❤️ ⭐ 💯 🔥 💡 🤣 👀 ❓ と、自分の顔。押すとぴょこっと動きます。付箋に付くので、投票の集計にも使えます。</p></div></div>
+    <div class="tool"><div class="tool-badge"><svg class="i" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M22 17a2 2 0 0 1-2 2H6.828a2 2 0 0 0-1.414.586l-2.202 2.202A.71.71 0 0 1 2 21.286V5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2z"/></svg></div><div><h3>コメント <kbd>C</kbd></h3><p>付箋を押すと、その付箋にコメントを書けます。続けて別の付箋にも書けます。</p></div></div>
+    <div class="tool"><div class="tool-badge"><svg class="i" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 14 4 9l5-5"/><path d="M4 9h10.5a5.5 5.5 0 0 1 5.5 5.5a5.5 5.5 0 0 1-5.5 5.5H11"/></svg></div><div><h3>元に戻す・やり直し</h3><p>自分の操作だけを取り消します。ほかの人の操作は取り消されないので、安心して戻せます。</p></div></div>
+  </div>
+</section>
+
+<!-- ===== 操作のコツ ===== -->
+<section class="block" id="howto" aria-labelledby="howto-h">
+  <p class="eyebrow">HOW TO</p>
+  <h2 id="howto-h">操作のコツ</h2>
+  <p class="lead">知っておくと、ぐっと速く書けるようになる操作です。</p>
+
+  <div class="howto">
+
+    <div class="card">
+      <div>
+        <h3>付箋を書く・増やす</h3>
+        <ul>
+          <li>キャンバスをダブルクリックすると付箋ができて、すぐに書けます。書き終わったら <kbd>Esc</kbd> か、ほかの場所をクリック。</li>
+          <li>付箋を選ぶと上下左右に <b>＋</b> が出ます。押すと、隣に同じ色の付箋ができて続けて書けます。</li>
+          <li>選んだときに出るパネルで、色（7色）・形（正方形／横長）を変えられます。次に置く付箋は、最後に選んだ色になります。</li>
+          <li>付箋の文字の中の URL は、押せるリンクになります。</li>
+        </ul>
+      </div>
+      <div class="art" aria-hidden="true">
+        <div class="sticky sel" style="left:30%; top:32%; width:70px; height:70px; background:var(--yellow)">新しい<br>アイデア</div>
+        <div class="plus" style="left:calc(30% + 25px); top:calc(32% - 30px)">+</div>
+        <div class="plus" style="left:calc(30% + 25px); top:calc(32% + 80px)">+</div>
+        <div class="plus" style="left:calc(30% - 30px); top:calc(32% + 25px)">+</div>
+        <div class="plus" style="left:calc(30% + 80px); top:calc(32% + 25px)">+</div>
+        <div class="sticky ghost" style="left:calc(30% + 110px); top:32%; width:70px; height:70px; background:var(--yellow)"></div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div>
+        <h3>矢印でつなぐ</h3>
+        <ul>
+          <li>付箋の <b>＋</b> をドラッグすると矢印が伸びます。ほかの付箋の上で離すとつながり、何もないところで離すと新しい付箋ができてつながります。</li>
+          <li>ツールバーの「矢印」を選べば、クリック2回でつなげます。途中でスクロールして遠くの付箋にもつなげます。キーボードの <kbd>L</kbd> でも選べます。</li>
+          <li>矢印を選ぶと、向き（→ ← ↔）を選べます。ダブルクリックで矢印にテキストを添えられます。</li>
+          <li>付箋を動かすと、矢印もついてきます。</li>
+        </ul>
+      </div>
+      <div class="art" aria-hidden="true">
+        <svg class="arrow-svg" viewBox="0 0 260 170" preserveAspectRatio="none">
+          <defs><marker id="ah" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M0 0L10 5L0 10z" fill="#5d6475"/></marker></defs>
+          <line x1="88" y1="85" x2="150" y2="85" stroke="#5d6475" stroke-width="2" marker-end="url(#ah)"/>
+        </svg>
+        <div class="sticky" style="left:22px; top:52px; width:64px; height:64px; background:var(--blue)">申請</div>
+        <div class="sticky" style="left:156px; top:52px; width:64px; height:64px; background:var(--blue)">承認</div>
+        <div style="position:absolute; left:94px; top:62px; font-size:10px; background:var(--bg); padding:0 4px; color:var(--muted)">上長へ</div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div>
+        <h3>スタンプとコメント</h3>
+        <ul>
+          <li>スタンプは、押した場所にある付箋に付きます（付く先の付箋が青く光るので、押す前にわかります）。付箋を動かせば一緒に動きます。</li>
+          <li><b>投票にそのまま使えます。</b>どの付箋に何個押されたかが記録されるので、CSV で書き出せば付箋ごとの票数がすぐにわかります。スプレッドシートで「スタンプ合計」の列を並べ替えれば、人気の順に並びます。</li>
+          <li>スタンプを選んで <kbd>Delete</kbd> で取り消せます。</li>
+          <li>コメントがある付箋には 💬 と件数が出ます。押すと付箋の横にパネルが開きます。<kbd>Enter</kbd> で送信、<kbd>Shift</kbd><span class="kp">+</span><kbd>Enter</kbd> で改行。</li>
+          <li>コメントを直せるのは書いた本人だけ。消せるのは本人とボードの作成者です。</li>
+        </ul>
+      </div>
+      <div class="art" aria-hidden="true">
+        <div class="sticky" style="left:24px; top:46px; width:76px; height:76px; background:var(--pink)">AI に<br>要約を頼む</div>
+        <img class="stamp pop" src="data:image/svg+xml;base64,PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0idXRmLTgiPz4KPCEtLSBHZW5lcmF0b3I6IEFkb2JlIElsbHVzdHJhdG9yIDI2LjMuMSwgU1ZHIEV4cG9ydCBQbHVnLUluIC4gU1ZHIFZlcnNpb246IDYuMDAgQnVpbGQgMCkgIC0tPgo8c3ZnIHZlcnNpb249IjEuMSIgaWQ9IkxheWVyXzJfMDAwMDAxMzg1NjI0NDAxODA1MzI1OTQ0MTAwMDAwMDE3NTc4MTc4Mjg1NTUzMzc2MzJfIgoJIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyIgeG1sbnM6eGxpbms9Imh0dHA6Ly93d3cudzMub3JnLzE5OTkveGxpbmsiIHg9IjBweCIgeT0iMHB4IiB2aWV3Qm94PSIwIDAgMTI4IDEyOCIKCSBzdHlsZT0iZW5hYmxlLWJhY2tncm91bmQ6bmV3IDAgMCAxMjggMTI4OyIgeG1sOnNwYWNlPSJwcmVzZXJ2ZSI+CjxwYXRoIHN0eWxlPSJmaWxsOiNGRkNBMjg7IiBkPSJNNzcuNiw0OC44YzctMS40LDEzLjgtMC43LDE3LjItMC4yYzMuOCwwLjUsOS4xLDEuMywxMy4yLDMuMmM0LjcsMi4xLDUuOSw1LjcsNiwxMAoJYzAuMSw0LTEuMSw2LjQtMi41LDcuN2M0LjIsMi4zLDUuMiw1LDUsOS41Yy0wLjIsNC0yLDcuMS01LjYsOC45YzIuOSwzLjEsMy41LDUuNSwzLDEwLjJjLTAuNCw0LjQtMi4xLDctOSw5YzEuMywxLjQsMS43LDMuOCwxLjYsNgoJYy0wLjIsMi42LTEsNS4xLTQuNiw2LjljLTEsMC41LTYuOSwzLjQtMTkuMi0wLjVjLTEwLjQsMS44LTI0LjksMC45LTM2LjQtNC42Yy0xMC45LTAuMS0yMy44LTEtMjQuOC0xYy0xLjEsMC0zLjItMC41LTQuMi0zLjMKCVMxMy4yLDg2LjcsMTYuMSw3NGMwLjQtMS44LDEuOS0yLjgsMy4yLTIuOXM4LjYtMC45LDEwLjMtMS4xYzktMS4xLDYuOC04LjksMTcuMi0yMS4zYzQuOS01LjksMTQuOS0xMCwxNS41LTIzLjEKCWMwLjItNC40LDAuNS0xMS42LDAuNS0xMi42YzAtNi4zLDEyLjItNy41LDE2LjYsMS4yQzg3LjMsMjkuNyw4MC44LDM3LjMsNzcuNiw0OC44eiIvPgo8Zz4KCTxnPgoJCTxkZWZzPgoJCQk8cGF0aCBpZD0iU1ZHSURfMV8iIGQ9Ik03Ny42LDQ4LjhjNy0xLjQsMTMuOC0wLjcsMTcuMi0wLjJjMy44LDAuNSw5LjEsMS4zLDEzLjIsMy4yYzQuNywyLjEsNS45LDUuNyw2LDEwYzAuMSw0LTEuMSw2LjQtMi41LDcuNwoJCQkJYzQuMiwyLjMsNS4yLDUsNSw5LjVjLTAuMiw0LTIsNy4xLTUuNiw4LjljMi45LDMuMSwzLjUsNS41LDMsMTAuMmMtMC40LDQuNC0yLjEsNy05LDljMS4zLDEuNCwxLjcsMy44LDEuNiw2CgkJCQljLTAuMiwyLjYtMSw1LjEtNC42LDYuOWMtMSwwLjUtNi45LDMuNC0xOS4yLTAuNWMtMTAuNCwxLjgtMjQuOSwwLjktMzYuNC00LjZjLTEwLjktMC4xLTIzLjgtMS0yNC44LTFjLTEuMSwwLTMuMi0wLjUtNC4yLTMuMwoJCQkJUzEzLjIsODYuNywxNi4xLDc0YzAuNC0xLjgsMS45LTIuOCwzLjItMi45czguNi0wLjksMTAuMy0xLjFjOS0xLjEsNi44LTguOSwxNy4yLTIxLjNjNC45LTUuOSwxNC45LTEwLDE1LjUtMjMuMQoJCQkJYzAuMi00LjQsMC41LTExLjYsMC41LTEyLjZjMC02LjMsMTIuMi03LjUsMTYuNiwxLjJDODcuMywyOS43LDgwLjgsMzcuMyw3Ny42LDQ4Ljh6Ii8+CgkJPC9kZWZzPgoJCTxjbGlwUGF0aCBpZD0iU1ZHSURfMDAwMDAwODY2ODUxMzAxOTQ1MjkyNjU2MDAwMDAwMDA2NjAwOTg3NzU2NzMzMTc3OThfIj4KCQkJPHVzZSB4bGluazpocmVmPSIjU1ZHSURfMV8iICBzdHlsZT0ib3ZlcmZsb3c6dmlzaWJsZTsiLz4KCQk8L2NsaXBQYXRoPgoJCTxnIHN0eWxlPSJjbGlwLXBhdGg6dXJsKCNTVkdJRF8wMDAwMDA4NjY4NTEzMDE5NDUyOTI2NTYwMDAwMDAwMDY2MDA5ODc3NTY3MzMxNzc5OF8pOyI+CgkJCTxwYXRoIHN0eWxlPSJmaWxsOiNGQUE3MDA7IiBkPSJNMTYsNzIuMmMwLjEsMS41LDAsMy43LDIuOCwzLjdzOS41LTAuNywxMC45LTAuOWMyLjctMC4zLDctMi41LDguNi02YzEuNC0yLjksNC43LTEwLjUsNC43LTEwLjUKCQkJCXM3LTIwLDkuNi0yMC4zYzQuMS0wLjUsMTEuOS0xLjQsMTEuOS0xM2MwLTMuNiwwLjQtOSwwLjQtMTBjMC4zLTcuNyw4LjktNC44LDEyLjMtMS4xbDMuNi0zbC02LjQtNS43YzAsMC0xMy40LDAuNy0xMy4zLDAuOAoJCQkJQzYxLjQsNi4zLDE2LDcyLjIsMTYsNzIuMnoiLz4KCQkJPHBvbHlnb24gc3R5bGU9ImZpbGw6I0ZBQTcwMDsiIHBvaW50cz0iMTYuNiwxMTAuOCA0NC4xLDExMS44IDQ0LjEsMTE2IDE3LjQsMTE0LjYgCQkJIi8+CgkJCTxwYXRoIHN0eWxlPSJmaWxsOiNGQUE3MDA7IiBkPSJNMTExLjQsNDguNmw3LDEyLjZsLTEuOCw0MS43bC0xMy40LDIwLjNsLTIwLTAuNWMwLDAtNS42LTExLjMtNi40LTEzLjRjLTAuOC0yLTMtNi03LjMtMTIuMgoJCQkJYy00LjItNi4yLTEuMy0xMS42LDEuNi0xMy43YzEuNy0xLjIsMy4xLTUuMiwzLjMtNy42czEtMjAuNywxLjItMjYuMXM1LjEtNi43LDcuMi02LjdMMTExLjQsNDguNnogTTkxLjYsNTUuNgoJCQkJYy0zLjYsMC40LTUuNCw0LjUtNS40LDguOGMwLjEsNy4yLDIuOSw3LjEsNS45LDcuN2MwLjgsMC4yLDEuMiwxLjUsMCwxLjdjLTUuMiwwLjUtNi4yLDUtNi4yLDguNWMwLDYuNiw0LjgsNy4yLDUuNiw3LjIKCQkJCWMxLjMsMC4xLDEuNywxLjcsMCwxLjhjLTMuMywwLjItNS4zLDMuNS01LjMsNy40YzAsMywwLjksNi4xLDYuMSw3LjZjMC42LDAuMiwxLjUsMS42LTAuMiwxLjhjLTQuNSwwLjctNC42LDIuOS00LjcsNS44CgkJCQljMCwzLjMsMS42LDQuMywzLjYsNC45YzEuNywwLjQsNS4xLDAuNSw3LDAuMmM0LjYtMC44LDguNC01LjksNC40LTExLjRjLTAuOCwwLTUuOCwwLTYuNCwwcy0wLjYtMC44LDAuMi0wLjgKCQkJCWMxMC45LTAuNiwxNC4xLTQuNSwxNC43LTguOWMwLjQtMy4yLTAuNS02LjUtMy4yLTguOWMtMC40LTAuNC0xLTAuMi0xLjctMC4yYzEyLTYuNSw3LjYtMTYuNiwxLjgtMTcuNmMtMS4xLTAuMi0yLjEtMC4zLTEuMS0wLjcKCQkJCWM1LjktMi4xLDcuNC0xOC41LTYtMThDMTAwLjksNTIuNSw5NC41LDU1LjMsOTEuNiw1NS42eiIvPgoJCTwvZz4KCTwvZz4KPC9nPgo8Zz4KCTxnPgoJCTxkZWZzPgoJCQk8cGF0aCBpZD0iU1ZHSURfMDAwMDAxNTI5NzQ3ODM5NjU3MjA0NDA4NjAwMDAwMTAxMTc5NzAxNjE3NDQ5ODI3MDNfIiBkPSJNNzcuNiw0OC44YzctMS40LDEzLjgtMC43LDE3LjItMC4yCgkJCQljMy44LDAuNSw5LjEsMS4zLDEzLjIsMy4yYzQuNywyLjEsNS45LDUuNyw2LDEwYzAuMSw0LTEuMSw2LjQtMi41LDcuN2M0LjIsMi4zLDUuMiw1LDUsOS41Yy0wLjIsNC0yLDcuMS01LjYsOC45CgkJCQljMi45LDMuMSwzLjUsNS41LDMsMTAuMmMtMC40LDQuNC0yLjEsNy05LDljMS4zLDEuNCwxLjcsMy44LDEuNiw2Yy0wLjIsMi42LTEsNS4xLTQuNiw2LjljLTEsMC41LTYuOSwzLjQtMTkuMi0wLjUKCQkJCWMtMTAuNCwxLjgtMjQuOSwwLjktMzYuNC00LjZjLTEwLjktMC4xLTIzLjgtMS0yNC44LTFjLTEuMSwwLTMuMi0wLjUtNC4yLTMuM1MxMy4yLDg2LjcsMTYuMSw3NGMwLjQtMS44LDEuOS0yLjgsMy4yLTIuOQoJCQkJczguNi0wLjksMTAuMy0xLjFjOS0xLjEsNi44LTguOSwxNy4yLTIxLjNjNC45LTUuOSwxNC45LTEwLDE1LjUtMjMuMWMwLjItNC40LDAuNS0xMS42LDAuNS0xMi42YzAtNi4zLDEyLjItNy41LDE2LjYsMS4yCgkJCQlDODcuMywyOS43LDgwLjgsMzcuMyw3Ny42LDQ4Ljh6Ii8+CgkJPC9kZWZzPgoJCTxjbGlwUGF0aCBpZD0iU1ZHSURfMDAwMDAwMjMyNjkxMjA1OTU5NTgzMDg3MjAwMDAwMTA2NDQ0NDM2MzIzODY3NTAxMjlfIj4KCQkJPHVzZSB4bGluazpocmVmPSIjU1ZHSURfMDAwMDAxNTI5NzQ3ODM5NjU3MjA0NDA4NjAwMDAwMTAxMTc5NzAxNjE3NDQ5ODI3MDNfIiAgc3R5bGU9Im92ZXJmbG93OnZpc2libGU7Ii8+CgkJPC9jbGlwUGF0aD4KCQk8ZyBzdHlsZT0iY2xpcC1wYXRoOnVybCgjU1ZHSURfMDAwMDAwMjMyNjkxMjA1OTU5NTgzMDg3MjAwMDAwMTA2NDQ0NDM2MzIzODY3NTAxMjlfKTsiPgoJCQk8cGF0aCBzdHlsZT0iZmlsbDojQjU1RTE5OyIgZD0iTTMxLjMsNjguM2MwLjgsMi43LDQsMi41LDUuOCwwLjZDNDEuNSw2NCw0NC44LDU0LjYsNDksNTAuM2M2LjktNy4xLDE0LjYtMTIuNiwxNC42LTIwCgkJCQljMC0yLjQsMS04LjgtMi4xLTEwLjFjLTEuNi0wLjctMi44LDAuNS0yLjgsMS40YzAsMS0wLjcsMTAuNS0wLjcsMTAuNUwzMS4zLDY4LjN6Ii8+CgkJCTxwYXRoIHN0eWxlPSJmaWxsOiNCNTVFMTk7IiBkPSJNNzIuNyw3LjFjLTAuNCwxLjEtMC4yLDIuNCwxLjQsMy45YzE1LjEsMTQtMC43LDMxLjUtMC41LDQwLjZjMC4xLDIuNSwwLDE4LjYtMC4yLDIwLjMKCQkJCWMtMS42LDEwLjktOCwxNC44LTExLjYsMTYuOWMtMC41LDAuMy0wLjQsMS40LDAuNCwxLjJjMC43LTAuMiw4LTEuNiwxMS45LTljMC4zLDIuMiwyLjYsNi4yLDQuNSw3Yy0yLDAuOS03LjUsOS4xLDEuNCwxNi41CgkJCQljLTMuNCwxLjMtNS44LDcuOS0wLjksMTIuMmMtMy41LDEuMS0yMiwxLjQtMzIuNy01LjZjLTEtMC43LTIuNy0wLjUtMy41LDAuM2MtMC45LDAuOC0xLjQsMC44LTEuOSwwLjdzLTE0LjksMC42LTE1LjksMC42CgkJCQlzLTMuMiwwLjItMy4yLDEuNnMyNC42LDEuNiwyNC42LDEuNmwxMy42LDZsMjMuMy0wLjljMCwwLDEzLjksMS4zLDEyLjEsMC45cy0xMC42LTIuNC0xNC41LTYuNWMtNC41LTQuOS0wLjYtOC4xLDAuNS04LjQKCQkJCWMwLjctMC4yLDEuNS0wLjQsMi42LDBjMS4yLDAuNCwxNCwzLjUsMjAuMiwwLjZjMC44LTAuNCwwLjUtMC45LTAuMi0wLjljLTEwLjIsMC41LTE4LjktMS4yLTIzLTQuN2MtNS45LTUuMS0zLjMtMTAuNi0xLjMtMTEuOAoJCQkJYzAuNy0wLjQsMS41LTAuMywxLjktMC4xYzgsMy40LDI0LjEsMS41LDI4LjctMS40YzAuNS0wLjMsMC4zLTEtMC40LTAuOGMtMS41LDAuNC0yMi4yLDQuMS0yOS40LTEuOGMtNS00LjEtNS45LTguNi0yLjYtMTIuMQoJCQkJYzEtMS4xLDIuOC0wLjgsMy4yLTAuN2MxMy4yLDIuNywyNy4yLDAsMjkuNy0yLjZjMC42LTAuNiwwLjMtMS40LTAuNy0xLjFjLTMuNSwxLjEtMTcuNSwzLTIzLjgsMi4yYy0xLjYtMC4yLTMuMi0wLjQtNS40LTEuOQoJCQkJYy0xLjItMC44LTIuNi0xLjgtMy42LTIuOHMtMS45LTIuOS0xLjUtNi40YzAuMi0yLDEuMy00LDQuOC00LjdjMi0wLjQsNS4yLDAuMyw2LjEsMC41czIuNiwwLjIsMy43LTAuMQoJCQkJYzEuOC0wLjUsNy44LTIuMSwxMS42LTIuNGMxLjItMC4xLDEuNC0xLjUtMC4xLTEuNmMtMS40LTAuMS02LjgtMC4yLTEwLjksMC44Yy0wLjUsMC4xLTAuOC0wLjItMC41LTAuNWMwLjMtMC40LDEuMS0xLDEuMy0xLjIKCQkJCWMwLjMtMC4yLDAuNC0xLjItMS4xLTAuOGMtMC45LDAuMi0yLjUsMS4zLTMuMywyLjRjLTAuNCwwLjYtMS4xLDAuNy0xLjUsMC43Yy00LjgtMC4zLTcuOCwwLjItOS40LDEuOWMtMC4xLTIuNSwwLjMtNS4yLDAuOC02LjYKCQkJCWMwLjMtMC45LDguOS05LDguMi0yMy40Qzg0LjksMTAuOSw3NC40LDIuOCw3Mi43LDcuMXoiLz4KCQk8L2c+Cgk8L2c+CjwvZz4KPC9zdmc+Cg==" style="left:82px; top:36px" alt="">
+        <img class="stamp" src="data:image/svg+xml;base64,PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0idXRmLTgiPz4KPCEtLSBHZW5lcmF0b3I6IEFkb2JlIElsbHVzdHJhdG9yIDI0LjEuMiwgU1ZHIEV4cG9ydCBQbHVnLUluIC4gU1ZHIFZlcnNpb246IDYuMDAgQnVpbGQgMCkgIC0tPgo8c3ZnIHZlcnNpb249IjEuMSIgaWQ9IkxheWVyXzEiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyIgeG1sbnM6eGxpbms9Imh0dHA6Ly93d3cudzMub3JnLzE5OTkveGxpbmsiIHg9IjBweCIgeT0iMHB4IgoJIHZpZXdCb3g9IjAgMCAxMjggMTI4IiBzdHlsZT0iZW5hYmxlLWJhY2tncm91bmQ6bmV3IDAgMCAxMjggMTI4OyIgeG1sOnNwYWNlPSJwcmVzZXJ2ZSI+CjxnPgoJPHBhdGggc3R5bGU9ImZpbGw6I0ZERDgzNTsiIGQ9Ik02OC4wNSw3LjIzbDEzLjQ2LDMwLjdjMS4wMywyLjM1LDMuMjYsMy45Niw1LjgyLDQuMTlsMzIuNzksMi45NGMzLjcxLDAuNTQsNS4xOSw1LjA5LDIuNSw3LjcxCgkJTDk3LjkyLDczLjUyYy0yLDEuNjgtMi45MSw0LjMyLTIuMzYsNi44N2w3LjE4LDMzLjYxYzAuNjMsMy42OS0zLjI0LDYuNTEtNi41Niw0Ljc2TDY3LjU2LDEwMmMtMi4yLTEuMjktNC45Mi0xLjI5LTcuMTIsMAoJCWwtMjguNjIsMTYuNzVjLTMuMzEsMS43NC03LjE5LTEuMDctNi41Ni00Ljc2bDcuMTgtMzMuNjFjMC41NC0yLjU1LTAuMzYtNS4xOS0yLjM2LTYuODdMNS4zNyw1Mi43OGMtMi42OC0yLjYxLTEuMi03LjE3LDIuNS03LjcxCgkJbDMyLjc5LTIuOTRjMi41Ni0wLjIzLDQuNzktMS44NCw1LjgyLTQuMTlsMTMuNDYtMzAuN0M2MS42MSwzLjg4LDY2LjM5LDMuODgsNjguMDUsNy4yM3oiLz4KCTxnPgoJCTxwYXRoIHN0eWxlPSJmaWxsOiNGRkZGOEQ7IiBkPSJNNjcuMDcsMzkuNzdsLTIuMjgtMjIuNjJjLTAuMDktMS4yNi0wLjM1LTMuNDIsMS42Ny0zLjQyYzEuNiwwLDIuNDcsMy4zMywyLjQ3LDMuMzNsNi44NCwxOC4xNgoJCQljMi41OCw2LjkxLDEuNTIsOS4yOC0wLjk3LDEwLjY4QzcxLjk0LDQ3LjUsNjcuNzIsNDYuMjUsNjcuMDcsMzkuNzd6Ii8+Cgk8L2c+Cgk8Zz4KCQk8cGF0aCBzdHlsZT0iZmlsbDojRjRCNDAwOyIgZD0iTTk1LjI4LDcxLjUxTDExNC45LDU2LjJjMC45Ny0wLjgxLDIuNzItMi4xLDEuMzItMy41N2MtMS4xMS0xLjE2LTQuMTEsMC41MS00LjExLDAuNTFsLTE3LjE3LDYuNzEKCQkJYy01LjEyLDEuNzctOC41Miw0LjM5LTguODIsNy42OUM4NS43Myw3MS45NCw4OS42OCw3NS4zMyw5NS4yOCw3MS41MXoiLz4KCTwvZz4KPC9nPgo8L3N2Zz4K" style="left:20px; top:104px" alt="">
+        <div class="comment-badge" style="left:70px; top:116px">💬 2</div>
+        <div class="comment-panel" style="left:118px; top:30px"><b>佐藤</b><p>議事録にも使えそう</p><b>田中</b><p>来週試してみます！</p></div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div>
+        <h3>選ぶ・動かす・そろえる</h3>
+        <ul>
+          <li>何もないところからドラッグすると、範囲で選べます。<kbd>Shift</kbd>＋クリックで選択に足す・外す。<kbd>command ⌘</kbd><span class="kp">+</span><kbd>A</kbd>（Windows は <kbd>Ctrl</kbd><span class="kp">+</span><kbd>A</kbd>）で全部。</li>
+          <li>動かしていると、近くの付箋と端や中心がそろう位置に吸い付き、点線が出ます。吸い付かせたくないときは <kbd>command ⌘</kbd>（Windows は <kbd>Ctrl</kbd>）を押しながら。</li>
+          <li><kbd>Shift</kbd> を押しながら動かすと、真横か真下にだけ動きます。</li>
+          <li><kbd>option ⌥</kbd>（Windows は <kbd>Alt</kbd>）を押しながらドラッグすると複製。<kbd>command ⌘</kbd><span class="kp">+</span><kbd>D</kbd>（Windows は <kbd>Ctrl</kbd><span class="kp">+</span><kbd>D</kbd>）でも複製できます。</li>
+        </ul>
+      </div>
+      <div class="art" aria-hidden="true">
+        <div class="sticky" style="left:30px; top:28px; width:60px; height:60px; background:var(--green)">A</div>
+        <div class="sticky sel" style="left:130px; top:86px; width:60px; height:60px; background:var(--orange)">B</div>
+        <div style="position:absolute; left:20px; top:116px; width:180px; border-top:2px dashed rgba(59,108,246,.55)"></div>
+        <div class="sticky" style="left:30px; top:86px; width:60px; height:60px; background:var(--orange); opacity:.35; box-shadow:none; border:2px dashed #3b6cf6"></div>
+        <div style="position:absolute; left:96px; top:100px; font-size:18px; color:#3b6cf6">←</div>
+      </div>
+    </div>
+
+    <div class="card no-art">
+      <div>
+        <h3>画面を動かす・拡大する</h3>
+        <div class="grid two" style="margin-top:8px">
+          <ul class="plain">
+            <li><b>トラックパッド</b>：2本指でスライドして移動、ピンチで拡大・縮小</li>
+            <li><b>マウス</b>：ホイールで移動、<kbd>command ⌘</kbd>（Windows は <kbd>Ctrl</kbd>）を押しながらホイールで拡大・縮小</li>
+          </ul>
+          <ul class="plain">
+            <li><b>どのツールでも</b>：<kbd>Space</kbd> を押しながらドラッグで移動</li>
+            <li><b>迷子になったら</b>：右下の <svg class="i" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M8 3H5a2 2 0 0 0-2 2v3"/><path d="M21 8V5a2 2 0 0 0-2-2h-3"/><path d="M3 16v3a2 2 0 0 0 2 2h3"/><path d="M16 21h3a2 2 0 0 0 2-2v-3"/></svg>（全体を表示）でボード全体が入ります</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+
+    <div class="card no-art">
+      <div>
+        <h3>コピー＆ペーストで、ボードからボードへ</h3>
+        <p style="font-size:15px; margin-top:6px">選んだものを <kbd>command ⌘</kbd><span class="kp">+</span><kbd>C</kbd>（Windows は <kbd>Ctrl</kbd><span class="kp">+</span><kbd>C</kbd>）でコピーし、別のボードで <kbd>command ⌘</kbd><span class="kp">+</span><kbd>V</kbd>（Windows は <kbd>Ctrl</kbd><span class="kp">+</span><kbd>V</kbd>）で貼れます。前回のふりかえりの枠を使い回すときに便利です。セクションをコピーすると中の付箋も一緒に入ります（スタンプとコメントは入りません）。Slack などに貼ると、付箋の文字が1行ずつ並びます。</p>
+      </div>
+    </div>
+
+  </div>
+</section>
+
+<!-- ===== 進行 ===== -->
+<section class="block" id="facilitate" aria-labelledby="fac-h">
+  <p class="eyebrow">FACILITATION</p>
+  <h2 id="fac-h">タイマーと BGM で、時間を区切って集中</h2>
+  <p class="lead">ワークショップの進行に必要なものが、ボードの上の真ん中にそろっています。</p>
+  <div class="grid two">
+    <div class="card">
+      <h3><svg class="i" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><line x1="10" x2="14" y1="2" y2="2"/><line x1="12" x2="15" y1="14" y2="11"/><circle cx="12" cy="14" r="8"/></svg> タイマー</h3>
+      <div class="timer-demo">
+        <span class="preset">3分</span><span class="preset">5分</span><span class="preset">10分</span><span class="preset">15分</span>
+        <span class="timer-pill"><span class="fill" style="width:62%"></span><svg class="i" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><line x1="10" x2="14" y1="2" y2="2"/><line x1="12" x2="15" y1="14" y2="11"/><circle cx="12" cy="14" r="8"/></svg><span>03:06</span></span>
+      </div>
+      <ul class="plain" style="font-size:15px; margin-top:10px">
+        <li>ボードに1つだけで、全員の画面で同時に動きます。誰でも開始・停止・+1分・終了できます。</li>
+        <li>残り時間は、背景の色が減っていくことでもわかります（青 → 黄 → 橙 → 赤）。</li>
+        <li>最後の3秒はカウントダウン、0秒で終了の音と紙吹雪。</li>
+      </ul>
+    </div>
+    <div class="card">
+      <h3><svg class="i" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 16V3a1 1 0 0 0-1.28-.96l-10 2.917a1 1 0 0 0-.72.96V19"/><circle cx="18" cy="16" r="3"/><circle cx="6" cy="19" r="3"/></svg> BGM と音量</h3>
+      <div class="bgm-list"><span>リラックス</span><span>フォーカス</span><span>ハッピー</span><span>ノリノリ</span></div>
+      <ul class="plain" style="font-size:15px; margin-top:10px">
+        <li>選んだ曲は、参加者全員に流れます。</li>
+        <li>音量は自分にだけ効きます。音を出したくない人は 0 にできます。</li>
+        <li>音が出ないときは、ページを一度クリックしてください（ブラウザの決まりで、操作するまで音が出ません）。</li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+<!-- ===== 共有 ===== -->
+<section class="block" id="share" aria-labelledby="share-h">
+  <p class="eyebrow">SHARING</p>
+  <h2 id="share-h">共有する</h2>
+  <p class="lead">右上の「共有」から、誰がボードを開けるかを選び、リンクをコピーします。</p>
+  <div class="grid two">
+    <div class="card">
+      <h3>共有範囲は2種類</h3>
+      <div class="scope">
+        <div><b><svg class="i" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 17H7A5 5 0 0 1 7 7h2"/><path d="M15 7h2a5 5 0 1 1 0 10h-2"/><line x1="8" x2="16" y1="12" y2="12"/></svg> リンクを知っている組織のメンバー</b><span>初期の設定。リンクを知っていれば、組織の人は誰でも参加できます。</span></div>
+        <div><b><svg class="i" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect width="18" height="11" x="3" y="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg> 招待した人だけ</b><span>名前かメールアドレスで招待した人だけが開けます。リンクが広まっても、招待していない人は開けません。</span></div>
+      </div>
+      <p class="note">共有範囲の変更と招待は、ボードを作った人だけができます。</p>
+    </div>
+    <div class="card">
+      <h3>🔒 組織の人だけで使えます</h3>
+      <ul class="plain" style="font-size:15px">
+        <li>ログインできるのは組織の Google アカウントだけです。組織の外の人はボードを開けません。</li>
+        <li>ボードの一覧は誰にも見えません。リンクを知らなければ、ボードにはたどり着けません。</li>
+        <li>付箋は参加者なら誰でも動かせ、消せます（消しても「元に戻す」で戻せます）。</li>
+        <li>ボードそのものを削除できるのは、作った人だけです。削除すると元に戻せません。</li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+<!-- ===== 書き出し ===== -->
+<section class="block export" id="export" aria-labelledby="export-h">
+  <p class="eyebrow">EXPORT</p>
+  <h2 id="export-h">書き出して、残す・まとめる</h2>
+  <p class="lead">ボード名の横の <span class="btn-chip"><svg class="i" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m6 9 6 6 6-6"/></svg></span> メニューから、3つの形式で書き出せます。参加者なら誰でも使えます。</p>
+  <div class="grid three">
+    <div class="card">
+      <h3><span class="fmt" style="background:#2f8f4e">CSV</span>CSV でダウンロード</h3>
+      <p>付箋とテキストの一覧。セクション・色・スタンプの数（種類ごと・合計）・コメント・矢印のつなぎ先まで入ります。</p>
+      <p class="for">→ スタンプの投票を付箋ごとに集計。AI に渡して要約・分類。先頭に AI 向けの説明の行が付いています。</p>
+    </div>
+    <div class="card">
+      <h3><span class="fmt" style="background:#3b6cf6">PNG</span>画像でダウンロード</h3>
+      <p>ボードにあるものすべてを、白い背景の1枚の画像に。見えている範囲に関係なく全体が入ります。</p>
+      <p class="for">→ 資料やスライドに貼る。ふりかえりの記録に。</p>
+    </div>
+    <div class="card">
+      <h3><span class="fmt" style="background:#e07b16">HTML</span>HTML でダウンロード</h3>
+      <p>1つの HTML ファイルに。拡大しても文字がぼやけず、文字の検索もできます。コメントは入りません。</p>
+      <p class="for">→ 共有用のページに貼って、ボードに参加していない人にも見せる。</p>
+    </div>
+  </div>
+</section>
+
+<!-- ===== ショートカット ===== -->
+<section class="block" id="keys" aria-labelledby="keys-h">
+  <p class="eyebrow">SHORTCUTS</p>
+  <h2 id="keys-h">ショートカット一覧</h2>
+  <p class="lead">Mac の <kbd>command ⌘</kbd> は、Windows では <kbd>Ctrl</kbd>、Mac の <kbd>option ⌥</kbd> は、Windows では <kbd>Alt</kbd> にあたります。文字を入力している間は、ふつうの文字の操作になります。</p>
+  <div class="keys-wrap">
+    <div class="card">
+      <table class="keys">
+        <caption>ツール</caption>
+        <thead><tr><th>操作</th><th>Mac</th><th>Windows</th></tr></thead>
+        <tr><td>選択</td><td><kbd>V</kbd></td><td><kbd>V</kbd></td></tr>
+        <tr><td>画面移動</td><td><kbd>H</kbd></td><td><kbd>H</kbd></td></tr>
+        <tr><td>矢印</td><td><kbd>L</kbd></td><td><kbd>L</kbd></td></tr>
+        <tr><td>コメント</td><td><kbd>C</kbd></td><td><kbd>C</kbd></td></tr>
+        <tr><td>選択に戻る・選択を外す</td><td><kbd>Esc</kbd></td><td><kbd>Esc</kbd></td></tr>
+        <tr><td>画面を動かす（どのツールでも）</td><td><kbd>Space</kbd>＋ドラッグ</td><td><kbd>Space</kbd>＋ドラッグ</td></tr>
+        <tr><td>付箋を置く</td><td>キャンバスをダブルクリック</td><td>キャンバスをダブルクリック</td></tr>
+        <tr><td>文字を書き終える</td><td><kbd>Esc</kbd></td><td><kbd>Esc</kbd></td></tr>
+      </table>
+    </div>
+    <div class="card">
+      <table class="keys">
+        <caption>編集</caption>
+        <thead><tr><th>操作</th><th>Mac</th><th>Windows</th></tr></thead>
+        <tr><td>元に戻す</td><td><kbd>command ⌘</kbd><span class="kp">+</span><kbd>Z</kbd></td><td><kbd>Ctrl</kbd><span class="kp">+</span><kbd>Z</kbd></td></tr>
+        <tr><td>やり直し</td><td><kbd>shift ⇧</kbd><span class="kp">+</span><kbd>command ⌘</kbd><span class="kp">+</span><kbd>Z</kbd></td><td><kbd>Ctrl</kbd><span class="kp">+</span><kbd>Y</kbd></td></tr>
+        <tr><td>全部選ぶ</td><td><kbd>command ⌘</kbd><span class="kp">+</span><kbd>A</kbd></td><td><kbd>Ctrl</kbd><span class="kp">+</span><kbd>A</kbd></td></tr>
+        <tr><td>コピー</td><td><kbd>command ⌘</kbd><span class="kp">+</span><kbd>C</kbd></td><td><kbd>Ctrl</kbd><span class="kp">+</span><kbd>C</kbd></td></tr>
+        <tr><td>切り取り</td><td><kbd>command ⌘</kbd><span class="kp">+</span><kbd>X</kbd></td><td><kbd>Ctrl</kbd><span class="kp">+</span><kbd>X</kbd></td></tr>
+        <tr><td>貼り付け</td><td><kbd>command ⌘</kbd><span class="kp">+</span><kbd>V</kbd></td><td><kbd>Ctrl</kbd><span class="kp">+</span><kbd>V</kbd></td></tr>
+        <tr><td>複製</td><td><kbd>command ⌘</kbd><span class="kp">+</span><kbd>D</kbd></td><td><kbd>Ctrl</kbd><span class="kp">+</span><kbd>D</kbd></td></tr>
+        <tr><td>ドラッグで複製</td><td><kbd>option ⌥</kbd>＋ドラッグ</td><td><kbd>Alt</kbd>＋ドラッグ</td></tr>
+        <tr><td>削除</td><td><kbd>Delete</kbd></td><td><kbd>Delete</kbd></td></tr>
+        <tr><td>真横・真下にだけ動かす</td><td><kbd>Shift</kbd>＋ドラッグ</td><td><kbd>Shift</kbd>＋ドラッグ</td></tr>
+        <tr><td>吸い付かずに動かす</td><td><kbd>command ⌘</kbd>＋ドラッグ</td><td><kbd>Ctrl</kbd>＋ドラッグ</td></tr>
+      </table>
+    </div>
+  </div>
+</section>
+
+<!-- ===== よくある質問 ===== -->
+<section class="block" id="faq" aria-labelledby="faq-h">
+  <p class="eyebrow">FAQ</p>
+  <h2 id="faq-h">よくある質問</h2>
+  <details class="faq"><summary>組織の外の人を招待できますか？</summary><div>できません。ログインできるのは組織の Google アカウントだけです。組織の外の方とのワークショップでは、書き出した画像や HTML を共有してください。</div></details>
+  <details class="faq"><summary>同じ付箋を同時に書き換えたらどうなりますか？</summary><div>後から書いた方の内容が残ります。ふだんは自分の付箋を書くことが多いので、ほとんど気になりません。</div></details>
+  <details class="faq"><summary>間違えて付箋を消してしまいました</summary><div>「元に戻す」で戻せます。キーボードなら <kbd>command ⌘</kbd><span class="kp">+</span><kbd>Z</kbd>（Windows は <kbd>Ctrl</kbd><span class="kp">+</span><kbd>Z</kbd>）です。戻せるのは自分の操作だけで、ページを再読み込みすると戻せる履歴は消えます。ほかの人が消した付箋は、消した本人に戻してもらってください。</div></details>
+  <details class="faq"><summary>ボードを消したいです</summary><div>ボード名の横の <svg class="i" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m6 9 6 6 6-6"/></svg> メニューの「ボードを削除」から削除できます。削除できるのはボードを作った人だけで、元に戻せません。</div></details>
+  <details class="faq"><summary>タイマーや BGM の音が鳴りません</summary><div>ブラウザの決まりで、ページを一度もクリックしていないと音が出ません。🎵 ボタンに赤い印が出ているときは、押すと音が出るようになります。音量が 0 になっていないかも確かめてください。</div></details>
+  <details class="faq"><summary>iPad などのタブレットでも使えますか？</summary><div>タッチ操作に対応しています。1本指のドラッグで画面の移動、2本指のピンチで拡大・縮小します。複製などはボタンからも操作できます。</div></details>
+  <details class="faq"><summary>英語で表示できますか？</summary><div>ブラウザの言語が日本語以外なら英語で表示されます。トップ画面のアカウントのメニュー（またはログイン画面の下）の「表示言語」で切り替えることもできます。</div></details>
+</section>
+
+</main>
+
+<footer>
+  <a class="cta" href="/">N-Board を開く <svg class="i" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M7 7h10v10"/><path d="M7 17 17 7"/></svg></a>
+  <p>ぜひ、次の会議やふりかえりで使ってみてください。</p>
+</footer>
+
+</body>
+</html>

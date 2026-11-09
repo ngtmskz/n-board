@@ -1,0 +1,369 @@
+rules_version = '2';
+
+// このファイルはテンプレート。scripts/build-rules.mjs がメールアドレスのパターン（プレースホルダー）を
+// VITE_ALLOWED_DOMAINS から置き換えて firestore.rules を生成する（firestore.rules は直接編集しない）。
+//
+// データ構造
+//   boards/{boardId}                     ボード本体
+//   boards/{boardId}/objects/{objectId}  付箋・セクション・スタンプ・テキスト・画像・矢印（type で区別）
+//   boards/{boardId}/presence/{uid}      参加中の人（ハートビート）
+//   boards/{boardId}/state/timer         ボード全体で共有するタイマー
+//   boards/{boardId}/state/bgm           ボード全体で共有する BGM（流す曲）
+//   users/{uid}/history/{boardId}        自分が開いたボードの履歴
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    // ---- 共通 ----
+
+    // 組織の Google Workspace アカウントでログインしているか
+    function isEmployee() {
+      return request.auth != null
+        && request.auth.token.firebase.sign_in_provider == 'google.com'
+        && request.auth.token.email_verified == true
+        && request.auth.token.email.lower().matches('__ALLOWED_EMAIL_PATTERN__');
+    }
+
+    function boardPath(boardId) {
+      return /databases/$(database)/documents/boards/$(boardId);
+    }
+
+    // ボードを開ける人か。
+    // link：リンクを知っている組織のメンバーなら誰でも。invited：作成者と、招待したメールアドレスの人だけ。
+    function canAccess(board) {
+      return board.visibility == 'link'
+        || (board.visibility == 'invited'
+            && (board.ownerUid == request.auth.uid
+                || request.auth.token.email.lower() in board.get('memberEmails', [])));
+    }
+
+    function boardAccessible(boardId) {
+      return canAccess(get(boardPath(boardId)).data);
+    }
+
+    function isBoardOwner(boardId) {
+      return get(boardPath(boardId)).data.ownerUid == request.auth.uid;
+    }
+
+    function unchanged(keys) {
+      return !request.resource.data.diff(resource.data).affectedKeys().hasAny(keys);
+    }
+
+    function isShortString(v, max) {
+      return v is string && v.size() <= max;
+    }
+
+    function validCount(v) {
+      return v is int && v >= 0 && v <= 100000;
+    }
+
+    function isOptionalPhotoURL(v) {
+      return v == null || isShortString(v, 2048);
+    }
+
+    // ---- ボード ----
+
+    function validBoardTitle(t) {
+      return t is string && t.size() >= 1 && t.size() <= 100;
+    }
+
+    match /boards/{boardId} {
+      // 存在しないIDは null を返して「削除済み」を判定できるようにする（中身は見えない）
+      allow get: if isEmployee() && (resource == null || canAccess(resource.data));
+      // ボードの一覧取得は禁止（IDを知っている人だけが開ける）
+      allow list: if false;
+
+      allow create: if isEmployee()
+        // 推測されにくいID（Firestoreの自動ID=20文字）だけを許可
+        && boardId.matches('[A-Za-z0-9]{20,40}')
+        && request.resource.data.keys().hasOnly(
+             ['title', 'ownerUid', 'ownerName', 'visibility', 'createdAt', 'updatedAt', 'schemaVersion'])
+        && request.resource.data.keys().hasAll(
+             ['title', 'ownerUid', 'ownerName', 'visibility', 'createdAt', 'updatedAt', 'schemaVersion'])
+        && validBoardTitle(request.resource.data.title)
+        && request.resource.data.ownerUid == request.auth.uid
+        && isShortString(request.resource.data.ownerName, 100)
+        && request.resource.data.visibility == 'link'
+        && request.resource.data.createdAt == request.time
+        && request.resource.data.updatedAt == request.time
+        && request.resource.data.schemaVersion == 1;
+
+      // 参加者は誰でもタイトルを変更できる。共有範囲と招待した人は作成者だけが変えられる。
+      allow update: if isEmployee()
+        && canAccess(resource.data)
+        && request.resource.data.updatedAt == request.time
+        && ((request.resource.data.diff(resource.data).affectedKeys().hasOnly(['title', 'updatedAt'])
+             && validBoardTitle(request.resource.data.title))
+            || (resource.data.ownerUid == request.auth.uid
+                && request.resource.data.diff(resource.data).affectedKeys()
+                     .hasOnly(['visibility', 'memberEmails', 'updatedAt'])
+                && request.resource.data.visibility in ['link', 'invited']
+                && request.resource.data.memberEmails is list
+                // 招待できる人数の上限（types.ts の MAX_BOARD_MEMBERS）
+                && request.resource.data.memberEmails.size() <= 100));
+
+      // ボードの削除は作成者本人のみ
+      allow delete: if isEmployee() && resource.data.ownerUid == request.auth.uid;
+
+      // ---- オブジェクト（付箋・セクション・スタンプ） ----
+
+      function validCommon(d) {
+        return d.x is number && d.y is number && d.z is number
+          && d.createdBy is map
+          && d.createdBy.keys().hasOnly(['uid', 'name', 'photoURL'])
+          && d.createdBy.keys().hasAll(['uid', 'name', 'photoURL'])
+          && isShortString(d.createdBy.uid, 128)
+          && isShortString(d.createdBy.name, 100)
+          && isOptionalPhotoURL(d.createdBy.photoURL)
+          && d.updatedBy == request.auth.uid
+          && d.updatedAt == request.time
+          && d.deleted is bool
+          // ロック機能は未実装。追加時はここを「ロック中は locked の変更以外を拒否」に置き換える。
+          && d.locked == false;
+      }
+
+      function validSize(d) {
+        return d.w is number && d.w >= 40 && d.w <= 5000
+          && d.h is number && d.h >= 40 && d.h <= 5000;
+      }
+
+      function validSticky(d) {
+        return d.keys().hasOnly(['type', 'x', 'y', 'z', 'w', 'h', 'text', 'color', 'parentId',
+                                 'createdBy', 'createdAt', 'updatedBy', 'updatedAt', 'deleted', 'locked'])
+          && d.keys().hasAll(['type', 'x', 'y', 'z', 'w', 'h', 'text', 'color', 'parentId',
+                              'createdBy', 'createdAt', 'updatedBy', 'updatedAt', 'deleted', 'locked'])
+          && validCommon(d) && validSize(d)
+          && isShortString(d.text, 2000)
+          && d.color in ['yellow', 'orange', 'pink', 'purple', 'blue', 'green', 'gray']
+          && (d.parentId == null || isShortString(d.parentId, 40));
+      }
+
+      function validSection(d) {
+        return d.keys().hasOnly(['type', 'x', 'y', 'z', 'w', 'h', 'title', 'color',
+                                 'createdBy', 'createdAt', 'updatedBy', 'updatedAt', 'deleted', 'locked'])
+          && d.keys().hasAll(['type', 'x', 'y', 'z', 'w', 'h', 'title', 'color',
+                              'createdBy', 'createdAt', 'updatedBy', 'updatedAt', 'deleted', 'locked'])
+          && validCommon(d) && validSize(d)
+          && isShortString(d.title, 100)
+          && d.color in ['gray', 'blue', 'green', 'yellow', 'pink', 'purple'];
+      }
+
+      function validStamp(d) {
+        return d.keys().hasOnly(['type', 'x', 'y', 'z', 'stampKind', 'targetId',
+                                 'createdBy', 'createdAt', 'updatedBy', 'updatedAt', 'deleted', 'locked'])
+          && d.keys().hasAll(['type', 'x', 'y', 'z', 'stampKind', 'targetId',
+                              'createdBy', 'createdAt', 'updatedBy', 'updatedAt', 'deleted', 'locked'])
+          && validCommon(d)
+          && d.stampKind in ['like', 'heart', 'star', 'hundred', 'fire', 'idea', 'rofl', 'eyes', 'question', 'face']
+          && (d.targetId == null || isShortString(d.targetId, 40));
+      }
+
+      function validText(d) {
+        // autoWidth は後から追加した項目なので、ない古いデータも認める
+        return d.keys().hasOnly(['type', 'x', 'y', 'z', 'w', 'h', 'text', 'fontSize', 'color', 'parentId', 'autoWidth',
+                                 'createdBy', 'createdAt', 'updatedBy', 'updatedAt', 'deleted', 'locked'])
+          && d.keys().hasAll(['type', 'x', 'y', 'z', 'w', 'h', 'text', 'fontSize', 'color', 'parentId',
+                              'createdBy', 'createdAt', 'updatedBy', 'updatedAt', 'deleted', 'locked'])
+          && validCommon(d)
+          && d.w is number && d.w >= 40 && d.w <= 5000
+          && d.h is number && d.h >= 10 && d.h <= 20000
+          && isShortString(d.text, 2000)
+          && d.fontSize in [16, 24, 36, 56]
+          && d.color in ['black', 'gray', 'red', 'orange', 'green', 'blue', 'purple']
+          && (!('autoWidth' in d) || d.autoWidth is bool)
+          && (d.parentId == null || isShortString(d.parentId, 40));
+      }
+
+      // 画像。画像のファイルは Storage の boards/{boardId}/images/ に置き、ここには置き場所と表示の大きさだけ持つ。
+      function validImage(d) {
+        return d.keys().hasOnly(['type', 'x', 'y', 'z', 'w', 'h', 'src', 'parentId',
+                                 'createdBy', 'createdAt', 'updatedBy', 'updatedAt', 'deleted', 'locked'])
+          && d.keys().hasAll(['type', 'x', 'y', 'z', 'w', 'h', 'src', 'parentId',
+                              'createdBy', 'createdAt', 'updatedBy', 'updatedAt', 'deleted', 'locked'])
+          && validCommon(d)
+          && d.w is number && d.w >= 20 && d.w <= 5000
+          && d.h is number && d.h >= 20 && d.h <= 5000
+          // このボードの画像の置き場所だけを指せる
+          && d.src is string
+          && d.src.matches('boards/' + boardId + '/images/[A-Za-z0-9]{20,40}[.](png|jpg|gif|webp)')
+          && (d.parentId == null || isShortString(d.parentId, 40));
+      }
+
+      // 矢印。つなぐ2つの ID と、添えるテキスト・両向きかだけを持つ（位置は両端から決まるので x, y は 0 のまま）。
+      // bothEnds は後から追加した項目なので、ない矢印も認める（片向き）。
+      function validConnector(d) {
+        return d.keys().hasOnly(['type', 'x', 'y', 'z', 'fromId', 'toId', 'label', 'bothEnds',
+                                 'createdBy', 'createdAt', 'updatedBy', 'updatedAt', 'deleted', 'locked'])
+          && d.keys().hasAll(['type', 'x', 'y', 'z', 'fromId', 'toId', 'label',
+                              'createdBy', 'createdAt', 'updatedBy', 'updatedAt', 'deleted', 'locked'])
+          && validCommon(d)
+          && isShortString(d.fromId, 40) && d.fromId.size() > 0
+          && isShortString(d.toId, 40) && d.toId.size() > 0
+          && d.fromId != d.toId
+          && isShortString(d.label, 50)
+          && (!('bothEnds' in d) || d.bothEnds is bool);
+      }
+
+      // 将来の種類（shape, path, timer など）はここに追加する
+      function validObject(d) {
+        return (d.type == 'sticky' && validSticky(d))
+          || (d.type == 'section' && validSection(d))
+          || (d.type == 'stamp' && validStamp(d))
+          || (d.type == 'text' && validText(d))
+          || (d.type == 'image' && validImage(d))
+          || (d.type == 'connector' && validConnector(d));
+      }
+
+      match /objects/{objectId} {
+        allow read: if isEmployee() && boardAccessible(boardId);
+
+        // 作成者は本人。作成時は削除済みにできない。
+        allow create: if isEmployee() && boardAccessible(boardId)
+          && objectId.matches('[A-Za-z0-9]{20,40}')
+          && validObject(request.resource.data)
+          && request.resource.data.createdBy.uid == request.auth.uid
+          && request.resource.data.createdAt == request.time
+          && request.resource.data.deleted == false;
+
+        // 参加者全員が誰のオブジェクトでも編集・移動・削除（deleted=true の論理削除）できる。
+        // 種類・作成者・作成日時は変更不可。
+        allow update: if isEmployee() && boardAccessible(boardId)
+          && unchanged(['type', 'createdBy', 'createdAt'])
+          && (request.resource.data.type != 'image' || unchanged(['src']))
+          && validObject(request.resource.data);
+
+        // 物理削除はボード削除時の後片付け用。ボード作成者のみ。
+        allow delete: if isEmployee() && isBoardOwner(boardId);
+      }
+
+      // ---- コメント（付箋に付ける） ----
+
+      function validComment(d) {
+        return d.keys().hasOnly(['targetId', 'text', 'createdBy', 'createdAt', 'updatedAt', 'edited', 'deleted'])
+          && d.keys().hasAll(['targetId', 'text', 'createdBy', 'createdAt', 'updatedAt', 'edited', 'deleted'])
+          && isShortString(d.targetId, 40) && d.targetId.size() > 0
+          && d.text is string && d.text.size() >= 1 && d.text.size() <= 1000
+          && d.createdBy is map
+          && d.createdBy.keys().hasOnly(['uid', 'name', 'photoURL'])
+          && d.createdBy.keys().hasAll(['uid', 'name', 'photoURL'])
+          && isShortString(d.createdBy.uid, 128)
+          && isShortString(d.createdBy.name, 100)
+          && isOptionalPhotoURL(d.createdBy.photoURL)
+          && d.updatedAt == request.time
+          && d.edited is bool
+          && d.deleted is bool;
+      }
+
+      match /comments/{commentId} {
+        allow read: if isEmployee() && boardAccessible(boardId);
+
+        // 書いた人は本人。作成時は編集済み・削除済みにできない。
+        allow create: if isEmployee() && boardAccessible(boardId)
+          && commentId.matches('[A-Za-z0-9]{20,40}')
+          && validComment(request.resource.data)
+          && request.resource.data.createdBy.uid == request.auth.uid
+          && request.resource.data.createdAt == request.time
+          && request.resource.data.edited == false
+          && request.resource.data.deleted == false;
+
+        // 本文の編集は書いた本人だけ（他人が直すと、その人の発言として見えてしまうため）。
+        // 削除（deleted=true の論理削除）は書いた本人とボード作成者。削除したものは元に戻さない。
+        allow update: if isEmployee() && boardAccessible(boardId)
+          && validComment(request.resource.data)
+          && resource.data.deleted == false
+          && ((resource.data.createdBy.uid == request.auth.uid
+                && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['text', 'edited', 'updatedAt'])
+                && request.resource.data.edited == true)
+              || ((resource.data.createdBy.uid == request.auth.uid || isBoardOwner(boardId))
+                && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['deleted', 'updatedAt'])
+                && request.resource.data.deleted == true));
+
+        // 物理削除はボード削除時の後片付け用。ボード作成者のみ。
+        allow delete: if isEmployee() && isBoardOwner(boardId);
+      }
+
+      // ---- 参加中の人 ----
+
+      match /presence/{presenceUid} {
+        allow read: if isEmployee() && boardAccessible(boardId);
+        allow create, update: if isEmployee() && boardAccessible(boardId)
+          && presenceUid == request.auth.uid
+          && request.resource.data.keys().hasOnly(['name', 'photoURL', 'lastSeen'])
+          && request.resource.data.keys().hasAll(['name', 'photoURL', 'lastSeen'])
+          && isShortString(request.resource.data.name, 100)
+          && isOptionalPhotoURL(request.resource.data.photoURL)
+          && request.resource.data.lastSeen == request.time;
+        allow delete: if isEmployee() && (presenceUid == request.auth.uid || isBoardOwner(boardId));
+      }
+
+      // ---- ボード全体で共有する状態（タイマーなど） ----
+
+      // 残り時間 = remainingMs -（今のサーバー時刻 - startedAt）。止まっているときは startedAt なし。
+      function validTimer(d) {
+        return d.keys().hasOnly(['status', 'durationMs', 'remainingMs', 'startedAt', 'updatedBy', 'updatedAt'])
+          && d.keys().hasAll(['status', 'durationMs', 'remainingMs', 'startedAt', 'updatedBy', 'updatedAt'])
+          && d.status in ['idle', 'running', 'paused']
+          // 上限は 99分59秒（表示を「分:秒」の2桁に収めるため）
+          && d.durationMs is int && d.durationMs >= 0 && d.durationMs <= 5999000
+          && d.remainingMs is int && d.remainingMs >= 0 && d.remainingMs <= 5999000
+          // 動かし始めた時刻はサーバーの時刻で記録する（途中で +1分 したときは前の時刻のまま）
+          && (d.status == 'running'
+                ? (d.startedAt == request.time
+                   || (resource != null && resource.data.status == 'running' && d.startedAt == resource.data.startedAt))
+                : d.startedAt == null)
+          && d.updatedBy == request.auth.uid
+          && d.updatedAt == request.time;
+      }
+
+      // 流す BGM（null なら止める）。曲の ID は src/constants.ts の BGM_TRACKS と合わせる。
+      function validBgm(d) {
+        return d.keys().hasOnly(['trackId', 'updatedBy', 'updatedAt'])
+          && d.keys().hasAll(['trackId', 'updatedBy', 'updatedAt'])
+          && (d.trackId == null || d.trackId in ['relax', 'focus', 'happy', 'groove'])
+          && d.updatedBy == request.auth.uid
+          && d.updatedAt == request.time;
+      }
+
+      match /state/{stateId} {
+        allow read: if isEmployee() && boardAccessible(boardId);
+        // 参加者は誰でもタイマー・BGM を操作できる
+        allow create, update: if isEmployee() && boardAccessible(boardId)
+          && ((stateId == 'timer' && validTimer(request.resource.data))
+              || (stateId == 'bgm' && validBgm(request.resource.data)));
+        // ボード削除時の後片付け用
+        allow delete: if isEmployee() && isBoardOwner(boardId);
+      }
+    }
+
+    // ---- ログインしたことがある人（招待するときに名前で探す） ----
+
+    match /users/{userId} {
+      // 組織のメンバーなら誰でも一覧を読める（招待の候補に出すため）
+      allow read: if isEmployee();
+      // 本人だけが、自分の名前・メールアドレス・写真を書ける
+      allow create, update: if isEmployee() && userId == request.auth.uid
+        && request.resource.data.keys().hasOnly(['name', 'email', 'photoURL', 'updatedAt'])
+        && request.resource.data.keys().hasAll(['name', 'email', 'photoURL', 'updatedAt'])
+        && isShortString(request.resource.data.name, 100)
+        && request.resource.data.email == request.auth.token.email.lower()
+        && isOptionalPhotoURL(request.resource.data.photoURL)
+        && request.resource.data.updatedAt == request.time;
+    }
+
+    // ---- 履歴（自分が開いたボード） ----
+
+    match /users/{userId}/history/{boardId} {
+      allow read: if isEmployee() && userId == request.auth.uid;
+      allow create, update: if isEmployee() && userId == request.auth.uid
+        && request.resource.data.keys().hasOnly(['title', 'ownerUid', 'lastOpenedAt', 'stickyCount', 'commentCount'])
+        && request.resource.data.keys().hasAll(['title', 'ownerUid', 'lastOpenedAt'])
+        && validBoardTitle(request.resource.data.title)
+        && isShortString(request.resource.data.ownerUid, 128)
+        && request.resource.data.lastOpenedAt is timestamp
+        // 最後に開いていたときの付箋とコメントの数（履歴一覧に出す）
+        && validCount(request.resource.data.get('stickyCount', 0))
+        && validCount(request.resource.data.get('commentCount', 0));
+      // 将来の「履歴から削除」用
+      allow delete: if isEmployee() && userId == request.auth.uid;
+    }
+  }
+}

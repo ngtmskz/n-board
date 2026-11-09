@@ -1,0 +1,47 @@
+rules_version = '2';
+
+// このファイルはテンプレート。scripts/build-rules.mjs がメールアドレスのパターン（プレースホルダー）を
+// VITE_ALLOWED_DOMAINS から置き換えて storage.rules を生成する（storage.rules は直接編集しない）。
+//
+// 置き場所
+//   boards/{boardId}/images/{fileName}  ボードに貼った画像
+//
+// 画像を見られるのは「組織のアカウントで、そのボードを開ける人」だけ。
+// ボードを開けるかどうかは Firestore のボードの共有範囲で決める（firestore.rules の canAccess と同じ条件）。
+// URL を知っていれば誰でも見られる形式（ダウンロード用の URL）は使わない。
+service firebase.storage {
+  match /b/{bucket}/o {
+
+    // 組織の Google Workspace アカウントでログインしているか
+    function isEmployee() {
+      return request.auth != null
+        && request.auth.token.firebase.sign_in_provider == 'google.com'
+        && request.auth.token.email_verified == true
+        && request.auth.token.email.lower().matches('__ALLOWED_EMAIL_PATTERN__');
+    }
+
+    function board(boardId) {
+      return firestore.get(/databases/(default)/documents/boards/$(boardId)).data;
+    }
+
+    // ボードを開ける人か（firestore.rules の canAccess と合わせる）
+    function canAccess(boardId) {
+      let b = board(boardId);
+      return b.visibility == 'link'
+        || (b.visibility == 'invited'
+            && (b.ownerUid == request.auth.uid
+                || request.auth.token.email.lower() in b.get('memberEmails', [])));
+    }
+
+    match /boards/{boardId}/images/{fileName} {
+      allow read: if isEmployee() && canAccess(boardId);
+      // 貼るときは、画像の形式で 5MB まで（アプリでは長い辺 1600px に縮めてから送る。GIF はそのまま）。
+      // 一度置いた画像は書き換えない（消しても元に戻せるよう、画像のファイルはボードの削除まで残す）。
+      allow create: if isEmployee() && canAccess(boardId)
+        && request.resource.size <= 5 * 1024 * 1024
+        && request.resource.contentType.matches('image/(png|jpeg|gif|webp)');
+      // ボードの削除時の後片付け（作成者のみ）
+      allow delete: if isEmployee() && board(boardId).ownerUid == request.auth.uid;
+    }
+  }
+}

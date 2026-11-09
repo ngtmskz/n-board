@@ -1,0 +1,45 @@
+{
+  "name": "n-board",
+  "private": true,
+  "license": "MIT",
+  "author": "Masa Nagata (https://github.com/ngtmskz)",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/ngtmskz/n-board.git"
+  },
+  "homepage": "https://github.com/ngtmskz/n-board",
+  "version": "1.0.0",
+  "type": "module",
+  "scripts": {
+    "dev": "node scripts/dev.mjs",
+    "dev:web": "node scripts/build-licenses.mjs && vite",
+    "emulators": "node scripts/build-rules.mjs --mode development && node scripts/firebase.mjs emulators:start --only auth,firestore,storage --import ./.emulator-data --export-on-exit",
+    "rules:build": "node scripts/build-rules.mjs --mode development",
+    "test:rules": "node scripts/test-rules.mjs",
+    "typecheck": "tsc --noEmit -p .",
+    "build": "tsc --noEmit -p . && node scripts/build-licenses.mjs && vite build --mode production",
+    "deploy": "npm run build && node scripts/firebase.mjs deploy --only hosting,firestore,storage --project production"
+  },
+  "dependencies": {
+    "@fontsource-variable/inter": "^5.3.0",
+    "@fontsource-variable/noto-sans-jp": "^5.3.1",
+    "firebase": "^13.1.0",
+    "html-to-image": "^1.11.13",
+    "lottie-web": "^5.13.0",
+    "lucide-react": "^1.61.0",
+    "react": "^19.3.1",
+    "react-dom": "^19.3.1",
+    "react-router-dom": "^7.18.4",
+    "zustand": "^5.0.16"
+  },
+  "devDependencies": {
+    "@firebase/rules-unit-testing": "^6.0.0",
+    "@types/react": "^19.3.0",
+    "@types/react-dom": "^19.3.0",
+    "@vitejs/plugin-react": "^6.1.2",
+    "firebase-tools": "^15.34.1",
+    "typescript": "^7.0.2",
+    "vite": "^8.3.5",
+    "vitest": "^5.0.5"
+  }
+}
