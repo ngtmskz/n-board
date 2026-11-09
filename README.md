@@ -19,14 +19,14 @@ Sticky notes in 7 colors. Group them into sections, and add plain text for title
 
 <br clear="all"><br>
 
-<img src="docs/images/features/arrow-en.gif" align="left" width="380" alt="Dragging the plus handle of a sticky note to another note to draw an arrow, then into empty space to create a new connected note">
+<img src="docs/images/features/arrow-en.gif" align="left" width="400" alt="Dragging the plus handle of a sticky note to another note to draw an arrow, then into empty space to create a new connected note">
 
 **➡️ Arrows**<br>
 Drag the ＋ on a sticky note to connect it to another one. Let go in empty space and a new, connected note appears. Arrows follow when you move things.
 
 <br clear="all"><br>
 
-<img src="docs/images/features/realtime-en.gif" align="left" width="380" alt="Two other participants add sticky notes and type into them at the same time, then stamp each other's notes">
+<img src="docs/images/features/realtime-en.gif" align="left" width="400" alt="Two other participants add sticky notes and type into them at the same time, then stamp each other's notes">
 
 **👥 Realtime collaboration**<br>
 What others write shows up on your screen as they type — even when several people are writing at once. You can also see who's on the board.
@@ -40,14 +40,14 @@ Discuss a sticky note without cluttering the board. Notes with comments show a c
 
 <br clear="all"><br>
 
-<img src="docs/images/features/stamp-en.gif" align="left" width="380" alt="Placing animated stamps on sticky notes: thumbs-up, fire, heart and eyes stamps bounce as they land">
+<img src="docs/images/features/stamp-en.gif" align="left" width="400" alt="Placing animated stamps on sticky notes: thumbs-up, fire, heart and eyes stamps bounce as they land">
 
 **🎉 Animated stamps**<br>
 9 stamps based on Google's Noto Emoji animations, plus one with your profile photo. They bounce for about 2 seconds when they land — and double as votes.
 
 <br clear="all"><br>
 
-<img src="docs/images/features/timer-en.gif" align="left" width="380" alt="The shared timer counts down the last seconds, then confetti falls across the board">
+<img src="docs/images/features/timer-en.gif" align="left" width="400" alt="The shared timer counts down the last seconds, then confetti falls across the board">
 
 **⏱ Timer and music**<br>
 One timer for everyone on the board, with a big countdown for the last 3 seconds and confetti at zero. Pick from 4 looping background tracks while you think.

@@ -19,14 +19,14 @@
 
 <br clear="all"><br>
 
-<img src="docs/images/features/arrow-ja.gif" align="left" width="380" alt="付箋の＋をドラッグして別の付箋に矢印をつなぎ、何もないところで離して新しい付箋を作っているところ">
+<img src="docs/images/features/arrow-ja.gif" align="left" width="400" alt="付箋の＋をドラッグして別の付箋に矢印をつなぎ、何もないところで離して新しい付箋を作っているところ">
 
 **➡️ 矢印**<br>
 付箋の ＋ をドラッグして、ほかの付箋につなげます。何もないところで離すと、つながった新しい付箋ができます。付箋を動かすと、矢印もついてきます。
 
 <br clear="all"><br>
 
-<img src="docs/images/features/realtime-ja.gif" align="left" width="380" alt="ほかの2人がそれぞれ付箋を置き、同時に文字を書いていき、最後にお互いの付箋にスタンプを押すところ">
+<img src="docs/images/features/realtime-ja.gif" align="left" width="400" alt="ほかの2人がそれぞれ付箋を置き、同時に文字を書いていき、最後にお互いの付箋にスタンプを押すところ">
 
 **👥 リアルタイムの同時編集**<br>
 ほかの人が書いている内容が、そのまま自分の画面に出てきます。何人が同時に書いても大丈夫です。誰が参加中かも表示されます。
@@ -40,14 +40,14 @@
 
 <br clear="all"><br>
 
-<img src="docs/images/features/stamp-ja.gif" align="left" width="380" alt="付箋に動くスタンプを押しているところ。👍、🔥、❤️、👀 のスタンプが、貼ったときに弾むように動きます">
+<img src="docs/images/features/stamp-ja.gif" align="left" width="400" alt="付箋に動くスタンプを押しているところ。👍、🔥、❤️、👀 のスタンプが、貼ったときに弾むように動きます">
 
 **🎉 動くスタンプ**<br>
 Google の Noto Emoji の動く絵文字9種類と、自分のプロフィール写真のスタンプ。貼ったときに2秒ほどぴょこっと動きます。投票にも使えます。
 
 <br clear="all"><br>
 
-<img src="docs/images/features/timer-ja.gif" align="left" width="380" alt="全員の画面で動くタイマーが残り数秒をカウントダウンし、0秒でボードに紙吹雪が舞うところ">
+<img src="docs/images/features/timer-ja.gif" align="left" width="400" alt="全員の画面で動くタイマーが残り数秒をカウントダウンし、0秒でボードに紙吹雪が舞うところ">
 
 **⏱ タイマーと BGM**<br>
 全員の画面で同じように動くタイマーです。残り3秒で大きなカウントダウンが出て、終わると紙吹雪で知らせます。考える時間には、4曲から選んで BGM も流せます。
