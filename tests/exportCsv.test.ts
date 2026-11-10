@@ -168,9 +168,15 @@ describe('CSV の中身', () => {
   });
 
   it('数式として動かないよう、=・+・@ で始まる文章の先頭に「\'」を付ける', () => {
-    const out = buildBoardCsv('b', [sticky('x', '=1+1', 0, 0), sticky('y', '- 箇条書き', 0, 300)], [], new Date());
+    const out = buildBoardCsv('b', [sticky('x', '=1+1', 0, 0)], [], new Date());
     expect(out).toContain(",'=1+1,");
-    expect(out).toContain(',- 箇条書き,');
+  });
+
+  it('「-」で始まる文章にも「\'」を付け、ただの数値と「-」1文字はそのままにする', () => {
+    const texts = ['- 箇条書き', '- 2+3', '-2+3', '--2+3', '-3℃', '---', '-3', '-0.5', '-'];
+    const out = buildBoardCsv('b', texts.map((text, i) => sticky(`s${i}`, text, 0, i * 300)), [], new Date());
+    for (const text of ['- 箇条書き', '- 2+3', '-2+3', '--2+3', '-3℃', '---']) expect(out).toContain(`,'${text},`);
+    for (const text of ['-3', '-0.5', '-']) expect(out).toContain(`,${text},`);
   });
 });
 

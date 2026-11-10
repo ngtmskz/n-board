@@ -158,11 +158,14 @@ export function orderRows(objects: BoardObject[], comments: BoardComment[] = [])
 }
 
 /**
- * 表計算ソフトで開いたときに、=・+・@ などで始まる文章が数式として動かないよう、先頭に「'」を付ける。
- * （「-」は箇条書きでよく使うので対象にしない）
+ * 表計算ソフトで開いたときに、=・+・-・@ などで始まる文章が数式として動かないよう、先頭に「'」を付ける。
+ * 「-」で始まるものは、ただの数値（-3、-0.5）と「-」1文字だけはそのままにする。
+ * 「- 箇条書き」も Excel では数式として扱われる（「- 2+3」は計算され、文章は #NAME? になる）ので対象にする。
  */
 function neutralize(value: string) {
-  return /^[=+@\t\r]/.test(value) ? `'${value}` : value;
+  if (/^[=+@\t\r]/.test(value)) return `'${value}`;
+  if (value.startsWith('-') && value !== '-' && !/^-\d+(\.\d+)?$/.test(value)) return `'${value}`;
+  return value;
 }
 
 function cell(value: string | number) {

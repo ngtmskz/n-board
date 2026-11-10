@@ -6,6 +6,12 @@ All notable changes to N-Board are recorded here. Versions follow [Semantic Vers
 - **Minor** — new features that work without any changes on your side
 - **Patch** — bug fixes and small wording or layout fixes
 
+## [Unreleased]
+
+### Fixed
+
+- CSV export now also prefixes `'` to text that starts with `-` (except plain numbers and a lone `-`), so spreadsheet apps such as Excel don't evaluate it as a formula. Bullet-style notes like `- idea` were shown as `#NAME?` in Excel before
+
 ## [1.0.0] - 2026-11-09
 
 The first public release.
